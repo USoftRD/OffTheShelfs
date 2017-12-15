@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OTS>
+	<OTS_Type>Java Component</OTS_Type>
+	<Description>The purpose of this component is mainly monitoring and debugging. It offers methods to call a Java command, to collect garbage, to check free memory, to retrieve properties and settings, and more. 
+	A handy method is the CONSOLE method, which opens a console window that will show all logged events and all writes to stdio and stderr.</Description>
+</OTS>
