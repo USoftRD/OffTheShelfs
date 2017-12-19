@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OTS>
+	<OTS_Type>Java Component Table</OTS_Type>
+	<Description>You can use the LDAPTable component to connect to an LDAP server for accessing modifying information in directories. A directory is a specialized database optimized for reading, browsing and searching. LDAP stands for Lightweight Directory Access Protocol. As the name suggests, it is a lightweight protocol for accessing directory services, specifically X.500-based directory services.   
+The LDAP tableComponent is used together with LDAPAttribute. In order to work with LDAP you should import the LDAPAttribute tableComponent too. Their componentTables relate to each other as parent and child.
+
+The LDAP table component creates a connection to a directory service with the following parameters:   
+1-LDAP Version number.   
+2-Host: specifying the name of the LDAP directory server.   
+3-LDAP Port.   
+4-RootDN: the first or top-level entry is the root entry, e.g. dc=ness,dc=com.   
+5-User.   
+6-Password.   
+
+Therefore the constructor SQL has to specify the LDAP Version number, Host. LDAP Port, RootDN, User, Password.   
+NOTE: The LDAPATTRIBUTE tableComponent must have the same constructor-sql as the LDAP componentTable.
+
+Example of constructor SQL:       
+select        
+'&lt;LDAP Version number&gt;', (e.g. 3)       
+'&lt;Host&gt;',   (e.g. 'localhost')       
+'&lt;LDAP Port&gt;',  (e.g. 389)       
+'&lt;RootDN&gt;',   (e.g. 'dc=ness,dc=com')       
+'&lt;User&gt;',    (e.g. 'myUser')        
+'&lt;Password&gt;'    (e.g. 'myPassword')       
+
+After you have configured the constructor SQL fot both the LDAP component as for the LDAPATTRIBUTE component, don't forget to check both constructor SQL's on the 'State' tabpage and to save the changes.   
+
+You can specify LDAP user and password in the Authorizer. After creating a new user in the Authorizer selecting LDAP as validation agent, the Authorizer will validate the user's password credentials. 
+  
+If you don't want users to query or edit other users passwords, you should configure slapd.config as follows:
+access to attr=userPassword
+	by anonymous auth
+	by self read
+	by self write
+	by dn="&lt;myDN&gt;" write
+This way users won't have read access to other users passwords. See http://www.openldap.org/ for more details on configuration options for slapd.config.
+
+In order for the Application to be able to query, modify or add entries, their attributes and values in the LDAP directories, it's necessary for the LDAP directory server (slapd) to be running.   
+
+In the query field it's possible to query directories on specific attribute names. It's allowed to use search filters. Here's an example of how to use the search filter syntax:   
+        (cn=Common Name)   
+        (!(cn=Common Name))   
+        (&amp;(objectClass=Person)(|(sn=Surname)(cn=Common Na*)))   
+        (o=nes*euro*)   
+Search Filter Definition:   
+        and = "&amp;"   
+        or = "|"   
+        not = "!" filter   
+        equal= "="   
+        approx= "~="   
+        greater= "&gt;="   
+        less = "&lt;="   
+        any = "*"
+
+LDAPATTRIBUTE is used together with the LDAP tableComponent.
+The LDAPATTRIBUTE tableComponent must have the same constructor-sql as the LDAP componentTable.
+ 
+Example of constructor SQL:       
+select        
+'&lt;LDAP Version number&gt;', (e.g. 3)       
+'&lt;Host&gt;',   (e.g. 'localhost')       
+'&lt;LDAP Port&gt;',  (e.g. 389)       
+'&lt;RootDN&gt;',   (e.g. 'dc=ness,dc=com')       
+'&lt;User&gt;',    (e.g. 'myUser')        
+'&lt;Password&gt;'    (e.g. 'myPassword')       
+
+After you have configured the constructor SQL fot both the LDAP component as for the LDAPATTRIBUTE component, don't forget to check the constructor SQL's on the 'State' tabpage and to save the changes.
+</Description>
+</OTS>

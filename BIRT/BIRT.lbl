@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OTS>
+	<OTS_Type>Java Component</OTS_Type>
+	<Description>This component provides a way to automatically generate reports from report design files created with Business Intelligence and Reporting Tools (BIRT), without requiring interaction with the tool suite itself. It is required that the deployment components of BIRT (the Runtime) are installed before installing this component, 
+
+The constructor of this component contains the ReportEngine folder of the runtime installation, a temp directory for writing temporary files, and a prefix for images when using HTML output, for example, if you install BIRT in 'C:\Java\BIRT\runtime', then the Constructor must be something like:
+
+SELECT 'C:\Java\BIRT\runtime\ReportEngine', 'C:\temp', 'images'
+(For the description of the parameters see the constructor)
+
+For creating report designs themselves, you must separately install the BIRT tool itself (it is not shipped with USoft), which can be found (along with the runtime itself) at:
+
+http://www.eclipse.org/birt/phoenix/
+
+This component is designed to work with design files created with BIRT version 3.7.2, although design files created with newer versions of BIRT might work as well. Older versions however might not work properly with this component.</Description>
+</OTS>
