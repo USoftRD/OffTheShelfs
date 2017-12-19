@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OTS>
+	<OTS_Type>C# Component</OTS_Type>
+	<Description>The CSString component is a C# component which can be used for performing some extended string manipulations.
+The component is based on the internal 'WStrings' class and, if needed, can be specialized futther.
+</Description>
+</OTS>
