@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OTS>
+	<OTS_Type>C# Component</OTS_Type>
+	<Description>This component uses System.Net.Mail to send an email to one or more recipients.
+The body can be plain text or it can contain HTML.
+Optionally 1 ore more attachments can be added to the mail.
+
+Example calls:
+
+INVOKE OTS_Mail.SendMail
+WITH
+SELECT 'JohnDo@MyCompany.com', 'TestMail1', 'Hello world!'
+
+
+INVOKE OTS_Mail.SendMailHtml
+WITH
+SELECT 'JohnDo@MyCompany.com', 'TestMail1', '&lt;u&gt;Hello&lt;u&gt;&lt;br/&gt;&lt;b&gt;world!&lt;/b&gt;'
+
+INVOKE OTS_Mail.SendMailHtml
+WITH
+SELECT 'JohnDo@MyCompany.com;JaneDo@MyCompany.com', 'TestMail1', '&lt;u&gt;Hello&lt;u&gt;&lt;br/&gt;&lt;b&gt;world!&lt;/b&gt;', 'C:\usd90setup\Doc\AddNote.pdf', 'C:\usd90setup\BITMAPS\usdlogo.bmp'
+</Description>
+</OTS>

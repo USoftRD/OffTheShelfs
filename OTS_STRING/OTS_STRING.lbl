@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OTS>
+	<OTS_Type>C# Component</OTS_Type>
+	<Description>The OTS_String component is a C# component which can be used for performing some extended string manipulations.</Description>
+</OTS>
