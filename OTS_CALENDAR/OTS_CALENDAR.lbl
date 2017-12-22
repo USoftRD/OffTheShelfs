@@ -4,6 +4,6 @@
 	<Description>The calendar component gives access to a number of date conversion options as available in the java.util.Calendar and java.text.SimpleDateFormat classes. For example, you can convert a date to a string in a local representation according to a specified style. These functions are database-independent.  
 
 For detailed information, refer to the Java documentation: 
-http://java.sun.com/j2se/1.3/docs/api/java/util/Calendar.html 
-http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.html</Description>
+https://docs.oracle.com/javase/9/docs/api/java/util/Calendar.html
+https://docs.oracle.com/javase/9/docs/api/java/text/SimpleDateFormat.html</Description>
 </OTS>
