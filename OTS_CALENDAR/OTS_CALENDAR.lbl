@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <OTS>
 	<OTS_Type>Java Component</OTS_Type>
-	<Description>For the policy and limitations regarding Off the Shelf components, refer to Help topic: Off the Shelf components.  
-
-The calendar component gives access to a number of date conversion options as available in the java.util.Calendar and java.text.SimpleDateFormat classes. For example, you can convert a date to a string in a local representation according to a specified style. These functions are database-independent.  
+	<Description>The calendar component gives access to a number of date conversion options as available in the java.util.Calendar and java.text.SimpleDateFormat classes. For example, you can convert a date to a string in a local representation according to a specified style. These functions are database-independent.  
 
 For detailed information, refer to the Java documentation: 
 http://java.sun.com/j2se/1.3/docs/api/java/util/Calendar.html 
