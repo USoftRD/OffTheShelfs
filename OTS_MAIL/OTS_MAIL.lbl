@@ -4,6 +4,7 @@
 	<Description>This component uses System.Net.Mail to send an email to one or more recipients.
 The body can be plain text or it can contain HTML.
 Optionally 1 ore more attachments can be added to the mail.
+NOTE: Before you can use this component, make sure you change the constructor SQL: specify your own outgoing mailserver and reply-emailaddress.
 
 Example calls:
 
