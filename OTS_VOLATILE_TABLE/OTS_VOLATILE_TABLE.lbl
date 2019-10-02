@@ -1,5 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<OTS>
+<OTS> 
 	<OTS_Type>C# Component</OTS_Type>
-	<Description>The&#x20;OTS_VOLATILE_TABLE&#x20;implements&#x20;a&#x20;volatile&#x20;in-memory&#x20;table&#x20;with&#x20;1&#x20;up&#x20;to&#x20;10&#x20;fields,&#x20;intended&#x20;to&#x20;be&#x20;used&#x20;as&#x20;a&#x20;component&#x20;table.&#xD;&#xA;The&#x20;first&#x20;field&#x20;is&#x20;interpreted&#x20;as&#x20;the&#x20;key&#x20;field.&#xD;&#xA;All&#x20;fields&#x20;are&#x20;stored&#x20;as&#x20;strings,&#xD;&#xA;The&#x20;constructor&#x20;SQL&#x20;is&#x20;used&#x20;to:&#xD;&#xA;-1-&#x20;define&#x20;the&#x20;number&#x20;of&#x20;fields&#x20;(up&#x20;to&#x20;10)&#xD;&#xA;-2-&#x20;define&#x20;initial&#x20;data&#x20;in&#x20;xml&#x20;format.&#xD;&#xA;&#xD;&#xA;A&#x20;constructorSQL&#x20;example&#x20;&#x20;for&#x20;a&#x20;default&#x20;volatile&#x20;table&#x20;with&#x20;the&#x20;max&#x20;of&#x20;10&#x20;fields&#x20;and&#x20;no&#x20;initial&#x20;data:&#xD;&#xA;select&#x20;null,&#x20;null&#xD;&#xA;&#xD;&#xA;A&#x20;constructor&#x20;SQL&#x20;example&#x20;for&#x20;a&#x20;volatile&#x20;table&#x20;with&#x20;3&#x20;fields&#x20;and&#x20;no&#x20;initial&#x20;data:&#xD;&#xA;select&#x20;3,&#x20;null&#xD;&#xA;&#xD;&#xA;A&#x20;constructor&#x20;SQL&#x20;example&#x20;for&#x20;a&#x20;pre-filled&#x20;volatile&#x20;table&#x20;with&#x20;3&#x20;fields:&#xD;&#xA;&#xD;&#xA;select&#x20;3,&#xD;&#xA;&apos;&amp;lt;Volatile_tables&#x20;documentName=&quot;Volatile&#x20;tables&quot;&amp;Gt;&#xD;&#xA;&amp;lt;VOLATILETABLE&#x20;FIELD1=&quot;1&quot;&#x20;FIELD2=&quot;one&quot;&#x20;FIELD3=&quot;first&quot;/&amp;Gt;&#xD;&#xA;&amp;lt;VOLATILETABLE&#x20;FIELD1=&quot;2&quot;&#x20;FIELD2=&quot;two&quot;&#x20;FIELD3=&quot;second&quot;/&amp;Gt;&#xD;&#xA;&amp;lt;VOLATILETABLE&#x20;FIELD1=&quot;3&quot;&#x20;FIELD2=&quot;three&quot;&#x20;FIELD3=&quot;third&quot;/&amp;Gt;&#xD;&#xA;&amp;lt;VOLATILETABLE&#x20;FIELD1=&quot;4&quot;&#x20;FIELD2=&quot;four&quot;&#x20;FIELD3=&quot;fourth&quot;/&amp;Gt;&#xD;&#xA;&amp;lt;/Volatile_tables&amp;Gt;&apos;&#xD;&#xA;&#xD;&#xA;The&#x20;xml&#x20;in&#x20;the&#x20;constructor&#x20;can&#x20;also&#x20;be&#x20;passed&#x20;as&#x20;a&#x20;filepath&#x20;to&#x20;an&#x20;xml&#x20;data&#x20;file.&#xD;&#xA;The&#x20;xml&#x20;resembles&#x20;xml.import&#x20;format&#x20;but&#x20;essentialy&#x20;the&#x20;attributes&#x20;/*/*/@*&#x20;are&#x20;simply&#x20;read&#x20;in&#x20;order&#x20;of&#x20;appearance&#x20;and&#x20;assigned&#x20;to&#x20;the&#x20;fields&#x20;of&#x20;the&#x20;table&#x20;for&#x20;each&#x20;/*/*&#x20;element.&#xD;&#xA;&#xD;&#xA;Calling&#x20;the&#x20;method&#x20;OTS_VOLATILE_TABLE.Clear()&#x20;(&#x20;select&#x20;ots_volatile_table.clear()&#x20;)&#x20;clears&#x20;the&#x20;table.&#x20;Such&#x20;an&#x20;operation&#x20;would&#x20;be&#x20;hidden&#x20;from&#x20;the&#x20;rules&#x20;engine,&#x20;i.e.&#x20;a&#x20;transition&#x20;constraint&#x20;would&#x20;not&#x20;fire.&#xD;&#xA;select&#x20;ots_volatile_table.reset()&#x20;would&#x20;clear&#x20;the&#x20;table&#x20;and&#x20;then&#x20;re-insert&#x20;the&#x20;initial&#x20;data&#x20;from&#x20;the&#x20;constructor&#x20;sql,&#x20;if&#x20;any&#x20;(&#x20;this&#x20;also&#x20;is&#x20;unseen&#x20;by&#x20;the&#x20;rules&#x20;engine).&#xD;&#xA;&#xD;&#xA;Make&#x20;sure&#x20;that&#x20;a&#x20;constructor&#x20;is&#x20;always&#x20;available,&#x20;active&#x20;and&#x20;checked&#x20;(validated).&#xD;&#xA;After&#x20;importing&#x20;this&#x20;component,&#x20;the&#x20;constructor&#x20;SQL&#x20;must&#x20;be&#x20;checked!</Description>
+	<Description>The OTS_VOLATILE_TABLE implements a volatile in-memory table with 1 up to 10 fields, intended to be used as a component table.
+The first field is interpreted as the key field.
+All fields are stored as strings,
+The constructor SQL is used to:
+-1- define the number of fields (up to 10)
+-2- define initial data in xml format.
+
+A constructorSQL example  for a default volatile table with the max of 10 fields and no initial data:
+select null, null
+
+A constructor SQL example for a volatile table with 3 fields and no initial data:
+select 3, null
+
+A constructor SQL example for a pre-filled volatile table with 3 fields:
+
+select 3,
+'&lt;Volatile_tables documentName="Volatile tables"&Gt;
+&lt;VOLATILETABLE FIELD1="1" FIELD2="one" FIELD3="first"/&Gt;
+&lt;VOLATILETABLE FIELD1="2" FIELD2="two" FIELD3="second"/&Gt;
+&lt;VOLATILETABLE FIELD1="3" FIELD2="three" FIELD3="third"/&Gt;
+&lt;VOLATILETABLE FIELD1="4" FIELD2="four" FIELD3="fourth"/&Gt;
+&lt;/Volatile_tables&Gt;'
+
+The xml in the constructor can also be passed as a filepath to an xml data file.
+The xml resembles xml.import format but essentialy the attributes /*/*/@* are simply read in order of appearance and assigned to the fields of the table for each /*/* element.
+
+Calling the method OTS_VOLATILE_TABLE.Clear() ( select ots_volatile_table.clear() ) clears the table. Such an operation would be hidden from the rules engine, i.e. a transition constraint would not fire.
+select ots_volatile_table.reset() would clear the table and then re-insert the initial data from the constructor sql, if any ( this also is unseen by the rules engine).
+
+Make sure that a constructor is always available, active and checked (validated).
+After importing this component, the constructor SQL must be checked!.</Description>
 </OTS>
