@@ -3,6 +3,11 @@
 	<OTS_Type>C# Component</OTS_Type>
 	<Description>The OTS_VOLATILE_TABLE implements a volatile in-memory table with 1 up to 10 fields, intended to be used as a component table.
 The first field is interpreted as the key field.
+All fields are stored as strings<?xml version="1.0" encoding="UTF-8"?>
+<OTS> 
+	<OTS_Type>C# Component</OTS_Type>
+	<Description>The OTS_VOLATILE_TABLE implements a volatile in-memory table with 1 up to 10 fields, intended to be used as a component table.
+The first field is interpreted as the key field.
 All fields are stored as strings,
 The constructor SQL is used to:
 -1- define the number of fields (up to 10)
@@ -17,12 +22,12 @@ select 3, null
 A constructor SQL example for a pre-filled volatile table with 3 fields:
 
 select 3,
-'&lt;Volatile_tables documentName="Volatile tables"&Gt;
-&lt;VOLATILETABLE FIELD1="1" FIELD2="one" FIELD3="first"/&Gt;
-&lt;VOLATILETABLE FIELD1="2" FIELD2="two" FIELD3="second"/&Gt;
-&lt;VOLATILETABLE FIELD1="3" FIELD2="three" FIELD3="third"/&Gt;
-&lt;VOLATILETABLE FIELD1="4" FIELD2="four" FIELD3="fourth"/&Gt;
-&lt;/Volatile_tables&Gt;'
+'&lt;Volatile_tables documentName="Volatile tables"&gt;
+&lt;VOLATILETABLE FIELD1="1" FIELD2="one" FIELD3="first"/&gt;
+&lt;VOLATILETABLE FIELD1="2" FIELD2="two" FIELD3="second"/&gt;
+&lt;VOLATILETABLE FIELD1="3" FIELD2="three" FIELD3="third"/&gt;
+&lt;VOLATILETABLE FIELD1="4" FIELD2="four" FIELD3="fourth"/&gt;
+&lt;/Volatile_tables&gt;'
 
 The xml in the constructor can also be passed as a filepath to an xml data file.
 The xml resembles xml.import format but essentialy the attributes /*/*/@* are simply read in order of appearance and assigned to the fields of the table for each /*/* element.
