@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<OTS> 
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<OTS>
 	<OTS_Type>C# Component</OTS_Type>
-	<Description>The OTS_VOLATILE_TABLE implements a volatile in-memory table with 1 up to 10 fields, intended to be used as a component table.
+	<Description>This component implements a volatile in-memory table with 1 up to 10 fields, intended to be used as a component table.
 The first field is interpreted as the key field.
 All fields are stored as strings,
 The constructor SQL is used to:
@@ -31,5 +31,6 @@ Calling the method OTS_VOLATILE_TABLE.Clear() ( select ots_volatile_table.clear(
 select ots_volatile_table.reset() would clear the table and then re-insert the initial data from the constructor sql, if any ( this also is unseen by the rules engine).
 
 Make sure that a constructor is always available, active and checked (validated).
-After importing this component, the constructor SQL must be checked!.</Description>
+After importing this component, the constructor SQL must be checked!
+	</Description>
 </OTS>

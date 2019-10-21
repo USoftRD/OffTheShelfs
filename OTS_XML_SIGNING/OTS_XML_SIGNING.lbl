@@ -1,5 +1,33 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<OTS> 
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<OTS>
 	<OTS_Type>C# Component</OTS_Type>
-	<Description>This&#x20;OTS_XML_SIGNING&#x20;example&#x20;component&#x20;has&#x20;methods&#x20;to&#x20;add&#x20;a&#x20;signature,&#x20;verify&#x20;a&#x20;signature&#x20;and&#x20;remove&#x20;a&#x20;signature&#x20;from&#x20;an&#x20;XML&#x20;document.&#xD;&#xA;&#xD;&#xA;In&#x20;the&#x20;application,&#x20;using&#x20;SqlCommand,&#x20;you&#x20;can&#x20;test&#x20;the&#x20;methods&#x20;with&#x20;the&#x20;following&#x20;examples:&#xD;&#xA;&#xD;&#xA;-1-&#x20;Adding&#x20;a&#x20;signature.&#x20;Assuming&#x20;a&#x20;certificate&#x20;with&#x20;private&#x20;key&#x20;&#x20;available&#x20;for&#x20;company.com:&#xD;&#xA;&#xD;&#xA;&#x9;select&#x20;OTS_XML_SIGNING.AddSignature&#xD;&#xA;&#x9;(&#xD;&#xA;&#x9;&#x9;&apos;c:\temp\yourxmlfile.xml&apos;,&#x20;&#x20;&apos;*.company.com&apos;,&#x20;&apos;c:\temp\yoursignedxmlfile.xml&apos;&#xD;&#xA;&#x9;)&#xD;&#xA;&#x9;or&#x20;e.g.&#x20;signing&#x20;xml&#x20;export&#x20;data&#x20;directly:&#xD;&#xA;&#x9;select&#x20;OTS_XML_SIGNING.AddSignature&#xD;&#xA;&#x9;(&#xD;&#xA;&#x9;&#x9;(invoke&#x20;xml.export&#x20;with&#x20;select&#x20;*&#x20;from&#x20;mytable),&#x20;&#x20;&apos;*.company.com&apos;,&#x20;&apos;c:\temp\yoursignedxmlfile.xml&apos;&#xD;&#xA;&#x9;)&#xD;&#xA;&#xD;&#xA;-2-&#x20;Verifying&#x20;the&#x20;signature:&#xD;&#xA;&#x9;select&#x20;OTS_XML_SIGNING.VerifySignature&#xD;&#xA;&#x9;(&#xD;&#xA;&#x9;&#x9;&apos;c:\temp\yoursignedxmlfile.xml&apos;,&#x20;&apos;*.company.com&apos;&#xD;&#xA;&#x9;)&#xD;&#xA;&#xD;&#xA;-3-&#x20;Removing&#x20;the&#x20;signature&#x20;(assuming&#x20;the&#x20;signature&#x20;is&#x20;valid):&#xD;&#xA;&#x9;select&#x20;OTS_XML_SIGNING.RemoveSignature&#xD;&#xA;&#x9;(&#xD;&#xA;&#x9;&#x9;&apos;c:\temp\yoursignedxmlfile.xml&apos;,&#x20;&apos;*.company.com&apos;,&#x20;&apos;&apos;&#xD;&#xA;&#x9;)&#xD;&#xA;&#x9;This&#x20;removal&#x20;allows&#x20;further&#x20;processing&#x20;of&#x20;the&#x20;xml&#x20;file&#x20;without&#x20;the&#x20;extra&#x20;&lt;Signature&gt;...&#x20;data</Description>
+	<Description>This OTS_XML_SIGNING example component has methods to add a signature, verify a signature and remove a signature from an XML document.
+
+In the application, using SqlCommand, you can test the methods with the following examples:
+
+-1- Adding a signature. Assuming a certificate with private key  available for company.com:
+
+	select OTS_XML_SIGNING.AddSignature
+	(
+		'c:\temp\yourxmlfile.xml',  '*.company.com', 'c:\temp\yoursignedxmlfile.xml'
+	)
+	or e.g. signing xml export data directly:
+	select OTS_XML_SIGNING.AddSignature
+	(
+		(invoke xml.export with select * from mytable),  '*.company.com', 'c:\temp\yoursignedxmlfile.xml'
+	)
+
+-2- Verifying the signature:
+	select OTS_XML_SIGNING.VerifySignature
+	(
+		'c:\temp\yoursignedxmlfile.xml', '*.company.com'
+	)
+
+-3- Removing the signature (assuming the signature is valid):
+	select OTS_XML_SIGNING.RemoveSignature
+	(
+		'c:\temp\yoursignedxmlfile.xml', '*.company.com', ''
+	)
+	This removal allows further processing of the xml file without the extra &lt;Signature&gt;... data
+	</Description>
 </OTS>
