@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <OTS>
 	<OTS_Type>C# Component</OTS_Type>
-	<Description>The OTS_CSVUTIL is a helper class to handle comma separated values.
+	<Description>The OTS_CSV_UTIL is a helper class to handle comma separated values.
 
 To produce a csv from a SQL select statement:
 
 -1- produce a csv string
-	invoke OTS_CSVUTIL.Make with select 'stdout', 'field separator', * from yourtable [where clause] [order by clause]
-	for example: invoke OTS_CSVUTIL.Make with select 'stdout', ',', * from person
+	invoke OTS_CSV_UTIL.Make with select 'stdout', 'field separator', * from yourtable [where clause] [order by clause]
+	for example: invoke OTS_CSV_UTIL.Make with select 'stdout', ',', * from person
 
 -2- produce a csv file
-	invoke OTS_CSVUTIL.Make with select 'your-file-path', 'field separator', * from yourtable [where clause] [order by clause]	
+	invoke OTS_CSV_UTIL.Make with select 'your-file-path', 'field separator', * from yourtable [where clause] [order by clause]	
 
 -3- produce a csv file with generated filepath:
-	invoke OTS_CSVUTIL.Make with select '', '', * from yourtable [where clause] [order by clause]
+	invoke OTS_CSV_UTIL.Make with select '', '', * from yourtable [where clause] [order by clause]
 
 Note: For the Make method, make sure you always pass the first two arguments: filepath|stdout and separator. If you would omit (one of) those, the first selected fields would be interpreted as filepath and/or separator!
 (Of course you could decide to derive the filepath and/or separator field(s) from columns of a table that you add in the SQL FROM clause.)
@@ -21,20 +21,20 @@ Note: For the Make method, make sure you always pass the first two arguments: fi
 To produce a csv from USoft's xml.import format passed as inline string or filepath:
 
 -4- produce a string 
-	select OTS_CSVUTIL.FromXmlImport( 'the inline xml string or filepath', 'record separator, e.g. ;', 'stdout')
-	for example: select OTS_CSVUTIL.FROMXMLIMPORT( ( invoke xml.export with select * from person), ';', 'stdout' )
+	select OTS_CSV_UTIL.FromXmlImport( 'the inline xml string or filepath', 'record separator, e.g. ;', 'stdout')
+	for example: select OTS_CSV_UTIL.FROMXMLIMPORT( ( invoke xml.export with select * from person), ';', 'stdout' )
 
 -5- produce a csv file 
-	select OTS_CSVUTIL.FromXmlImport( 'the inline xml string or filepath', 'record separator, e.g. ;', 'filepath')
+	select OTS_CSV_UTIL.FromXmlImport( 'the inline xml string or filepath', 'record separator, e.g. ;', 'filepath')
 
 -6- produce a csv file with generated filepath
-	select OTS_CSVUTIL.FromXmlImport( 'the inline xml string or filepath', 'record separator, e.g. ;', '')
+	select OTS_CSV_UTIL.FromXmlImport( 'the inline xml string or filepath', 'record separator, e.g. ;', '')
 
 To produce xml.import format from csv content:
 -7- produce an xml formatted string (a row of headings is expected as the first row)
-	select OTS_CSVUTIL.ToXmlImport('inline csv or filepath', 'field separator, e.g.;', 'result table name', 'stdout', 'optional heading mapping list')
+	select OTS_CSV_UTIL.ToXmlImport('inline csv or filepath', 'field separator, e.g.;', 'result table name', 'stdout', 'optional heading mapping list')
 example:
-select OTS_CSVUTIL.ToXmlImport(
+select OTS_CSV_UTIL.ToXmlImport(
 'PERSON_ID;FIRST_NAME;FAMILY_NAME;ADDRESS;CITY;COUNTRY;AREA_CODE;EMAIL;BANK_ACCOUNT;BIRTH_DATE;GENDER;DISCOUNT;GUIDE;STAFF
 5;Daniel;BROWN;KINGSLEY RD 49;YORK;UK;Y02 2AA;;288234001;1985-06-21T00:00:00;M;1;Y;N
 6;Gerald;DAVIES;THE PANTINES 223II;WALTON-ON-SEA;UK;WA7 6DP;;456666541;1990-11-06T00:00:00;M;5;Y;N
@@ -48,17 +48,17 @@ select OTS_CSVUTIL.ToXmlImport(
 )
 
 -8- produce an xml  file
-	select OTS_CSVUTIL.ToXmlImport('inline csv or filepath', 'field separator, e.g.;', 'result table name', 'filepath', 'optional heading mapping list')
+	select OTS_CSV_UTIL.ToXmlImport('inline csv or filepath', 'field separator, e.g.;', 'result table name', 'filepath', 'optional heading mapping list')
 
 -9- produce an xml  file  with generated filepath:
-	select OTS_CSVUTIL.ToXmlImport('inline csv or filepath', 'field separator, e.g.;', 'result table name', '', 'optional heading mapping list')
+	select OTS_CSV_UTIL.ToXmlImport('inline csv or filepath', 'field separator, e.g.;', 'result table name', '', 'optional heading mapping list')
 
 Some advanced test examples (the table PERSON is from USoft's course example: the Travel Agency. Replace with your own table)
 
 Example 1: xml import format  -&gt; csv -&gt; xml import format with new table name and field mapping
-select OTS_CSVUTIL.ToXmlImport
+select OTS_CSV_UTIL.ToXmlImport
 (
-	OTS_CSVUTIL.FROMXMLIMPORT
+	OTS_CSV_UTIL.FROMXMLIMPORT
 	( 
 		(invoke xml.export with select PERSON_ID,FAMILY_NAME, ADDRESS from person),
 		';',
@@ -71,8 +71,8 @@ select OTS_CSVUTIL.ToXmlImport
 )
 
 Example 2: heading concatenated to plain xml.export -&gt; csv Note that  use of the separator must be consistent in the headings list, the csv data produced and the ToXmlExport (all ',' in this example)
-select OTS_CSVUTIL.ToXmlImport(
-	'ID;NAME' || char(10) || (invoke OTS_CSVUTIL.Make with select 'stdout', ';', PERSON_ID, FIRST_NAME from person),
+select OTS_CSV_UTIL.ToXmlImport(
+	'ID;NAME' || char(10) || (invoke OTS_CSV_UTIL.Make with select 'stdout', ';', PERSON_ID, FIRST_NAME from person),
 	';',
 	'MYTABLE',
 	'stdout', 
