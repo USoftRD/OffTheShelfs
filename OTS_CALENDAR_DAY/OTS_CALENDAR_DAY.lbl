@@ -2,7 +2,7 @@
 <OTS>
 	<OTS_Type>C# Component</OTS_Type>
 	<Description>This Calendar component is intended to be used in a Calendar table component.
-OTS_CALENDARDAY steps through the days in a certain period.
+OTS_CALENDAR_DAY steps through the days in a certain period.
 The default period is specified in the constructor SQL, together with a default culture and default month and day name format.
 
 This component has to be considered as an example showing various programming techniques. For production purposes, the example can be extended or reduces to the actual requirements.
@@ -14,8 +14,8 @@ This example shows:
 	-parsing an Enum from a string
 		
 
-The component table OTS_CALENDARDAY can be queried to find all days in a certain period.
-In the USoft application, open the OTS_CALENDARDAY table and query all records to see the result.
+The component table OTS_CALENDAR_DAY can be queried to find all days in a certain period.
+In the USoft application, open the OTS_CALENDAR_DAY table and query all records to see the result.
 The default period is set in the constructor SQL. This period  can be overridden by specifying values for  the period start and end in the query (i.e. specify value(s) for PERIOD_START and/or PERIOD_END).
 Note that specifying PERIOD_START and PERIOD_END is a way of parameterizing the component and deviates from normal table behaviour.
 Operators &lt;, &lt;=, &gt;, &gt;=, % (LIKE) are not supported therefore on these fields.
@@ -31,17 +31,17 @@ The year can be set (and must of course fall in the period to find any days at a
 The year can be used with conditions &lt;, &lt;=, &gt;, &gt;= and the component will use these conditions to reduce the number of days fetched for efficiency.
 Query conditions on the other fields (month number, day in month, day of week, day of year, month name, day name) are resolved by the rules engine.
 
-The OTS_CALENDARDAY also offers the following helper methods:
-select OTS_CALENDARDAY.ListFormats()		=&gt; lists all DateTime input formats that can be used to specify the period (in the constructor SQL and/or as query condition)
-select OTS_CALENDARDAY.ListCultures()		=&gt; lists all the culture names (with their display name)
+The OTS_CALENDAR_DAY also offers the following helper methods:
+select OTS_CALENDAR_DAY.ListFormats()		=&gt; lists all DateTime input formats that can be used to specify the period (in the constructor SQL and/or as query condition)
+select OTS_CALENDAR_DAY.ListCultures()		=&gt; lists all the culture names (with their display name)
 
-The OTS_CALENDARDAY also offers the following utility methods:
-select OTS_CALENDARDAY.AddDays( datestring, howmanydays, format)	
+The OTS_CALENDAR_DAY also offers the following utility methods:
+select OTS_CALENDAR_DAY.AddDays( datestring, howmanydays, format)	
 	=&gt; reads the datestring (according to the input formats). An empty input string is taken as the current datetime.
 	=&gt; adds a number of days, e.g. 5  (which can also be a fraction, e.g. 1.5) 
 	=&gt; produces a date string as output in the specified format. An empty format string is taken as the USoft default format ( yyyy/MMddHHmmss )
 
-select OTS_CALENDARDAY.DaysBetween(datestring1, datestring2)
+select OTS_CALENDAR_DAY.DaysBetween(datestring1, datestring2)
 	=&gt;reads both datestrings 
 	=&gt;produces the number of days (can be a fraction) between the two dates
 
@@ -83,6 +83,6 @@ now + 2.5 days
 is valid
 
 An example of a query would be:
-select YEAR, MONTHNAME, DAYOFWEEK, DAYNAME from OTS_CALENDARDAY where PERIOD_START='now' and PERIOD_END='this week' and CULTURE_NAME='nl-NL'
+select YEAR, MONTHNAME, DAYOFWEEK, DAYNAME from OTS_CALENDAR_DAY where PERIOD_START='now' and PERIOD_END='this week' and CULTURE_NAME='nl-NL'
 	</Description>
 </OTS>
