@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<OTS>
+	<OTS_Type>C# Component</OTS_Type>
+	<Description>This component validates xml against an XSD schema.
+
+Call example: 
+	select OTS_XSD_SCHEMA('filepath to yourschema.xsd', ''filepath to yourxml.xml)
+
+
+Both the XSD schema and xml can be passe as inline arguments. The schema will then be saved in a temporary file in the users temp directory.
+Call example:
+
+SELECT OTS_XSD_SCHEMA.VALIDATE( '&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"&gt;
+	&lt;xs:element name="r"&gt;
+		&lt;xs:complexType&gt;
+			&lt;xs:sequence&gt;
+				&lt;xs:element name="author"/&gt;
+				&lt;xs:element name="gender" default="male"&gt;
+					&lt;xs:simpleType&gt;
+						&lt;xs:restriction base="xs:string"&gt;
+							&lt;xs:enumeration value="male"/&gt;
+						&lt;/xs:restriction&gt;
+					&lt;/xs:simpleType&gt;
+				&lt;/xs:element&gt;
+				&lt;xs:element name="birthdate"&gt;
+					&lt;xs:simpleType&gt;
+						&lt;xs:restriction base="xs:date"/&gt;
+					&lt;/xs:simpleType&gt;
+				&lt;/xs:element&gt;
+			&lt;/xs:sequence&gt;
+			&lt;xs:attribute name="version" use="required"/&gt;
+		&lt;/xs:complexType&gt;
+	&lt;/xs:element&gt;
+&lt;/xs:schema&gt;', 
+
+ '&lt;r version="1.0"&gt;&lt;author&gt;&lt;/author&gt;&lt;gender&gt;changethis to male or female&lt;/gender&gt;&lt;birthdate&gt;2002-09-24&lt;/birthdate&gt;&lt;/r&gt;' )
+
+
+
+SELECT OTS_XSD_SCHEMA.VALIDATE( 'C:\Development\Digitrage\Standaard.xsd',  'c:\development\digitrage\Goed.xml' )
+
+SELECT OTS_XSD_SCHEMA.VALIDATE( 'C:\Development\Digitrage\Standaard.xsd',  'c:\development\digitrage\Invalid.xml' )
+	</Description>
+</OTS>
