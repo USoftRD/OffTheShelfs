@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<OTS>
+	<OTS_Type>C# Component</OTS_Type>
+	<Description>This component will listen to file system events in a specified directory.
+Optionally, a file filter can also be specified.
+
+To start listening to file change events, e.g. in a directory c:\temp:
+
+select OTS_FILE_WATCH.Start('c:\temp\', '')
+
+To start listening to txt files only:
+
+select OTS_FILE_WATCH.Start('c:\temp\', '*.txt')
+
+To see results:
+
+invoke OTS_FILE_WATCH.query with select ''
+
+A query only component table can be created for this component.
+	</Description>
+</OTS>
