@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<OTS>
+	<OTS_Type>C# Component</OTS_Type>
+	<Description>The OTS_FILESYSTEM interacts with the Windows File system.
+
+Method call examples:
+
+select OTS_FILESYSTEM.pathcombine('c:\temp', 'aa\bb', 'cc', 'foo.txt')
+
+select OTS_FILESYSTEM.FileExists('c:\temp\abc.txt')
+
+select OTS_FILESYSTEM.DirectoryExists('c:\temp\xyz')
+
+select OTS_FILESYSTEM.directoryname('c:\temp\abc\def.txt')
+
+select OTS_FILESYSTEM.FileName('c:\temp\abc\def.txt')
+
+select OTS_FILESYSTEM.FileExtension('c:\temp\abc\def.png')
+
+select OTS_FILESYSTEM.ReadTextFile('c:\temp\abc.txt')
+
+select OTS_FILESYSTEM.ReadBinaryFileToBase64('c:\temp\abc.txt')
+
+select OTS_FILESYSTEM.AccesTime('c:\temp\abc.txt')
+
+select OTS_FILESYSTEM.Modified('c:\temp\abc.txt')
+
+select OTS_FILESYSTEM.NewestFile( 'c:\temp\WINFILES_USWTW.txt', 'c:\temp\abc.txt' , 'c:\temp\YPROLOG.txt') // index, zero based, of file last changed
+
+select OTS_FILESYSTEM.WriteAllText('c:\temp\abc.txt' , 'hello', 'world')
+select OTS_FILESYSTEM.WriteAllTextLines('c:\temp\abc.txt' , 'hello', 'world')
+
+select OTS_FILESYSTEM.FileCopy('c:\temp\abc.txt' , 'c:\temp\def.txt')
+
+select OTS_FILESYSTEM.DirectoryCopy('c:\temp\abcdir' , 'c:\temp\defdir')
+
+select OTS_FILESYSTEM.FileMove('c:\temp\abc.txt' , 'c:\temp\def.txt')
+
+select OTS_FILESYSTEM.DirectoryIsEmpty('c:\temp\zzz' )
+select OTS_FILESYSTEM.DirectoryIsEmptyOrNotExists('c:\temp\zzz')
+
+select OTS_FILESYSTEM.DirectoryMove('c:\temp\ttt',  'c:\temp\ttt1')
+
+select OTS_FILESYSTEM.FileDelete('c:\temp\abc.txt') 
+select OTS_FILESYSTEM.FilesDelete('c:\temp\abc*.txt')
+
+select OTS_FILESYSTEM.DirectoryCreate('c:\temp\MyNewDirectory')
+select OTS_FILESYSTEM.DirectoryDelete('c:\temp\MyNewDirectory')
+
+select OTS_FILESYSTEM.DirectoryCreate('c:\temp\MyNewDirectory\SomeSubDir')
+select OTS_FILESYSTEM.DirectoryDeleteRecursive('c:\temp\MyNewDirectory')
+
+select OTS_FILESYSTEM.GetShortPathName('c:\program files\Common files')
+	</Description>
+</OTS>
