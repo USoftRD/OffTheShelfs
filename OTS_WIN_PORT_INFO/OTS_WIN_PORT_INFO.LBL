@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<OTS>
+	<OTS_Type>C# Component</OTS_Type>
+	<Description>The OTS_WIN_PORT_INFO retrieves port information on a windows computer.
+A table component OTS_WIN_PORT_INFO is available to query all ports in use and their status.
+Additionally, the below set of utility methods is available:
+
+select OTS_WIN_PORT_INFO.freePort()
+
+select OTS_WIN_PORT_INFO.isFreePort(80)
+
+select OTS_WIN_PORT_INFO.portdetails(80)
+
+invoke OTS_WIN_PORT_INFO.Query with select null
+	</Description>
+</OTS>
