@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<OTS>
+	<OTS_Type>C# Component</OTS_Type>
+	<Description>This OTS_WIN_NETWORK component interacts with the Windows network.
+A table component OTS_WIN_NETWORK is also available to instantly query networks as records.
+Once the OTS_WIN_NETWORK component is added to the USoft Definer you can:
+	-Open the application and query the Windows Network table (i.e. the OTS_WIN_NETWORK table)
+	-Open SqlCommand in the application and use method calls.
+
+Method call examples:
+
+select OTS_WIN_NETWORK.hostname()
+
+select OTS_WIN_NETWORK.DnsHostAddresses('localhost')
+
+select OTS_WIN_NETWORK.LocalIPAddress()
+
+select OTS_WIN_NETWORK.WIFIADDRESS()
+
+select OTS_WIN_NETWORK.IsNetworkAvailable()
+
+select OTS_WIN_NETWORK.ListNetwork()
+
+invoke OTS_WIN_NETWORK.Query with select null
+
+select OTS_WIN_NETWORK.Wifi()
+
+select OTS_WIN_NETWORK.wificonnected('USoftGuest')
+
+select OTS_WIN_NETWORK.ping('localhost')
+	</Description>
+</OTS>
