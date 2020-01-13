@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<OTS>
+	<OTS_Type>C# Component</OTS_Type>
+	<Description>The OTS_FILESYSTEM_DIALOG allows USoft C/S applications to open the Windows File and Folder dialogs
+
+Method call Examples:
+
+select OTS_FILESYSTEM_DIALOGS.Files('c:\temp\', 'Select a file', '"My Text Files (*.txt)|*.TXT|" + "All files (*.*)|*.*')
+
+select OTS_FILESYSTEM_DIALOGS.Folders('c:\temp\', 'Select the folder to be used in this example')
+	</Description>
+</OTS>
