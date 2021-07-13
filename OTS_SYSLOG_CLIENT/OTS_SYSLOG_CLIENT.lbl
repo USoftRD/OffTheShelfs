@@ -3,7 +3,7 @@
 	<OTS_Type>C# Component</OTS_Type>
 	<Description>This component is a .Net Syslog client. It Supports both RFC 3164 and RFC 5424 Syslog standards as well as UDP and encrypted TCP transports.
 
-The example is a slightly adapted version of an open source example of a C# Syslog client as found here. 
+The example is a slightly adapted version of an open source example of a C# Syslog client as found here:  https://github.com/emertechie/SyslogNet
 The component (appropriately named OTS_SYSLOG_CLIENT) itself is kept fairly simple, and consists of only one method called SendLog, an example of a call:
 
 
