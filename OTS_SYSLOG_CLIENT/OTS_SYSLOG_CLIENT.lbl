@@ -1,54 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <OTS>
 	<OTS_Type>C# Component</OTS_Type>
-	<Description>This component is a .Net Syslog client. It Supports both RFC 3164 and RFC 5424 Syslog standards as well as UDP and encrypted TCP transports.
+	<Description>
+	This component is a .Net Syslog client. It Supports both RFC 3164 and RFC 5424 Syslog standards as well as UDP and encrypted TCP transports.
+This component specifically uses the RFC 3164 standard.
+The example is a slightly adapted version of an open source example of a C# Syslog client as found here:  https://github.com/emertechie/SyslogNet
+The component (appropriately named OTS_SYSLOG_CLIENT_RFC3164) itself is kept fairly simple, and consists of a constructor and one method called SendLog.
 
-The example is a slightly adapted version of an open source example of a C# Syslog client as found here:  https://github.com/emertechie/SyslogNet
-The component (appropriately named OTS_SYSLOG_CLIENT) itself is kept fairly simple, and consists of only one method called SendLog, an example of a call:
+The constructor takes 3 input arguments, allowing you to specify:
 
+- host  : the host (string)
+- port  : the port number (integer)
+- tcp   : whether to use TCP or UDP (bool)
 
-invoke  OTS_SYSLOG_CLIENT.sendlog   
+By default, the address of this server is on “localhost” with port 514, using the UDP protocol.  
 
-with   
+an example of a sendLog call:
 
-select  adl.audit_type   
-,   adl.sidu   
-,  adl.logging   
+invoke  OTS_SYSLOG_CLIENT_RFC3164.sendlog   
+with   
+select  adl.audit_type   
+,   adl.sidu   
+,  adl.logging   
+from    audit_log adl 
 
-from    audit_log adl 
+sendLog which takes three arguments: 
 
+AUDIT_TYPE: depicting the kind of item being logged, e.g. a table update, batch job call, etc. 
+SIDU: depicting the kind of query being logged, i.e. Select, Insert, Delete or Update 
+LOGGING: the actual log message, which is formatted as a XML document 
+From these three data values, a one-line log message is generated, which is sent to the configured Syslog server. The resulting messages sent to a Syslog server could look like (mind escaping is used in this file): 
 
-sendLog which takes three arguments: 
-
-AUDIT_TYPE: depicting the kind of item being logged, e.g. a table update, batch job call, etc. 
-SIDU: depicting the kind of query being logged, i.e. Select, Insert, Delete or Update 
-LOGGING: the actual log message, which is formatted as a XML document 
-
-From these three data values, a one-line log message is generated, which is sent to the configured Syslog server. The resulting messages sent to a Syslog server could look like (mind escaping is used in this file): 
-
-		&lt;110&gt;Apr 17 12:20:33 AUDIT_EXAMPLE USR_ACC[U]: &lt;!-- On Thu 17 Apr 2021 12:20:33 test5 updated USR_ACC( ACC_ID, USR_ACC). ACC_ID: &apos;100&apos; USR_ACC: &apos;test123&apos; FIRST_NAME: &apos;John Doe&apos; changed to: &apos;John test&apos; --&gt;
-			&lt;USR_ACC TIMESTAMP=&quot;2020/1217122033&quot; USER=&quot;test5&quot;&gt;
-				&lt;ACC_ID key=&quot;100&quot; /&gt;
-				&lt;USR_ACC key=&quot;test123&quot; /&gt;
-				&lt;FIRST_NAME old=&quot;John Doe&quot; new=&quot;John test&quot; /&gt;
-			&lt;/USR_ACC&gt; 
-
-
-
-By default, the address of this server is on “localhost” with port 514, using the UDP protocol. Other settings may be specified in the component as well if logs need to be sent to a different location. 
-
-The remainder of the component consists of a few helper classes, to create and format the message correctly: 
-
-A SyslogMessage class to create the proper message and all of its required parameters, including enum classes to define logging level and logging facility more conveniently 
-
-An ISyslogMessageSender interface and two implementations of it (SyslogUdpSender and SyslogTcpSender) that define the method of transport being used, i.e. TCP or UDP. UDP is preferred, because TCP could take more than a second to execute, which can be bad for performance, but is included nonetheless if the target Syslog server requires it 
-
-An ISyslogMessageSerializer interface, and two implementations of it (SyslogRfc3164MessageSerializer and SyslogRfc5424MessageSerializer) for different message formats. Because we use XML as log message contents, and because SyslogRfc5424MessageSerializer has several strict rules on how a message should look like, we prefer to use the more simple SyslogRfc3164MessageSerializer class here as formatter class. 
+        &lt;110&gt;Apr 17 12:20:33 AUDIT_EXAMPLE USR_ACC[U]: &lt;!-- On Thu 17 Apr 2021 12:20:33 test5 updated USR_ACC( ACC_ID, USR_ACC). ACC_ID: &apos;100&apos; USR_ACC: &apos;test123&apos; FIRST_NAME: &apos;John Doe&apos; changed to: &apos;John test&apos; --&gt;
+            &lt;USR_ACC TIMESTAMP=&quot;2020/1217122033&quot; USER=&quot;test5&quot;&gt;
+                &lt;ACC_ID key=&quot;100&quot; /&gt;
+                &lt;USR_ACC key=&quot;test123&quot; /&gt;
+                &lt;FIRST_NAME old=&quot;John Doe&quot; new=&quot;John test&quot; /&gt;
+            &lt;/USR_ACC&gt; 
 
 
-
-for the implementation you could use table constraints that trigger the call to the syslog client on any SIDU operation (post-commit) on a driving table “AUDIT_LOG”, as seen in the above exam.
-
-
+The remainder of the component consists of a few helper classes, to create and format the message correctly: 
+A SyslogMessage class to create the proper message and all of its required parameters, including enum classes to define logging level and logging facility more conveniently 
+An ISyslogMessageSender interface and two implementations of it (SyslogUdpSender and SyslogTcpSender) that define the method of transport being used, i.e. TCP or UDP. UDP is preferred, because TCP could take more than a second to execute, which can be bad for performance, but is included nonetheless if the target Syslog server requires it 
+An ISyslogMessageSerializer interface, and two implementations of it (SyslogRfc3164MessageSerializer and SyslogRfc5424MessageSerializer) for different message formats. Because we use XML as log message contents, and because SyslogRfc5424MessageSerializer has several strict rules on how a message should look like, we prefer to use the more simple SyslogRfc3164MessageSerializer class here as formatter class. 
+for the implementation you could use table constraints that trigger the call to the syslog client on any SIDU operation (post-commit) on a driving table “AUDIT_LOG”, as seen in the above exam.
 			</Description>
 		</OTS>
