@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<OTS>
+	<OTS_Type>C# Component</OTS_Type>
+	<Description>A C# component for testing a regular expression pattern using the RegularExpressions functionality within .NET. 
+This component can be used as an alternative for the Regular Expression Patterns in Domains. For example, you can call this method in a Domain Constraint to implement custom messages based on regular expressions matching. An example of a Domain Constraint with Domain is included in this OTS component. The Domain Constraint validates an email address domain. More information on using Regular Expressions for Domains is explained here:
+
+https://community.usoft.com/domains-66/allowed-values-248
+
+Usage:
+
+This component uses the System.Text.RegularExpressions Namespace.
+
+The static method Validate expects two parameters:
+
+rx of type string, the regular expression pattern to match
+input of type string, the string to be matched.
+
+returns a boolean for the match result.
+
+
+Example:
+
+validating an email address:
+
+select OTS_RegexValidator.Validate('^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$','example@example.com')
+
+returns the value true
+
+	</Description>
+</OTS>
