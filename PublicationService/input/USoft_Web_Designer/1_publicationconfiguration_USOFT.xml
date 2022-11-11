@@ -1,0 +1,13 @@
+<Publication_Configurations documentName="Publication Configurations">
+	<T_PUBLICATION APPLICATION="[USOFT_USER]:XML"
+	               NAME="[USOFT_PUBLICATION]"
+	               PUB_FOLDER="[PUBLIC_PATH]\WEBPublication"
+	               ALT_FOLDER="[PUBLIC_PATH]\Alt\"
+	               CONNECT_SPEC="jdbc:jrec:USOFT@localhost:[USOFT_PUBLIC_PN]"
+	               SERVER_PAGE_TYPE="ASPX"
+	               LOG_LEVEL="DEBUG"
+	               CACHE_REFR_PERIOD="180"
+	               SCRIPT_AUTH="N"
+	               VERIFY_ORG_VALUES="CHANGEDCOLUMNS"
+	               ENVIRONMENT_TYPE="INFO"/>
+</Publication_Configurations>

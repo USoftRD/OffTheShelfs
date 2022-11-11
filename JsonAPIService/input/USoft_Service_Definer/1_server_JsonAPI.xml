@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?usoft-xml version="1.0" action="multi-tables-import"?>
+<MultiImport type="server">
+	<SVC_Applications documentName="SVC Applications">
+		<T_SVC_APPLICATION APPLICATION_NAME="[USOFT_APP]"
+		                   DESCRIPTION=""/>
+	</SVC_Applications>
+	<SVC_Connections documentName="SVC Connections">
+		<T_SVC_CONNECTION CONNECTION_NAME="[USOFT_APP_RS]"
+		                  APPLICATION_NAME="[USOFT_APP]"
+		                  DEFAULT_USER=""
+		                  DEFAULT_PASSWORD=""
+		                  SESSION_NAME="[USOFT_APP_RS]"
+		                  SESSION_EXPIRY="600"
+		                  DESCRIPTION=""
+		                  REUSE_SOCKETS="N"/>
+	</SVC_Connections>
+	<SVC_Class_Connections documentName="SVC Class Connections">
+		<T_SVC_CLASS_USE_CONNECTION CLASS_NAME="[jsonClass]"
+		                            CONNECTION_NAME="[USOFT_APP_RS]"/>
+	</SVC_Class_Connections>
+	<SVC_Rule_Services documentName="SVC Rule Services">
+		<T_SVC_RULE_SERVICE CONNECTION_NAME="[USOFT_APP_RS]"
+		                    HOST_NAME="localhost"
+		                    PORTNR="[USOFT_APP_RS_PN]"
+		                    PROPOSED_SERVICE_NAME="[USOFT_APP_RS]-[USOFT_APP_RS_PN]"
+		                    SERVICE_NAME="RulesService-[USOFT_APP_RS_PN]"
+		                    SERVICE_CONFIG=""/>
+	</SVC_Rule_Services>
+	<SVC_Servers documentName="SVC Servers">
+		<T_SVC_SERVER NAME="[USoft.JsonAPI]"
+		              BASEURI="http://0.0.0.0:8091/"
+		              EXTERNAL_BASEURI=""
+		              PUBLICATION_LOCATION="C:\USoft\api\API\JSON_API\"
+		              KEYSTORE=""
+		              KEYSTOREPWD=""
+		              CORS_CONFIG=""
+		              GENERICRESOURCE="Y"
+		              ADMINRESOURCE="Y"
+		              LOGGINGRESOURCE="Y"
+		              RUNCOMMAND="C:\USoft\api\API\JSON_API\[USoft.JsonAPI].cmd"
+		              JAVA_LOCATION="%usoft.system.dir%\JAVA\SUN\JRE64\BIN\java.exe"
+		              AUTHENTICATOR=""
+		              SERVICE_DESCRIPTION="REST&#x20;and&#x20;WSDL&#x20;services&#xD;&#xA;&#xD;&#xA;To&#x20;use&#x20;in&#x20;Postman:&#xD;&#xA;http://localhost:8091/api/json/outjsons&#xD;&#xA;http://localhost:8091/api/json/outjson/{id}&#xD;&#xA;http://localhost:8091/api/json/outjsonsub/{id}&#xD;&#xA;http://localhost:8091/api/json/outjsonssubs"
+		              LOG_LEVEL="INFO"
+		              RUNTIME_INCLUDE_JARS=""
+		              SECURITY_CONFIG=""
+		              IDP_CONFIG=""
+		              THROTTLE_SERVER_REQUESTS="N"
+		              MAX_SERVER_REQUESTS="4"/>
+	</SVC_Servers>
+	<SVC_Classes documentName="SVC Classes">
+		<T_SVC_CLASS CLASS_NAME="[jsonClass]"
+		             PACKAGE_PATH="com.usoft.service"
+		             SUPERCLASS_FUNCTIONAL_NAME="USoft&#x20;REST&#x20;Default&#x20;Provider"
+		             CLASS_TYPE="rest"
+		             RELATIVE_URI_PATH="/api/json"
+		             SOAP_TYPE="wrap"
+		             ANNOTATIONS="@AuthNone(user=&quot;APIUser&quot;,password=&quot;APIPwd&quot;)"
+		             PARENT_CLASS_NAME=""
+		             ACTIVE="Y"
+		             CORRECT="Y"
+		             OWNLOGGER="NONE"
+		             CHANGED_ON="2022-08-26T12:09:21"
+		             DEFAULT_ANNOTATION=";@Path(&quot;/api/json&quot;)"
+		             IS_SERVICE="Y"
+		             DESCRIPTION=""/>
+		<T_SVC_CLASS CLASS_NAME="[jsonOutClass]"
+		             PACKAGE_PATH="com.usoft.service.entities"
+		             SUPERCLASS_FUNCTIONAL_NAME=""
+		             CLASS_TYPE="struct"
+		             RELATIVE_URI_PATH=""
+		             SOAP_TYPE="wrap"
+		             ANNOTATIONS="@Entity;@XmlRootElement(name=&quot;OutJson&quot;)"
+		             PARENT_CLASS_NAME=""
+		             ACTIVE="Y"
+		             CORRECT="Y"
+		             OWNLOGGER="NONE"
+		             CHANGED_ON="2022-08-19T13:38:34"
+		             DEFAULT_ANNOTATION=""
+		             IS_SERVICE="N"
+		             DESCRIPTION=""/>
+		<T_SVC_CLASS CLASS_NAME="[jsonSubOutClass]"
+		             PACKAGE_PATH="com.usoft.service"
+		             SUPERCLASS_FUNCTIONAL_NAME=""
+		             CLASS_TYPE="struct"
+		             RELATIVE_URI_PATH=""
+		             SOAP_TYPE="wrap"
+		             ANNOTATIONS="@Entity;@XmlRootElement(name=&quot;OutJsonSub&quot;)"
+		             PARENT_CLASS_NAME=""
+		             ACTIVE="Y"
+		             CORRECT="Y"
+		             OWNLOGGER="NONE"
+		             CHANGED_ON="2022-08-19T14:29:41"
+		             DEFAULT_ANNOTATION=""
+		             IS_SERVICE="N"
+		             DESCRIPTION=""/>
+	</SVC_Classes>
+	<SVC_Super_Classes documentName="SVC Super Classes">
+		<T_SVC_SUPER_CLASS FUNCTIONALNAME="USoft&#x20;REST&#x20;Default&#x20;Provider"
+		                   SUPERCLASS_NAME="com.usoft.uservice.urest.USoftProvider"
+		                   BASECLASS_NAME=""
+		                   IMPL_INTERFACE_NAMES=""
+		                   DESCRIPTION="Generic&#x20;base&#x20;class&#x20;that&#x20;offers&#x20;sql()&#x20;methods&#x20;for&#x20;use&#x20;in&#x20;REST&#x20;methods."
+		                   CLASS_TYPE="rest"/>
+	</SVC_Super_Classes>
+	<SVC_Class_Methods documentName="SVC Class Methods">
+		<T_SVC_METHOD CLASS_NAME="[jsonClass]"
+		              METHOD_NAME="getOutJSON"
+		              SIGNATURE="public&#x20;OutJson[]&#x20;getOutJSON()"
+		              RELATIVE_URI_PATH="/outjsons"
+		              METHOD_DEFINITION="OutJson[]&#x20;result&#x20;=&#x20;(OutJson[])sql(&#x20;OutJson[].class,&#x20;&quot;USOFT_GET_OUT_JSON&quot;&#x20;&#x20;);&#xD;&#xA;if(result==null)&#x20;throw&#x20;new&#x20;jakarta.ws.rs.WebApplicationException(404);&#xD;&#xA;return&#x20;result;"
+		              HTTP_VERB="GET"
+		              ACCEPTS=""
+		              PRODUCES="application/json"
+		              CORRECT="Y"
+		              METHOD_ANNOTATION=""
+		              DEFAULT_ANNOTATION=";@Path(&quot;/outjsons&quot;);@GET;@Produces({&quot;application/json&quot;})"/>
+		<T_SVC_METHOD CLASS_NAME="[jsonClass]"
+		              METHOD_NAME="getOutJSONById"
+		              SIGNATURE="public&#x20;OutJson&#x20;getOutJSONById(&#xA;&#x9;String&#x20;id)"
+		              RELATIVE_URI_PATH="/outjson/{id}"
+		              METHOD_DEFINITION="OutJson&#x20;result&#x20;=&#x20;(OutJson)sql(&#x20;OutJson.class,&#x20;&quot;USOFT_GET_OUT_JSON_BY_ID&quot;&#x20;,&#x20;new&#x20;Object[]{&#x20;id&#x20;}&#x20;);&#xD;&#xA;if(result==null)&#x20;throw&#x20;new&#x20;jakarta.ws.rs.WebApplicationException(404);&#xD;&#xA;return&#x20;result;"
+		              HTTP_VERB="GET"
+		              ACCEPTS=""
+		              PRODUCES="application/json"
+		              CORRECT="Y"
+		              METHOD_ANNOTATION=""
+		              DEFAULT_ANNOTATION=";@Path(&quot;/outjson/{id}&quot;);@GET;@Produces({&quot;application/json&quot;})"/>
+		<T_SVC_METHOD CLASS_NAME="[jsonClass]"
+		              METHOD_NAME="getOutJSONSubById"
+		              SIGNATURE="public&#x20;Response&#x20;getOutJSONSubById(&#xA;&#x9;String&#x20;id)"
+		              RELATIVE_URI_PATH="/outjsonsub/{id}"
+		              METHOD_DEFINITION="com.google.gson.JsonObject&#x20;root&#x20;=&#x20;new&#x20;com.google.gson.JsonObject();&#xD;&#xA;com.google.gson.JsonObject&#x20;outjson&#x20;=&#x20;new&#x20;com.google.gson.JsonObject();&#xD;&#xA;com.google.gson.JsonArray&#x20;outjsonsubarr&#x20;=&#x20;new&#x20;com.google.gson.JsonArray();&#xD;&#xA;com.google.gson.Gson&#x20;gson&#x20;=&#x20;new&#x20;com.google.gson.Gson();&#xD;&#xA;&#xD;&#xA;OutJson&#x20;OutJson&#x20;=&#x20;(OutJson)sql(&#x20;OutJson.class,&#x20;&quot;USOFT_GET_OUT_JSON_BY_ID&quot;&#x20;,&#x20;new&#x20;Object[]{&#x20;id&#x20;}&#x20;);&#xD;&#xA;&#xD;&#xA;outjson.addProperty(&quot;ID&quot;,OutJson.ID);&#xD;&#xA;outjson.addProperty(&quot;[COLUMN_1]&quot;,OutJson.[COLUMN_1]);&#xD;&#xA;outjson.addProperty(&quot;[COLUMN_2]&quot;,OutJson.[COLUMN_2]);&#xD;&#xA;outjson.addProperty(&quot;[COLUMN_3]&quot;,OutJson.[COLUMN_3]);&#xD;&#xA;outjson.addProperty(&quot;[COLUMN_4]&quot;,OutJson.[COLUMN_4]);&#xD;&#xA;&#xD;&#xA;OutJsonSub[]&#x20;OutJsonSubs&#x20;=&#x20;(OutJsonSub[])sql(&#x20;OutJsonSub[].class,&#x20;&quot;USOFT_GET_OUT_JSON_SUB_BY_ID&quot;,&#x20;new&#x20;Object[]{&#x20;id&#x20;}&#x20;);&#xD;&#xA;&#xD;&#xA;for(int&#x20;i&#x20;=&#x20;0;&#x20;i&#x20;&lt;&#x20;OutJsonSubs.length;&#x20;i++){&#xD;&#xA;&#x9;com.google.gson.JsonObject&#x20;outjsonsubs&#x20;=&#x20;new&#x20;com.google.gson.JsonObject();&#xD;&#xA;&#x9;OutJsonSub&#x20;OJS&#x20;=&#x20;OutJsonSubs[i];&#xD;&#xA;&#x9;outjsonsubs.addProperty(&quot;ID&quot;,OJS.ID);&#xD;&#xA;&#x9;outjsonsubs.addProperty(&quot;[COLUMN_SUB_1]&quot;,OJS.[COLUMN_SUB_1]);&#xD;&#xA;&#x9;outjsonsubs.addProperty(&quot;[COLUMN_SUB_2]&quot;,OJS.[COLUMN_SUB_2]);&#xD;&#xA;&#x9;outjsonsubs.addProperty(&quot;[COLUMN_SUB_3]&quot;,OJS.[COLUMN_SUB_3]);&#xD;&#xA;&#x9;outjsonsubarr.add(outjsonsubs);&#xD;&#xA;}&#xD;&#xA;&#xD;&#xA;outjson.add(&quot;OutJsonSubs&quot;,outjsonsubarr);&#xD;&#xA;root.add(&quot;OutJson&quot;,&#x20;outjson);&#xD;&#xA;return&#x20;Response.ok(gson.toJson(root)).build();"
+		              HTTP_VERB="GET"
+		              ACCEPTS=""
+		              PRODUCES="application/json"
+		              CORRECT="Y"
+		              METHOD_ANNOTATION=""
+		              DEFAULT_ANNOTATION=";@Path(&quot;/outjsonsub/{id}&quot;);@GET;@Produces({&quot;application/json&quot;})"/>
+		<T_SVC_METHOD CLASS_NAME="[jsonClass]"
+		              METHOD_NAME="getOutJSONSubs"
+		              SIGNATURE="public&#x20;Response&#x20;getOutJSONSubs()"
+		              RELATIVE_URI_PATH="/outjsonssubs"
+		              METHOD_DEFINITION="com.google.gson.Gson&#x20;gson&#x20;=&#x20;new&#x20;com.google.gson.Gson();&#xD;&#xA;com.google.gson.JsonObject&#x20;root&#x20;=&#x20;new&#x20;com.google.gson.JsonObject();&#xD;&#xA;com.google.gson.JsonObject&#x20;outjsons&#x20;=&#x20;new&#x20;com.google.gson.JsonObject();&#xD;&#xA;OutJson[]&#x20;OutJsons&#x20;=&#x20;(OutJson[])sql(&#x20;OutJson[].class,&#x20;&quot;USOFT_GET_OUT_JSON&quot;&#x20;&#x20;);&#xD;&#xA;&#xD;&#xA;for(int&#x20;j&#x20;=&#x20;0;&#x20;j&#x20;&lt;&#x20;OutJsons.length;&#x20;j++){&#xD;&#xA;&#x9;com.google.gson.JsonObject&#x20;outjson&#x20;=&#x20;new&#x20;com.google.gson.JsonObject();&#xD;&#xA;&#x9;OutJson&#x20;OJ&#x20;=&#x20;OutJsons[j];&#xD;&#xA;&#x9;outjson.addProperty(&quot;[COLUMN_1]&quot;,OJ.[COLUMN_1]);&#xD;&#xA;&#x9;outjson.addProperty(&quot;[COLUMN_2]&quot;,OJ.[COLUMN_2]);&#xD;&#xA;&#x9;outjson.addProperty(&quot;[COLUMN_3]&quot;,OJ.[COLUMN_3]);&#xD;&#xA;&#x9;outjson.addProperty(&quot;[COLUMN_4]&quot;,OJ.[COLUMN_4]);&#xD;&#xA;&#xD;&#xA;&#x9;com.google.gson.JsonArray&#x20;outjsonsubarr&#x20;=&#x20;new&#x20;com.google.gson.JsonArray();&#xD;&#xA;&#x9;OutJsonSub[]&#x20;OutJsonSubs&#x20;=&#x20;(OutJsonSub[])sql(&#x20;OutJsonSub[].class,&#x20;&quot;USOFT_GET_OUT_JSON_SUB_BY_ID&quot;,&#x20;new&#x20;Object[]{&#x20;OJ.ID&#x20;}&#x20;);&#xD;&#xA;&#xD;&#xA;&#x9;for(int&#x20;i&#x20;=&#x20;0;&#x20;i&#x20;&lt;&#x20;OutJsonSubs.length;&#x20;i++){&#xD;&#xA;&#x9;&#x9;com.google.gson.JsonObject&#x20;outjsonsubs&#x20;=&#x20;new&#x20;com.google.gson.JsonObject();&#xD;&#xA;&#x9;&#x9;OutJsonSub&#x20;OJS&#x20;=&#x20;OutJsonSubs[i];&#xD;&#xA;&#x9;&#x9;outjsonsubs.addProperty(&quot;ID&quot;,OJS.ID);&#xD;&#xA;&#x9;&#x9;outjsonsubs.addProperty(&quot;[COLUMN_SUB_1]&quot;,OJS.[COLUMN_SUB_1]);&#xD;&#xA;&#x9;&#x9;outjsonsubs.addProperty(&quot;[COLUMN_SUB_2]&quot;,OJS.[COLUMN_SUB_2]);&#xD;&#xA;&#x9;&#x9;outjsonsubs.addProperty(&quot;[COLUMN_SUB_3]&quot;,OJS.[COLUMN_SUB_3]);&#xD;&#xA;&#x9;&#x9;outjsonsubarr.add(outjsonsubs);&#xD;&#xA;&#x9;}&#xD;&#xA;&#x9;outjson.add(&quot;OutJsonSubs&quot;,outjsonsubarr);&#xD;&#xA;&#x9;outjsons.add(OJ.ID,&#x20;outjson);&#xD;&#xA;}&#xD;&#xA;&#xD;&#xA;root.add(&quot;OutJsons&quot;,&#x20;outjsons);&#xD;&#xA;return&#x20;Response.ok(gson.toJson(root)).build();"
+		              HTTP_VERB="GET"
+		              ACCEPTS=""
+		              PRODUCES="application/json"
+		              CORRECT="Y"
+		              METHOD_ANNOTATION=""
+		              DEFAULT_ANNOTATION=";@Path(&quot;/outjsonssubs&quot;);@GET;@Produces({&quot;application/json&quot;})"/>
+	</SVC_Class_Methods>
+	<SVC_Method_Parameters documentName="SVC Method Parameters">
+		<T_SVC_PARAMETER CLASS_NAME="[jsonClass]"
+		                 METHOD_NAME="getOutJSON"
+		                 PARAMETER_SEQ="1"
+		                 PARAMETER_NAME="Response"
+		                 PARAMETER_TYPE="OutJson[]"
+		                 RETURN_PARAMETER="Y"
+		                 PARAMETER_ANNOTATION=""/>
+		<T_SVC_PARAMETER CLASS_NAME="[jsonClass]"
+		                 METHOD_NAME="getOutJSONById"
+		                 PARAMETER_SEQ="1"
+		                 PARAMETER_NAME="result"
+		                 PARAMETER_TYPE="OutJson"
+		                 RETURN_PARAMETER="Y"
+		                 PARAMETER_ANNOTATION=""/>
+		<T_SVC_PARAMETER CLASS_NAME="[jsonClass]"
+		                 METHOD_NAME="getOutJSONById"
+		                 PARAMETER_SEQ="2"
+		                 PARAMETER_NAME="id"
+		                 PARAMETER_TYPE="String"
+		                 RETURN_PARAMETER="N"
+		                 PARAMETER_ANNOTATION="@PathParam(&quot;id&quot;)"/>
+		<T_SVC_PARAMETER CLASS_NAME="[jsonClass]"
+		                 METHOD_NAME="getOutJSONSubById"
+		                 PARAMETER_SEQ="1"
+		                 PARAMETER_NAME="result"
+		                 PARAMETER_TYPE="Response"
+		                 RETURN_PARAMETER="Y"
+		                 PARAMETER_ANNOTATION=""/>
+		<T_SVC_PARAMETER CLASS_NAME="[jsonClass]"
+		                 METHOD_NAME="getOutJSONSubById"
+		                 PARAMETER_SEQ="2"
+		                 PARAMETER_NAME="id"
+		                 PARAMETER_TYPE="String"
+		                 RETURN_PARAMETER="N"
+		                 PARAMETER_ANNOTATION="@PathParam(&quot;id&quot;)"/>
+		<T_SVC_PARAMETER CLASS_NAME="[jsonClass]"
+		                 METHOD_NAME="getOutJSONSubs"
+		                 PARAMETER_SEQ="1"
+		                 PARAMETER_NAME="result"
+		                 PARAMETER_TYPE="Response"
+		                 RETURN_PARAMETER="Y"
+		                 PARAMETER_ANNOTATION=""/>
+	</SVC_Method_Parameters>
+	<SVC_Fields documentName="SVC Fields">
+		<T_SVC_FIELD CLASS_NAME="[jsonOutClass]"
+		             POSITION="2"
+		             FIELD_NAME="[COLUMN_1]"
+		             FIELD_TYPE="String"
+		             DEFAULT_VALUE=""
+		             FIELD_ANNOTATION="@Column(name=&quot;[COLUMN_1]&quot;);@XmlElement(name=&quot;[COLUMN_1]&quot;)"
+		             FIELD_DEFINITION="public&#x20;String&#x20;[COLUMN_1];"
+		             FIELD_COMMENT=""/>
+		<T_SVC_FIELD CLASS_NAME="[jsonOutClass]"
+		             POSITION="3"
+		             FIELD_NAME="[COLUMN_2]"
+		             FIELD_TYPE="String"
+		             DEFAULT_VALUE=""
+		             FIELD_ANNOTATION="@Column(name=&quot;[COLUMN_2]&quot;);@XmlElement(name=&quot;[COLUMN_2]&quot;)"
+		             FIELD_DEFINITION="public&#x20;String&#x20;[COLUMN_2];"
+		             FIELD_COMMENT=""/>
+		<T_SVC_FIELD CLASS_NAME="[jsonOutClass]"
+		             POSITION="4"
+		             FIELD_NAME="[COLUMN_3]"
+		             FIELD_TYPE="String"
+		             DEFAULT_VALUE=""
+		             FIELD_ANNOTATION="@Column(name=&quot;[COLUMN_3]&quot;);@XmlElement(name=&quot;[COLUMN_3]&quot;)"
+		             FIELD_DEFINITION="public&#x20;String&#x20;[COLUMN_3];"
+		             FIELD_COMMENT=""/>
+		<T_SVC_FIELD CLASS_NAME="[jsonOutClass]"
+		             POSITION="5"
+		             FIELD_NAME="[COLUMN_4]"
+		             FIELD_TYPE="String"
+		             DEFAULT_VALUE=""
+		             FIELD_ANNOTATION="@Column(name=&quot;[COLUMN_4]&quot;);@XmlElement(name=&quot;[COLUMN_4]&quot;)"
+		             FIELD_DEFINITION="public&#x20;String&#x20;[COLUMN_4];"
+		             FIELD_COMMENT=""/>
+		<T_SVC_FIELD CLASS_NAME="[jsonOutClass]"
+		             POSITION="1"
+		             FIELD_NAME="ID"
+		             FIELD_TYPE="String"
+		             DEFAULT_VALUE=""
+		             FIELD_ANNOTATION="@Column(name=&quot;ID&quot;);@XmlElement(name=&quot;ID&quot;)"
+		             FIELD_DEFINITION="public&#x20;String&#x20;ID;"
+		             FIELD_COMMENT=""/>
+		<T_SVC_FIELD CLASS_NAME="[jsonSubOutClass]"
+		             POSITION="3"
+		             FIELD_NAME="[COLUMN_SUB_1]"
+		             FIELD_TYPE="String"
+		             DEFAULT_VALUE=""
+		             FIELD_ANNOTATION="@Column(name=&quot;[COLUMN_SUB_1]&quot;);@XmlElement(name=&quot;[COLUMN_SUB_1]&quot;)"
+		             FIELD_DEFINITION="public&#x20;String&#x20;[COLUMN_SUB_1];"
+		             FIELD_COMMENT=""/>
+		<T_SVC_FIELD CLASS_NAME="[jsonSubOutClass]"
+		             POSITION="4"
+		             FIELD_NAME="[COLUMN_SUB_2]"
+		             FIELD_TYPE="String"
+		             DEFAULT_VALUE=""
+		             FIELD_ANNOTATION="@Column(name=&quot;[COLUMN_SUB_2]&quot;);@XmlElement(name=&quot;[COLUMN_SUB_2]&quot;)"
+		             FIELD_DEFINITION="public&#x20;String&#x20;[COLUMN_SUB_2];"
+		             FIELD_COMMENT=""/>
+		<T_SVC_FIELD CLASS_NAME="[jsonSubOutClass]"
+		             POSITION="5"
+		             FIELD_NAME="[COLUMN_SUB_3]"
+		             FIELD_TYPE="String"
+		             DEFAULT_VALUE=""
+		             FIELD_ANNOTATION="@Column(name=&quot;[COLUMN_SUB_3]&quot;);@XmlElement(name=&quot;[COLUMN_SUB_3]&quot;)"
+		             FIELD_DEFINITION="public&#x20;String&#x20;[COLUMN_SUB_3];"
+		             FIELD_COMMENT=""/>
+		<T_SVC_FIELD CLASS_NAME="[jsonSubOutClass]"
+		             POSITION="1"
+		             FIELD_NAME="ID"
+		             FIELD_TYPE="String"
+		             DEFAULT_VALUE=""
+		             FIELD_ANNOTATION="@Column(name=&quot;ID&quot;);@XmlElement(name=&quot;ID&quot;)"
+		             FIELD_DEFINITION="public&#x20;String&#x20;ID;"
+		             FIELD_COMMENT=""/>
+		<T_SVC_FIELD CLASS_NAME="[jsonSubOutClass]"
+		             POSITION="2"
+		             FIELD_NAME="OUT_JSON_ID"
+		             FIELD_TYPE="String"
+		             DEFAULT_VALUE=""
+		             FIELD_ANNOTATION="@Column(name=&quot;OUT_JSON_ID&quot;);@XmlElement(name=&quot;OUT_JSON_ID&quot;)"
+		             FIELD_DEFINITION="public&#x20;String&#x20;OUT_JSON_ID;"
+		             FIELD_COMMENT=""/>
+	</SVC_Fields>
+	<SVC_Statements documentName="SVC Statements">
+		<T_SVC_STATEMENT STATEMENT_NAME="USOFT_GET_OUT_JSON"
+		                 CORRECT="Y"
+		                 STATEMENT_DEF="select&#x20;o_Json.*&#x20;from&#x20;[OUT_JSON]&#x20;o_Json"
+		                 SQLNODE="&lt;?xml&#x20;version=&quot;1.0&quot;&#x20;encoding=&quot;UTF-16&quot;?&gt;&#xA;&lt;SqlNode&#x20;version=&quot;1.0&quot;&gt;&lt;Select&gt;&lt;SelectList&gt;&lt;SelectListElement&#x20;position=&quot;1&quot;&gt;&lt;Column&#x20;name=&quot;*&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;records&quot;&#x20;table_alias=&quot;o_Json&quot;&gt;&lt;SelectListElement&#x20;position=&quot;1&quot;&gt;&lt;Column&#x20;name=&quot;ID&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;ID&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;/SelectListElement&gt;&lt;SelectListElement&#x20;position=&quot;2&quot;&gt;&lt;Column&#x20;name=&quot;[COLUMN_1]&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;Column&#x20;1&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;/SelectListElement&gt;&lt;SelectListElement&#x20;position=&quot;3&quot;&gt;&lt;Column&#x20;name=&quot;[COLUMN_2]&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;Column&#x20;2&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;/SelectListElement&gt;&lt;SelectListElement&#x20;position=&quot;4&quot;&gt;&lt;Column&#x20;name=&quot;[COLUMN_3]&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;Column&#x20;3&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;/SelectListElement&gt;&lt;SelectListElement&#x20;position=&quot;5&quot;&gt;&lt;Column&#x20;name=&quot;[COLUMN_4]&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;Column&#x20;4&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;/SelectListElement&gt;&lt;/Column&gt;&lt;/SelectListElement&gt;&lt;/SelectList&gt;&lt;TableList&gt;&lt;TableListElement&#x20;name=&quot;[OUT_JSON]&quot;&#x20;info_window_name=&quot;Out&#x20;JSON&#x20;records&quot;&#x20;position=&quot;1&quot;&#x20;alias=&quot;o_Json&quot;/&gt;&lt;/TableList&gt;&lt;/Select&gt;&lt;/SqlNode&gt;"
+		                 APPLICATION_NAME="[USOFT_APP]"
+		                 DESCRIPTION=""/>
+		<T_SVC_STATEMENT STATEMENT_NAME="USOFT_GET_OUT_JSON_BY_ID"
+		                 CORRECT="Y"
+		                 STATEMENT_DEF="select&#x20;o_Json.*&#x20;from&#x20;[OUT_JSON]&#x20;o_Json&#x20;where&#x20;id&#x20;=&#x20;:1"
+		                 SQLNODE="&lt;?xml&#x20;version=&quot;1.0&quot;&#x20;encoding=&quot;UTF-16&quot;?&gt;&#xA;&lt;SqlNode&#x20;version=&quot;1.0&quot;&gt;&lt;Select&gt;&lt;SelectList&gt;&lt;SelectListElement&#x20;position=&quot;1&quot;&gt;&lt;Column&#x20;name=&quot;*&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;records&quot;&#x20;table_alias=&quot;o_Json&quot;&gt;&lt;SelectListElement&#x20;position=&quot;1&quot;&gt;&lt;Column&#x20;name=&quot;ID&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;ID&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;/SelectListElement&gt;&lt;SelectListElement&#x20;position=&quot;2&quot;&gt;&lt;Column&#x20;name=&quot;[COLUMN_1]&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;Column&#x20;1&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;/SelectListElement&gt;&lt;SelectListElement&#x20;position=&quot;3&quot;&gt;&lt;Column&#x20;name=&quot;[COLUMN_2]&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;Column&#x20;2&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;/SelectListElement&gt;&lt;SelectListElement&#x20;position=&quot;4&quot;&gt;&lt;Column&#x20;name=&quot;[COLUMN_3]&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;Column&#x20;3&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;/SelectListElement&gt;&lt;SelectListElement&#x20;position=&quot;5&quot;&gt;&lt;Column&#x20;name=&quot;[COLUMN_4]&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;Column&#x20;4&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;/SelectListElement&gt;&lt;/Column&gt;&lt;/SelectListElement&gt;&lt;/SelectList&gt;&lt;TableList&gt;&lt;TableListElement&#x20;name=&quot;[OUT_JSON]&quot;&#x20;info_window_name=&quot;Out&#x20;JSON&#x20;records&quot;&#x20;position=&quot;1&quot;&#x20;alias=&quot;o_Json&quot;/&gt;&lt;/TableList&gt;&lt;Where&gt;&lt;Operator&#x20;name=&quot;=&quot;&#x20;position=&quot;1&quot;&gt;&lt;Column&#x20;name=&quot;ID&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;ID&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;Host&#x20;name=&quot;1&quot;&#x20;position=&quot;2&quot;/&gt;&lt;/Operator&gt;&lt;/Where&gt;&lt;/Select&gt;&lt;/SqlNode&gt;"
+		                 APPLICATION_NAME="[USOFT_APP]"
+		                 DESCRIPTION=""/>
+		<T_SVC_STATEMENT STATEMENT_NAME="USOFT_GET_OUT_JSON_SUB_BY_ID"
+		                 CORRECT="Y"
+		                 STATEMENT_DEF="select&#x20;o_Json.*&#x20;from&#x20;[OUT_JSON_SUB]&#x20;o_Json&#x20;where&#x20;out_json_id&#x20;=&#x20;:1"
+		                 SQLNODE="&lt;?xml&#x20;version=&quot;1.0&quot;&#x20;encoding=&quot;UTF-16&quot;?&gt;&#xA;&lt;SqlNode&#x20;version=&quot;1.0&quot;&gt;&lt;Select&gt;&lt;SelectList&gt;&lt;SelectListElement&#x20;position=&quot;1&quot;&gt;&lt;Column&#x20;name=&quot;*&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON_SUB]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;sub&#x20;records&quot;&#x20;table_alias=&quot;o_Json&quot;&gt;&lt;SelectListElement&#x20;position=&quot;1&quot;&gt;&lt;Column&#x20;name=&quot;ID&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON_SUB]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;sub&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;ID&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;/SelectListElement&gt;&lt;SelectListElement&#x20;position=&quot;2&quot;&gt;&lt;Column&#x20;name=&quot;OUT_JSON_ID&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON_SUB]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;sub&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;Out&#x20;JSON&#x20;ID&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;/SelectListElement&gt;&lt;SelectListElement&#x20;position=&quot;3&quot;&gt;&lt;Column&#x20;name=&quot;[COLUMN_SUB_1]&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON_SUB]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;sub&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;Column&#x20;Sub&#x20;1&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;/SelectListElement&gt;&lt;SelectListElement&#x20;position=&quot;4&quot;&gt;&lt;Column&#x20;name=&quot;[COLUMN_SUB_2]&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON_SUB]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;sub&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;Column&#x20;Sub&#x20;2&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;/SelectListElement&gt;&lt;SelectListElement&#x20;position=&quot;5&quot;&gt;&lt;Column&#x20;name=&quot;[COLUMN_SUB_3]&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON_SUB]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;sub&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;Column&#x20;Sub&#x20;3&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;/SelectListElement&gt;&lt;/Column&gt;&lt;/SelectListElement&gt;&lt;/SelectList&gt;&lt;TableList&gt;&lt;TableListElement&#x20;name=&quot;[OUT_JSON_SUB]&quot;&#x20;info_window_name=&quot;Out&#x20;JSON&#x20;sub&#x20;records&quot;&#x20;position=&quot;1&quot;&#x20;alias=&quot;o_Json&quot;/&gt;&lt;/TableList&gt;&lt;Where&gt;&lt;Operator&#x20;name=&quot;=&quot;&#x20;position=&quot;1&quot;&gt;&lt;Column&#x20;name=&quot;OUT_JSON_ID&quot;&#x20;position=&quot;1&quot;&#x20;table_name=&quot;[OUT_JSON_SUB]&quot;&#x20;table_info_window_name=&quot;Out&#x20;JSON&#x20;sub&#x20;records&quot;&#x20;type=&quot;Column&quot;&#x20;table_alias=&quot;o_Json&quot;&#x20;prompt=&quot;Out&#x20;JSON&#x20;ID&quot;&#x20;datatype=&quot;String&quot;&#x20;dbtype=&quot;VARCHAR2&quot;/&gt;&lt;Host&#x20;name=&quot;1&quot;&#x20;position=&quot;2&quot;/&gt;&lt;/Operator&gt;&lt;/Where&gt;&lt;/Select&gt;&lt;/SqlNode&gt;"
+		                 APPLICATION_NAME="[USOFT_APP]"
+		                 DESCRIPTION=""/>
+	</SVC_Statements>
+	<SVC_Class_Statements documentName="SVC Class Statements">
+		<T_SVC_CLASS_USE_STATEMENT CLASS_NAME="[jsonClass]"
+		                           STATEMENT_NAME="USOFT_GET_OUT_JSON"/>
+		<T_SVC_CLASS_USE_STATEMENT CLASS_NAME="[jsonClass]"
+		                           STATEMENT_NAME="USOFT_GET_OUT_JSON_BY_ID"/>
+		<T_SVC_CLASS_USE_STATEMENT CLASS_NAME="[jsonClass]"
+		                           STATEMENT_NAME="USOFT_GET_OUT_JSON_SUB_BY_ID"/>
+	</SVC_Class_Statements>
+	<SVC_Classes_in_Servers documentName="SVC Classes in Servers">
+		<T_SVC_CLASS_IN_SERVER SERVER_NAME="[USoft.JsonAPI]"
+		                       CLASS_NAME="[jsonClass]"/>
+		<T_SVC_CLASS_IN_SERVER SERVER_NAME="[USoft.JsonAPI]"
+		                       CLASS_NAME="[jsonOutClass]"/>
+		<T_SVC_CLASS_IN_SERVER SERVER_NAME="[USoft.JsonAPI]"
+		                       CLASS_NAME="[jsonSubOutClass]"/>
+	</SVC_Classes_in_Servers>
+</MultiImport>
