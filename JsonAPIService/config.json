@@ -1,0 +1,168 @@
+{
+    "FormWidth": 1600,
+    "FormHeight": 500,
+    "Title": "Demo Wizard",
+    "XmlReplacementFilePaths": [
+        ".\\input\\USoft_Definer\\1_table_OUT_JSON.xml",
+        ".\\input\\USoft_Definer\\2_table_OUT_JSON_SUB.xml",
+		".\\input\\USoft_Service_Definer\\1_server_JsonAPI.xml"
+    ],
+    "ShowInfobox": true,
+    "IntroText": "\r\n\r\nThis XML wizard is used to create a XML file from the <b,fc:blue>JSonAPIService</b,fc>  component.\r\n\r\nThese generated output <b>XML files</b> can be used with function <fc:Blue>XML.IMPORT </fc> or can be pasted into the development tree in the USoft definer.\r\n\r\n\r\nPlease follow the steps and proceed until the required result is reached.",
+    "Steps": [{
+            "DisplayText": "Replace values in JSonAPIService tables",
+            "Title": "JSonAPIService tables",
+            "Fields": [{
+                    "DisplayText": "TABLE NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e9001",
+                    "Info": "Enter the desired <fc:Blue>TABLE NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[OUT_JSON]",
+                    "Type": "String",
+                    "Value": "OUT_JSON",
+                    "Width": 400
+                }, {
+                    "DisplayText": "COLUMN 1 NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e9002",
+                    "Info": "Enter the desired <fc:Blue>COLUMN 1 NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[COLUMN_1]",
+                    "Type": "String",
+                    "Value": "COLUMN_1",
+                    "Width": 400
+                }, {
+                    "DisplayText": "COLUMN 2 NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e9003",
+                    "Info": "Enter the desired <fc:Blue>COLUMN 2 NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[COLUMN_2]",
+                    "Type": "String",
+                    "Value": "COLUMN_2",
+                    "Width": 400
+                }, {
+                    "DisplayText": "COLUMN 3 NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e9004",
+                    "Info": "Enter the desired <fc:Blue>COLUMN 3 NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[COLUMN_3]",
+                    "Type": "String",
+                    "Value": "COLUMN_3",
+                    "Width": 400
+                }, {
+                    "DisplayText": "COLUMN 4 NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e9005",
+                    "Info": "Enter the desired <fc:Blue>COLUMN 4 NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[COLUMN_4]",
+                    "Type": "String",
+                    "Value": "COLUMN_4",
+                    "Width": 400
+                }, {
+                    "DisplayText": "SUBTABLE NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e9006",
+                    "Info": "Enter the desired <fc:Blue>SUBTABLE NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[OUT_JSON_SUB]",
+                    "Type": "String",
+                    "Value": "OUT_JSON_SUB",
+                    "Width": 400
+                }, {
+                    "DisplayText": "SUBTABLE COLUMN 1 NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e9007",
+                    "Info": "Enter the desired <fc:Blue>SUBTABLE COLUMN 1 NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[COLUMN_SUB_1]",
+                    "Type": "String",
+                    "Value": "COLUMN_SUB_1",
+                    "Width": 400
+                }, {
+                    "DisplayText": "SUBTABLE COLUMN 2 NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e9008",
+                    "Info": "Enter the desired <fc:Blue>SUBTABLE COLUMN 2 NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[COLUMN_SUB_2]",
+                    "Type": "String",
+                    "Value": "COLUMN_SUB_2",
+                    "Width": 400
+                }, {
+                    "DisplayText": "SUBTABLE COLUMN 3 NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e9009",
+                    "Info": "Enter the desired <fc:Blue>SUBTABLE COLUMN 3 NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[COLUMN_SUB_3]",
+                    "Type": "String",
+                    "Value": "COLUMN_SUB_3",
+                    "Width": 400
+                }
+            ]
+        },{
+            "DisplayText": "Replace values in JSonAPIService server / service",
+            "Title": "JSonAPIService server",
+            "Fields": [{
+                    "DisplayText": "APPLICATION NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8000",
+                    "Info": "Enter the desired <fc:Blue>APPLICATION NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[USOFT_APP]",
+                    "Type": "String",
+                    "Value": "USOFT_APP",
+                    "Width": 400
+                },{
+                    "DisplayText": "CONNECTION NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8001",
+                    "Info": "Enter the desired <fc:Blue>CONNECTION NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[USOFT_APP_RS]",
+                    "Type": "String",
+                    "Value": "USOFT_APP_RS",
+                    "Width": 400
+                },{
+                    "DisplayText": "CONNECTION PORT NUMBER:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8002",
+                    "Info": "Enter the desired <fc:Blue>CONNECTION PORT NUMBER</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[USOFT_APP_RS_PN]",
+                    "Type": "String",
+                    "Value": "7777",
+                    "Width": 400
+                },{
+                    "DisplayText": "SERVER NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8003",
+                    "Info": "Enter the desired <fc:Blue>SERVER NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[USoft.JsonAPI]",
+                    "Type": "String",
+                    "Value": "USoft.JsonAPI",
+                    "Width": 400
+                }, {
+                    "DisplayText": "JSON CLASS NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8004",
+                    "Info": "Enter the desired <fc:Blue>JSON CLASS NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[jsonClass]",
+                    "Type": "String",
+                    "Value": "jsonClass",
+                    "Width": 400
+                }, {
+                    "DisplayText": "JSON OUT CLASS NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8005",
+                    "Info": "Enter the desired <fc:Blue>JSON OUT CLASS NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[jsonOutClass]",
+                    "Type": "String",
+                    "Value": "jsonOutClass",
+                    "Width": 400
+                }, {
+                    "DisplayText": "JSON SUB OUT CLASS NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8006",
+                    "Info": "Enter the desired <fc:Blue>JSON SUB OUT CLASS</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[jsonSubOutClass]",
+                    "Type": "String",
+                    "Value": "jsonSubOutClass",
+                    "Width": 400
+                }
+            ]
+        }
+    ]
+}

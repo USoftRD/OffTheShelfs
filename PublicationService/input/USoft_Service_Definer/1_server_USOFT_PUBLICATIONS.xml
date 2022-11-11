@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?usoft-xml version="1.0" action="multi-tables-import"?>
+<MultiImport type="server">
+	<SVC_Applications documentName="SVC Applications">
+		<T_SVC_APPLICATION APPLICATION_NAME="[USOFT_APP]"
+		                   DESCRIPTION=""/>
+	</SVC_Applications>
+	<SVC_Connections documentName="SVC Connections">
+		<T_SVC_CONNECTION CONNECTION_NAME="[USOFT_APP_RS]"
+		                  APPLICATION_NAME="[USOFT_APP]"
+		                  DEFAULT_USER=""
+		                  DEFAULT_PASSWORD=""
+		                  SESSION_NAME="[USOFT_APP_RS]"
+		                  SESSION_EXPIRY="600"
+		                  DESCRIPTION=""
+		                  REUSE_SOCKETS="N"/>
+	</SVC_Connections>
+	<SVC_Rule_Services documentName="SVC Rule Services">
+		<T_SVC_RULE_SERVICE CONNECTION_NAME="[USOFT_APP_RS]"
+		                    HOST_NAME="localhost"
+		                    PORTNR="[USOFT_APP_RS_PN]"
+		                    PROPOSED_SERVICE_NAME="[USOFT_APP_RS]-[USOFT_APP_RS_PN]"
+		                    SERVICE_NAME="RulesService-[USOFT_APP_RS_PN]"
+		                    SERVICE_CONFIG=""/>
+	</SVC_Rule_Services>
+	<SVC_Servers documentName="SVC Servers">
+		<T_SVC_SERVER NAME="[USoft.Publications]"
+		              BASEURI="http://0.0.0.0:[USOFT_PUBLIC_PN]/"
+		              EXTERNAL_BASEURI=""
+		              PUBLICATION_LOCATION="[PUBLIC_PATH]\WEBPublication"
+		              KEYSTORE=""
+		              KEYSTOREPWD=""
+		              CORS_CONFIG=""
+		              GENERICRESOURCE="Y"
+		              ADMINRESOURCE="Y"
+		              LOGGINGRESOURCE="Y"
+		              RUNCOMMAND="[PUBLIC_PATH]\PUBLIC\USOFT_PUBLICATION\[USoft.Publications].cmd"
+		              JAVA_LOCATION="%usoft.system.dir%\JAVA\SUN\JRE64\BIN\java.exe"
+		              AUTHENTICATOR=""
+		              SERVICE_DESCRIPTION="REST&#x20;and&#x20;WSDL&#x20;services"
+		              LOG_LEVEL="INFO"
+		              RUNTIME_INCLUDE_JARS=""
+		              SECURITY_CONFIG=""
+		              IDP_CONFIG=""
+		              THROTTLE_SERVER_REQUESTS="N"
+		              MAX_SERVER_REQUESTS="4"/>
+	</SVC_Servers>
+	<SVC_Classes documentName="SVC Classes">
+		<T_SVC_CLASS CLASS_NAME="[PUBLIC]"
+		             PACKAGE_PATH="com.usoft.service"
+		             SUPERCLASS_FUNCTIONAL_NAME="USoft&#x20;Page&#x20;Engine&#x20;Resource"
+		             CLASS_TYPE="rest"
+		             RELATIVE_URI_PATH="/[PUBLIC]"
+		             SOAP_TYPE="wrap"
+		             ANNOTATIONS="@AuthUSoft"
+		             PARENT_CLASS_NAME=""
+		             ACTIVE="Y"
+		             CORRECT="Y"
+		             OWNLOGGER="WARN"
+		             DEFAULT_ANNOTATION=";@Path(&quot;/[PUBLIC]&quot;)"
+		             IS_SERVICE="Y"
+		             DESCRIPTION=""/>
+	</SVC_Classes>
+	<SVC_Class_Connections documentName="SVC Class Connections">
+		<T_SVC_CLASS_USE_CONNECTION CLASS_NAME="[PUBLIC]"
+		                            CONNECTION_NAME="[USOFT_APP_RS]"
+		                            CONNECTION_NUMBER="1"/>
+	</SVC_Class_Connections>
+	<SVC_Fields documentName="SVC Fields">
+		<T_SVC_FIELD CLASS_NAME="[PUBLIC]"
+		             POSITION="1"
+		             FIELD_NAME="mypubdir"
+		             FIELD_TYPE="String"
+		             DEFAULT_VALUE="setPubDir(&#x20;&quot;C:\\USoft\\web\\WEBPublication&quot;&#x20;)"
+		             FIELD_ANNOTATION=""
+		             FIELD_DEFINITION="public&#x20;String&#x20;mypubdir&#x20;=&#x20;setPubDir(&#x20;&quot;C:\\USoft\\web\\WEBPublication&quot;&#x20;);"
+		             FIELD_COMMENT=""/>
+	</SVC_Fields>
+	<SVC_Super_Classes documentName="SVC Super Classes">
+		<T_SVC_SUPER_CLASS FUNCTIONALNAME="USoft&#x20;Page&#x20;Engine&#x20;Resource"
+		                   SUPERCLASS_NAME="com.usoft.uservice.pageengine.PageEngineResource"
+		                   BASECLASS_NAME=""
+		                   IMPL_INTERFACE_NAMES=""
+		                   DESCRIPTION="This&#x20;base&#x20;class&#x20;contains&#x20;methods&#x20;for&#x20;the&#x20;USoft&#x20;Page&#x20;Engine.&#x20;Includes&#x20;methods&#x20;Job()&#x20;and&#x20;Sql()."
+		                   CLASS_TYPE="rest"/>
+	</SVC_Super_Classes>
+	<SVC_Classes_in_Servers documentName="SVC Classes in Servers">
+		<T_SVC_CLASS_IN_SERVER SERVER_NAME="[USoft.Publications]"
+		                       CLASS_NAME="[PUBLIC]"/>
+	</SVC_Classes_in_Servers>
+</MultiImport>
