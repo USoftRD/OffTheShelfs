@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?usoft-xml version="1.0" action="multi-tables-import"?>
+<MultiExport type="server">
+	<SVC_Applications documentName="SVC Applications">
+		<T_SVC_APPLICATION APPLICATION_NAME="[USOFT_APP]" DESCRIPTION=""/>
+	</SVC_Applications>
+	<SVC_Connections documentName="SVC Connections">
+		<T_SVC_CONNECTION CONNECTION_NAME="[USOFT_APP_RS]" APPLICATION_NAME="[USOFT_APP]" DEFAULT_USER="usoft" DEFAULT_PASSWORD="usoft" SESSION_NAME="USOFT" SESSION_EXPIRY="600" DESCRIPTION="" REUSE_SOCKETS="N"/>
+	</SVC_Connections>
+	<SVC_Rule_Services documentName="SVC Rule Services">
+		<T_SVC_RULE_SERVICE CONNECTION_NAME="[USOFT_APP_RS]" HOST_NAME="localhost" PORTNR="[USOFT_APP_RS_PN]" PROPOSED_SERVICE_NAME="[USOFT_APP_RS]-[USOFT_APP_RS_PN]" SERVICE_NAME="RulesService-[USOFT_APP_RS_PN]" SERVICE_CONFIG="URE.VALUE.TEXT.Config&#x20;&#xD;&#xA;C:\USoft\USD1001H\bin64/RulesService-[USOFT_APP_RS_PN]&#xD;&#xA;URE.VALUE.TEXT.RDBMSUser&#xD;&#xA;usoft&#xD;&#xA;URE.VALUE.PASSWORD.RDBMSPassword&#xD;&#xA;usoft&#xD;&#xA;URE.VALUE.TEXT.RDBMSType&#xD;&#xA;microsoft&#x20;sql&#x20;server&#x20;2019&#x20;(rtm)&#x20;&#xD;&#xA;URE.VALUE.TEXT.RDBMSConnection&#xD;&#xA;NLNT51\sqlexpress&#xD;&#xA;URE.VALUE.TEXT.RDBMSOwner&#xD;&#xA;usoft&#xD;&#xA;URE.VALUE.TEXT.TransportLayerSecurity&#xD;&#xA;false&#xD;&#xA;URE.VALUE.TEXT.InternalPeerUREsList&#xD;&#xA;&#xD;&#xA;URE.VALUE.TEXT.Languages&#xD;&#xA;DEFAULT&#xD;&#xA;URE.VALUE.TEXT.Decisions&#xD;&#xA;&#xD;&#xA;URE.VALUE.TEXT.MinEngines&#xD;&#xA;1&#xD;&#xA;URE.VALUE.TEXT.MaxEngines&#xD;&#xA;10&#xD;&#xA;URE.VALUE.TEXT.ServerTimeout&#xD;&#xA;600&#xD;&#xA;URE.VALUE.TEXT.ClientTimeout&#xD;&#xA;20&#xD;&#xA;URE.VALUE.TEXT.Port&#xD;&#xA;[USOFT_APP_RS_PN]&#xD;&#xA;URE.VALUE.TEXT.JdbcConnection&#xD;&#xA;jdbc:jrec:USOFT@NLNT51:[USOFT_APP_RS_PN]&#xD;&#xA;URE.VALUE.TEXT.Application&#xD;&#xA;USOFT&#xD;&#xA;URE.VALUE.TEXT.AutoStart&#xD;&#xA;yes&#xD;&#xA;URE.VALUE.TEXT.FlatFileLocation&#xD;&#xA;null&#xD;&#xA;URE.VALUE.TEXT.PublicationDirectory&#xD;&#xA;&#xD;&#xA;URE.VALUE.TEXT.MessageMode&#xD;&#xA;developer&#xD;&#xA;URE.VALUE.TEXT.LogLevel&#xD;&#xA;Error&#xD;&#xA;URE.VALUE.TEXT.LogDirectory&#xD;&#xA;C:\USoft\USD1001H\Logs\USoft_logs\&#xD;&#xA;URE.VALUE.TEXT.ProfilerStarted&#xD;&#xA;false&#xD;&#xA;URE.VALUE.TEXT.EngineCount&#xD;&#xA;0&#xD;&#xA;URE.VALUE.TEXT.StatusMsg&#xD;&#xA;&lt;label&#x20;class=&quot;statusControl_Ok&quot;&gt;Ok&lt;/label&gt;&#xD;&#xA;URE.VALUE.TEXT.DecisionInterval&#xD;&#xA;0&#xD;&#xA;URE.VALUE.TEXT.IdleTimeout&#xD;&#xA;0&#xD;&#xA;URE.VALUE.TEXT.DefinitionsFrom&#xD;&#xA;DictTable&#xD;&#xA;URE.VALUE.TEXT.Flatfile&#xD;&#xA;repository&#xD;&#xA;URE.VALUE.TEXT.EnginesRunning"/>
+	</SVC_Rule_Services>
+	<SVC_Servers documentName="SVC Servers">
+		<T_SVC_SERVER NAME="[USoft.Utilities]" BASEURI="http://0.0.0.0:[USOFT_UTIL_PN]/" EXTERNAL_BASEURI="" PUBLICATION_LOCATION="[PUBLIC_PATH]\USOFT_UTIL\" KEYSTORE="" KEYSTOREPWD="" CORS_CONFIG="" GENERICRESOURCE="Y" ADMINRESOURCE="Y" LOGGINGRESOURCE="Y" RUNCOMMAND="[PUBLIC_PATH]\USOFT_UTIL\[USoft.Utilities].cmd" JAVA_LOCATION="%usoft.system.dir%\JAVA\SUN\JRE64\BIN\java.exe" AUTHENTICATOR="" SERVICE_DESCRIPTION="REST&#x20;and&#x20;WSDL&#x20;services" LOG_LEVEL="INFO" RUNTIME_INCLUDE_JARS="" SECURITY_CONFIG="" IDP_CONFIG="" THROTTLE_SERVER_REQUESTS="N" MAX_SERVER_REQUESTS="4"/>
+	</SVC_Servers>
+</MultiExport>

@@ -1,0 +1,170 @@
+<?usoft-xml version="1.0" action="multi-tables-import"?>
+<MultiImport type="job"
+             objectName="SCHEDULE_RUN">
+	<Jobs documentName="Jobs">
+		<T_JOB JOB_NAME="SCHEDULE_RUN"
+		       SET_NAME="P_SCHEDULE_MESSAGE_IN"
+		       USE_USER_TABLE="N"
+		       USER_TABLE=""
+		       OUTPUT_SET_NAME="P_SCHEDULE_MESSAGE_OUT"
+		       USE_OUTPUT_USER_TABLE="N"
+		       OUTPUT_USER_TABLE=""
+		       COMMITTYPE="TASK"
+		       INTERFACE="N"
+		       MODULE=""
+		       INTERFACE_CORRECT="Y"
+		       ACTIVE="Y"/>
+	</Jobs>
+	<Tasks documentName="Tasks">
+		<T_JOB_TASK JOB_NAME="SCHEDULE_RUN"
+		            JOB_TASK_NAME="SCHEDULE_LOCK"
+		            SEQNO="10"
+		            COMMITTYPE="TASK"
+		            ABORT_MODE="JOB"
+		            IS_ACTION=""
+		            IS_EXPORT=""
+		            IS_IMPORT=""
+		            IS_JOB=""
+		            IS_SQL="SCHEDULE_LOCK"/>
+		<T_JOB_TASK JOB_NAME="SCHEDULE_RUN"
+		            JOB_TASK_NAME="SCHEDULE_ROWS_LOCKED"
+		            SEQNO="20"
+		            COMMITTYPE="TASK"
+		            ABORT_MODE="JOB"
+		            IS_ACTION=""
+		            IS_EXPORT=""
+		            IS_IMPORT=""
+		            IS_JOB=""
+		            IS_SQL="SCHEDULE_ROWS_LOCKED"/>
+		<T_JOB_TASK JOB_NAME="SCHEDULE_RUN"
+		            JOB_TASK_NAME="SCHEDULE_RUN"
+		            SEQNO="30"
+		            COMMITTYPE="TASK"
+		            ABORT_MODE="TASK"
+		            IS_ACTION=""
+		            IS_EXPORT=""
+		            IS_IMPORT=""
+		            IS_JOB=""
+		            IS_SQL="SCHEDULE_RUN"/>
+		<T_JOB_TASK JOB_NAME="SCHEDULE_RUN"
+		            JOB_TASK_NAME="SCHEDULE_UNLOCK"
+		            SEQNO="40"
+		            COMMITTYPE="TASK"
+		            ABORT_MODE="JOB"
+		            IS_ACTION=""
+		            IS_EXPORT=""
+		            IS_IMPORT=""
+		            IS_JOB=""
+		            IS_SQL="SCHEDULE_UNLOCK"/>
+	</Tasks>
+	<External_Sets documentName="External Sets">
+		<T_EXT_SET SET_NAME="P_SCHEDULE_MESSAGE_IN"
+		           FILEFORMAT="FIXED"
+		           ROWSEPARATOR="\n"
+		           T_EXT_SET_HTML="N"
+		           SQLSTATEMENT=""
+		           DESCRIPTION=""
+		           T_EXT_SET_TABLEBASED="N"
+		           INTERFACE="N"
+		           MODULE=""
+		           INTERFACE_CORRECT="Y"/>
+	</External_Sets>
+	<External_Set_Elements documentName="External Set Elements">
+		<T_EXT_SETELEMENT SET_NAME="P_SCHEDULE_MESSAGE_IN"
+		                  SEQNO="10"
+		                  ELEMENT_NAME="SCHEDULE_NAME"
+		                  DATATYPE="VARCHAR2"
+		                  TOTAL_LENGTH="100"
+		                  TC_FORMAT=""
+		                  CHILD_SET=""
+		                  INTERFACE="N"
+		                  MODULE=""
+		                  INTERFACE_CORRECT="Y"/>
+	</External_Set_Elements>
+	<External_Sets documentName="External Sets">
+		<T_EXT_SET SET_NAME="P_SCHEDULE_MESSAGE_OUT"
+		           FILEFORMAT="FIXED"
+		           ROWSEPARATOR="\n"
+		           T_EXT_SET_HTML="N"
+		           SQLSTATEMENT=""
+		           DESCRIPTION=""
+		           T_EXT_SET_TABLEBASED="N"
+		           INTERFACE="N"
+		           MODULE=""
+		           INTERFACE_CORRECT="Y"/>
+	</External_Sets>
+	<External_Set_Elements documentName="External Set Elements">
+		<T_EXT_SETELEMENT SET_NAME="P_SCHEDULE_MESSAGE_OUT"
+		                  SEQNO="1"
+		                  ELEMENT_NAME="MSG_OUT"
+		                  DATATYPE="VARCHAR2"
+		                  TOTAL_LENGTH="200"
+		                  TC_FORMAT=""
+		                  CHILD_SET=""
+		                  INTERFACE="N"
+		                  MODULE=""
+		                  INTERFACE_CORRECT="Y"/>
+	</External_Set_Elements>
+	<SQL_Tasks documentName="SQL Tasks">
+		<T_SQLTASK SQLTASK_NAME="SCHEDULE_LOCK"/>
+	</SQL_Tasks>
+	<SQL_Task_Statements documentName="SQL Task Statements">
+		<T_SQLTASK_STATEMENT SQLTASK_NAME="SCHEDULE_LOCK"
+		                     SEQNO="10"
+		                     ACTIVE="Y"
+		                     DISABLE_RULES="N"
+		                     SQLSTATEMENT="update&#13;&#10;&#9;scheduled_task st&#13;&#10;set&#13;&#10;&#9;st.running = 'Y'&#13;&#10;where 1=1&#13;&#10;and&#9;st.active = 'Y'&#13;&#10;and&#9;st.running = 'N'&#13;&#10;and&#9;current_date() &gt;= st.next_run&#13;&#10;and&#9;st.name = (&#13;&#10;&#9;select&#13;&#10;&#9;&#9;schedule_name&#13;&#10;&#9;from&#13;&#10;&#9;&#9;p_schedule_message_in&#13;&#10;&#9;where&#13;&#10;&#9;&#9;schedule_name = st.name&#13;&#10;)"
+		                     DESCRIPTION="Lock the schedule"/>
+	</SQL_Task_Statements>
+	<SQL_Tasks documentName="SQL Tasks">
+		<T_SQLTASK SQLTASK_NAME="SCHEDULE_ROWS_LOCKED"/>
+	</SQL_Tasks>
+	<SQL_Task_Statements documentName="SQL Task Statements">
+		<T_SQLTASK_STATEMENT SQLTASK_NAME="SCHEDULE_ROWS_LOCKED"
+		                     SEQNO="10"
+		                     ACTIVE="Y"
+		                     DISABLE_RULES="N"
+		                     SQLSTATEMENT="insert into p_schedule_message_out (MSG_OUT)&#13;&#10;select convert(varchar,RulesEngine.GetProperty( 'RowsCommitted' ))"
+		                     DESCRIPTION="Get rows committed"/>
+	</SQL_Task_Statements>
+	<SQL_Tasks documentName="SQL Tasks">
+		<T_SQLTASK SQLTASK_NAME="SCHEDULE_RUN"/>
+	</SQL_Tasks>
+	<SQL_Task_Statements documentName="SQL Task Statements">
+		<T_SQLTASK_STATEMENT SQLTASK_NAME="SCHEDULE_RUN"
+		                     SEQNO="10"
+		                     ACTIVE="Y"
+		                     DISABLE_RULES="N"
+		                     SQLSTATEMENT="invoke batchrunner.runjob with&#13;&#10;select&#13;&#10;&#9;st.job_name&#13;&#10;,&#9;'true' as &quot;-quiet&quot;&#13;&#10;from&#13;&#10;&#9;scheduled_task st&#13;&#10;,&#9;p_schedule_message_in pi&#13;&#10;,&#9;p_schedule_message_out po&#13;&#10;where&#13;&#10;&#9;st.name = pi.schedule_name&#13;&#10;and&#9;po.msg_out = '1'"
+		                     DESCRIPTION="Run the schedule"/>
+		<T_SQLTASK_STATEMENT SQLTASK_NAME="SCHEDULE_RUN"
+		                     SEQNO="20"
+		                     ACTIVE="Y"
+		                     DISABLE_RULES="N"
+		                     SQLSTATEMENT="update&#13;&#10;&#9;scheduled_task st&#13;&#10;set&#13;&#10;&#9;st.previous_run = current_date()&#13;&#10;where &#13;&#10;&#9;st.name = (&#13;&#10;&#9;&#9;select&#13;&#10;&#9;&#9;&#9;schedule_name&#13;&#10;&#9;&#9;from&#13;&#10;&#9;&#9;&#9;p_schedule_message_in&#13;&#10;&#9;&#9;where&#13;&#10;&#9;&#9;&#9;schedule_name = st.name&#13;&#10;)&#13;&#10;and exists (&#13;&#10;&#9;select&#13;&#10;&#9;&#9;'Schedule locked'&#13;&#10;&#9;from&#13;&#10;&#9;&#9;p_schedule_message_out&#13;&#10;&#9;where&#13;&#10;&#9;&#9;msg_out = '1'&#13;&#10;)"
+		                     DESCRIPTION="Update last run time"/>
+		<T_SQLTASK_STATEMENT SQLTASK_NAME="SCHEDULE_RUN"
+		                     SEQNO="30"
+		                     ACTIVE="Y"
+		                     DISABLE_RULES="N"
+		                     SQLSTATEMENT="update p_schedule_message_out&#13;&#10;set msg_out = (&#13;&#10;&#9;select &#13;&#10;&#9;&#9;'Scheduled task '&#9;||&#13;&#10;&#9;&#9;st.name&#9;&#9;&#9;&#9;||&#13;&#10;&#9;&#9;' (job '&#9;&#9;&#9;||&#13;&#10;&#9;&#9;st.job_name&#9;&#9;&#9;||&#13;&#10;&#9;&#9;') executed at '&#9;||&#13;&#10;&#9;&#9;convert(varchar,st.previous_run,120)&#13;&#10;&#9;from scheduled_task st&#13;&#10;&#9;,&#9;p_schedule_message_in par&#13;&#10;&#9;where st.name = par.schedule_name&#13;&#10;)&#13;&#10;where msg_out = '1'"
+		                     DESCRIPTION="Create return message"/>
+		<T_SQLTASK_STATEMENT SQLTASK_NAME="SCHEDULE_RUN"
+		                     SEQNO="40"
+		                     ACTIVE="Y"
+		                     DISABLE_RULES="N"
+		                     SQLSTATEMENT="update&#13;&#10;&#9;p_schedule_message_out&#13;&#10;set&#13;&#10;&#9;msg_out = null&#13;&#10;where&#13;&#10;&#9;msg_out = '0'"
+		                     DESCRIPTION="Set empty return message if schedule not executed"/>
+	</SQL_Task_Statements>
+	<SQL_Tasks documentName="SQL Tasks">
+		<T_SQLTASK SQLTASK_NAME="SCHEDULE_UNLOCK"/>
+	</SQL_Tasks>
+	<SQL_Task_Statements documentName="SQL Task Statements">
+		<T_SQLTASK_STATEMENT SQLTASK_NAME="SCHEDULE_UNLOCK"
+		                     SEQNO="10"
+		                     ACTIVE="Y"
+		                     DISABLE_RULES="N"
+		                     SQLSTATEMENT="update scheduled_task st&#13;&#10;set st.running = 'N'&#13;&#10;where st.name = (&#13;&#10;&#9;select schedule_name&#13;&#10;&#9;from p_schedule_message_in&#13;&#10;&#9;where schedule_name = st.name&#13;&#10;)"
+		                     DESCRIPTION="Unlock the schedule"/>
+	</SQL_Task_Statements>
+</MultiImport>
