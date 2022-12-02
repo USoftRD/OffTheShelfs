@@ -1,4 +1,4 @@
-# Application Config Setting
+# Scheduled Tasks
 This template concerns the installation of the scheduled tasks functionality where a server, on a set time, will run one or more defined jobs.
 ## Overview
 This template consists of the following part(s):
@@ -22,7 +22,7 @@ After the wizard is done new files will be generated ending with _replaced.xml.
 1. Import the 1_table_SCHEDULED_TASK_replaced.xml file in the definer under Teamwork > Import from file...
 2. Import the 2_job_SCHEDULE_RUN_replaced.xml file in the definer under Teamwork > Import from file...
 3. Validate SCHEDULE_RUN job in the definer|
-4. Import the 1_server_USOFT_UTILITIES_replaced.xml file in the service definer under Tools > SQL Command with SQL statement:
+4. Import the 1_server_USOFT_UTILITIES_replaced.xml file in the service definer under Tools > SQL Command with SQL statement:\
 `invoke xml.import with select '<path>\1_server_USOFT_UTILITIES_replaced.xml`
 5. Check the classes and used SQL statements in the USoft.Utilities server
 

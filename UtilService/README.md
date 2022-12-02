@@ -1,7 +1,7 @@
-# Application Config Setting
-This template concerns the installation of the utilities server which can be used for several tasks for a microservice.|
+# Utility Service
+This template concerns the installation of the utilities server which can be used for several tasks for a microservice.
 ## Overview
-This template consists of the following part(s):|
+This template consists of the following part(s):
 > ### Service definer
 |SERVER||
 |:-|-|
