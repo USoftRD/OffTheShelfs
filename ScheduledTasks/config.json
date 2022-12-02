@@ -1,0 +1,159 @@
+{
+    "FormWidth": 1600,
+    "FormHeight": 620,
+    "Title": "Import Wizard",
+    "XmlReplacementFilePaths": [
+        ".\\input\\USoft_Definer\\1_table_SCHEDULED_TASK.xml",
+        ".\\input\\USoft_Definer\\2_job_SCHEDULE_RUN.xml",
+		".\\input\\USoft_Service_Definer\\1_server_USOFT_UTILITIES.xml"
+    ],
+    "ShowInfobox": true,
+    "IntroText": "\r\n\r\nThis XML wizard is used to create a XML files from the <b,fc:blue>SCHEDULED_TASKS</b,fc> component.\r\n\r\nThese generated output <b>XML files</b> can be used with function <fc:Blue>INVOKE XML.IMPORT WITH SELECT '<filename>'</fc> or itss content can be pasted into the development tree in the USoft Definer and USoft Service Definer.\r\n\r\n\r\nPlease follow the steps and proceed until the required result is reached.\r\n\r\nMultiple SQL-tasks can be renamed as desired. These are required to run the scheduled tasks correctly.",
+    "Steps": [{
+            "DisplayText": "Replace values in following SCHEDULED_TASK objects:",
+            "Title": "SCHEDULED_TASK object",
+            "Fields": [{
+                    "DisplayText": "TABLE NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e9001",
+                    "Info": "Enter the desired <fc:Blue>TABLE NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[SCHEDULED_TASK]",
+                    "Type": "String",
+                    "Value": "SCHEDULED_TASK",
+                    "Width": 400
+                }, {
+                    "DisplayText": "JOB / SQL TASK NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e9002",
+                    "Info": "Enter the desired <fc:Blue>JOB / SQL TASK NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[SCHEDULE_RUN]",
+                    "Type": "String",
+                    "Value": "SCHEDULE_RUN",
+                    "Width": 400
+                }, {
+                    "DisplayText": "SQL TASK NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e9003",
+                    "Info": "Enter the desired <fc:Blue>SQL TASK NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[SCHEDULE_LOCK]",
+                    "Type": "String",
+                    "Value": "SCHEDULE_LOCK",
+                    "Width": 400
+                }, {
+                    "DisplayText": "SQL TASK NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e9004",
+                    "Info": "Enter the desired <fc:Blue>SQL TASK NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[SCHEDULE_ROWS_LOCKED]",
+                    "Type": "String",
+                    "Value": "SCHEDULE_ROWS_LOCKED",
+                    "Width": 400
+                }, {
+                    "DisplayText": "SQL TASK NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e9005",
+                    "Info": "Enter the desired <fc:Blue>SQL TASK NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[SCHEDULE_UNLOCK]",
+                    "Type": "String",
+                    "Value": "SCHEDULE_UNLOCK",
+                    "Width": 400
+                }
+            ]
+        },{
+            "DisplayText": "Replace values in Utilities server / service and class objects:",
+            "Title": "Utilities server",
+            "Fields": [{
+                    "DisplayText": "APPLICATION NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8000",
+                    "Info": "Enter the desired <fc:Blue>APPLICATION NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[USOFT_APP]",
+                    "Type": "String",
+                    "Value": "USOFT_APP",
+                    "Width": 400
+                },{
+                    "DisplayText": "CONNECTION NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8001",
+                    "Info": "Enter the desired <fc:Blue>CONNECTION NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[USOFT_APP_RS]",
+                    "Type": "String",
+                    "Value": "USOFT_APP_RS",
+                    "Width": 400
+                },{
+                    "DisplayText": "CONNECTION PORT NUMBER:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8002",
+                    "Info": "Enter the desired <fc:Blue>CONNECTION PORT NUMBER</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[USOFT_APP_RS_PN]",
+                    "Type": "String",
+                    "Value": "7777",
+                    "Width": 400
+                },{
+                    "DisplayText": "SERVER NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8003",
+                    "Info": "Enter the desired <fc:Blue>SERVER NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[USoft.Utilities]",
+                    "Type": "String",
+                    "Value": "USoft.Utilities",
+                    "Width": 400
+                },{
+                    "DisplayText": "SERVER PUBLIC PATH:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8004",
+                    "Info": "Enter the desired '<fc:Blue>SERVER PUBLIC PATH</fc>'",
+                    "MaskChar": null,
+                    "Placeholder": "[PUBLIC_PATH]",
+                    "Type": "String",
+                    "Value": "C:\\USoft\\api\\UTIL",
+                    "Width": 400
+                }, {
+                    "DisplayText": "SERVER PORT NUMBER:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8005",
+                    "Info": "Enter the desired <fc:Blue>SERVER PORT NUMBER</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[USOFT_UTIL_PN]",
+                    "Type": "String",
+                    "Value": "8777",
+                    "Width": 400
+                },{
+                    "DisplayText": "JOBSCHEDULER CLASS NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8006",
+                    "Info": "Enter the desired <fc:Blue>JOBSCHEDULER CLASS NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[JOBSCHEDULER]",
+                    "Type": "String",
+                    "Value": "JobScheduler",
+                    "Width": 400
+                }, {
+                    "DisplayText": "CLASS TASK NAME:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8007",
+                    "Info": "Enter the desired <fc:Blue>CLASS TASK NAME</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[USOFT_TASKNAME]",
+                    "Type": "String",
+                    "Value": "USoft_TaskName",
+                    "Width": 400
+                }, {
+                    "DisplayText": "CLASS RETURN MESSAGE RECORD:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8008",
+                    "Info": "Enter the desired <fc:Blue>CLASS RETURN MESSAGE RECORD</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[RETURN_MESSAGE_RECORD]",
+                    "Type": "String",
+                    "Value": "ReturnMessageRecord",
+                    "Width": 400
+                }, {
+                    "DisplayText": "SCHEDULE RUN SQL STATEMENT:",
+                    "GUID": "b86b7638-fced-41ae-960d-8105a26e8009",
+                    "Info": "Enter the desired <fc:Blue>SCHEDULE RUN SQL STATEMENT</fc>",
+                    "MaskChar": null,
+                    "Placeholder": "[SQL_SCHEDULE_RUN]",
+                    "Type": "String",
+                    "Value": "USOFT_SCHEDULE_RUN",
+                    "Width": 400
+                }
+            ]
+        }
+    ]
+}

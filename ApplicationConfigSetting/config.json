@@ -1,16 +1,16 @@
 {
     "FormWidth": 1600,
     "FormHeight": 500,
-    "Title": "Demo Wizard",
+    "Title": "Import Wizard",
     "XmlReplacementFilePaths": [
         ".\\input\\USoft_Definer\\1_table_ApplicationConfigSetting.xml",
         ".\\input\\USoft_Definer\\2_component_UserConfigSettingValidation.xml",
         ".\\input\\USoft_Definer\\3_constraint_UserConfigSettingValidation.xml"
     ],
     "ShowInfobox": true,
-    "IntroText": "\r\n\r\nThis XML wizard is used to create a XML file from the <b,fc:blue>USER_CONFIG_SETTING_VALIDATION</b,fc>  component.\r\n\r\nThis generated output <b>XML file</b> can be used with function <fc:Blue>XML.IMPORT </fc> or can be pasted into the development tree in the USoft definer.\r\n\r\n\r\nPlease follow the steps and proceed until the required result is reached.",
+    "IntroText": "\r\n\r\nThis XML wizard is used to create XML files from the <b,fc:blue>USER_CONFIG_SETTING_VALIDATION</b,fc>  component.\r\n\r\nThese generated output <b>XML files</b> can be used with function <fc:Blue>INVOKE XML.IMPORT WITH SELECT '<filename>' </fc> or its content can be pasted into the development tree in the USoft Definer.\r\n\r\n\r\nPlease follow the steps and proceed until the required result is reached.",
     "Steps": [{
-            "DisplayText": "Replace values in USER_CONFIG_SETTING_VALIDATION objects",
+            "DisplayText": "Replace values in following USER_CONFIG_SETTING_VALIDATION objects:",
             "Title": "USER_CONFIG_SETTING_VALIDATION object",
             "Fields": [{
                     "DisplayText": "Component / constraint name:",
