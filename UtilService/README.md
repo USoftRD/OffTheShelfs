@@ -7,9 +7,9 @@ This template consists of the following part(s):
 |:-|-|
 |`USoft.Utilities`|Which is the server who can be used to run several jobs / tasks for a microservice.|
 ## Installation
-Install the template by downloading the wizard and changing the names.
-All the steps will be explained here.
-This is also where you can change the names of the fields.
+Install the template by downloading the wizard and changing the names.\
+All the steps will be explained here.\
+This is also where you can change the names of the fields.\
 After the wizard is done new files will be generated ending with _replaced.xml.
 1. Import the 1_server_USOFT_UTILITIES_replaced.xml file in the service definer under Tools > SQL Command with SQL statement:
 `invoke xml.import with select <path>\1_server_USOFT_UTILITIES_replaced.xml`
