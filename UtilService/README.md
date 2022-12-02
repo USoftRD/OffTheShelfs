@@ -1,15 +1,4 @@
-
-
-
-
 # Application Config Setting
-
-| Left-aligned | Center-aligned | Right-aligned |
-| :---         |     :---:      |          ---: |
-| git status   | git status     | git status    |
-| git diff     | git diff       | git diff      |
-
-
 ||
 |-|
 |This template concerns the installation of the utilities server which can be used for several tasks for a microservice.|
