@@ -1,47 +1,34 @@
 # Application Config Setting
-||
-|-|
-|This template concerns the installation of a publication server.|
-|After this installation, the user is able to design and publish web pages in the web designer.|
+This template concerns the installation of a publication server.\
+After this installation, the user is able to design and publish web pages in the web designer.
 ## Overview
-||
-|-|
-|This template consists of the following part(s):
+This template consists of the following part(s):
 > ### Service definer
-||||
-|-|-|-|
-|SERVER|||
-||`USoft.Publications`|Which is the server who publish the in the web designer developed webpages.|
-> ### Webdesigner
-||||
-|-|-|-|
-|CONFIGURATION|||
-||`Publication_Configuration`|To publish the webpages in the webdesigner, a configuration is required to deploy the webpages in the same structure as defined in the publication server.|
-## Installation
-||
-|-|
-|Install the template by downloading the wizard and changing the names.|
-|All the steps will be explained here.|
-|This is also where you can change the names of the fields.|
-|After the wizard is done new files will be generated ending with _replaced.xml.|
-||
-|-|
-|1. Import the 1_server_USOFT_PUBLICATIONS_replaced.xml file in the service definer under Tools > SQL Command with SQL statement:|
-|`invoke xml.import with select '<path>\1_server_USOFT_PUBLICATIONS_replaced.xml`|
-|2. Check the PUBLIC class|
-|3. Import the 1_publicationconfiguration_USOFT_replaced.xml file in the webdesigner under Tools > SQL Command with SQL statement:|
-|`invoke xml.import with select '<path>\1_publicationconfiguration_USOFT_replaced.xml`|
-
-> The newly imported template will be ready for use in the definer and the webdesigner.
-## How to use
-|||
+|SERVER||
 |-|-|
-|1. Install the template||
-|2. In the service definer|Install the Publications server in the service definer under Actions > Install|
-||Publish and restart the Publications server under Publish > Publish and Restart|
-|3. Publish in the webdesigner|publication configuration under Publish > Publish... |
-||with Application checked and the correct Publication Confguration choosen|
-|4. With an internet browser test the following URL:| https://localhost:8081/PUBLIC/USOFT_APP_RS/app.usoft |
+|`USoft.Publications`|Which is the server who publish the in the web designer developed webpages.|
+> ### Webdesigner
+|CONFIGURATION||
+|-|-|
+|`Publication_Configuration`|To publish the webpages in the webdesigner, a configuration is required to deploy the webpages in the same structure as defined in the publication server.|
+## Installation
+Install the template by downloading the wizard and changing the names.\
+All the steps will be explained here.\
+This is also where you can change the names of the fields.\
+After the wizard is done new files will be generated ending with _replaced.xml.
+1. Import the 1_server_USOFT_PUBLICATIONS_replaced.xml file in the service definer under Tools > SQL Command with SQL statement:
+`invoke xml.import with select '<path>\1_server_USOFT_PUBLICATIONS_replaced.xml`
+2. Check the PUBLIC class
+3. Import the 1_publicationconfiguration_USOFT_replaced.xml file in the webdesigner under Tools > SQL Command with SQL statement:
+`invoke xml.import with select '<path>\1_publicationconfiguration_USOFT_replaced.xml`
+
+The newly imported template will be ready for use in the definer and the webdesigner.
+## How to use
+1. Install the template||
+2. In the service definer|Install the Publications server in the service definer under Actions > Install 
+3. Publish and restart the Publications server under Publish > Publish and Restart|
+4. Publish in the webdesigner|publication configuration under Publish > Publish... with Application checked and the correct Publication Confguration choosen
+4. With an internet browser test the following URL:| https://localhost:8081/PUBLIC/USOFT_APP_RS/app.usoft
 ## Change log
 > #### Created by [Danny Dorstijn](mailto:danny.dorstijn@usoft.com)
 |Version|Author|Date|Description|

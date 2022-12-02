@@ -29,7 +29,8 @@ The newly imported template will be ready for use in the definer.
 2. 'Create tables...' in binder
 3. Open Authorizer and run 'Fill Authorizer Tables...'
 4. In application, open 'Objects...' to explore defined tables, pick 'Application Config Settings'
-5. Enter for 1 or more configuration setting(s):|- Name (required)
+5. Enter for 1 or more configuration setting(s):
+* Name (required)
 * Value (required)
 * Explanation
 * User Setting y/n
@@ -45,7 +46,7 @@ The newly imported template will be ready for use in the definer.
 * Validation failed message
 * Notes\
 \
-These 'Application Config| Settings' or 'User Config Settings' records can, for example, be used as settings in SQL-statements\
+These 'Application Config Settings' or 'User Config Settings' records can, for example, be used as settings in SQL-statements\
 Example:
 > `select acs.value from APPLICATION_CONFIG_SETTING acs where acs.name = '<acs_name>'`
 ## Change log
