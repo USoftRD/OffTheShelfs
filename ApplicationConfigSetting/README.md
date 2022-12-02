@@ -3,21 +3,19 @@ This template concerns the objects to use a table for aplication settings, which
 ## Overview
 This template consists of the following part(s):
 > ### Definer
-||||
-|-|-|-|
-|TABLE|||
-||`APPLICATION_CONFIG_SETTING`|Holds the names and values for each config setting|
-||`USER_CONFIG_SETTING`|Holds the names, values and value type for each config setting, which can be used to publish to users (by webdesigner, for example)|
 
-||||
-|-|-|-|
-|COMPONENT|||
-||`USER_CONFIG_SETTING_VALIDATION`| component which can validate an user setting by the format the value type is set by regular expression, like numbers, date, etc.|
+|TABLE||
+|-|-|
+|`APPLICATION_CONFIG_SETTING`|Holds the names and values for each config setting|
+|`USER_CONFIG_SETTING`|Holds the names, values and value type for each config setting, which can be used to publish to users (by webdesigner, for example)|
 
-||||
-|-|-|-|
-|CONSTRAINT|||
-||`USER_CONFIG_SETTING_VALIDATION`|A constraint which execute the user config setting validation component to validate the value input for table user config setting.|
+|COMPONENT||
+|-|-|
+|`USER_CONFIG_SETTING_VALIDATION`| component which can validate an user setting by the format the value type is set by regular expression, like numbers, date, etc.|
+
+|-|-|
+|CONSTRAINT||
+|`USER_CONFIG_SETTING_VALIDATION`|A constraint which execute the user config setting validation component to validate the value input for table user config setting.|
 ## Installation
 Install the template by downloading the wizard and changing the names.\
 All the steps will be explained here.\
