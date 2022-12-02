@@ -63,8 +63,6 @@ example:
 ## Created by
 [Peter Ekkelenkamp](mailto:peter.ekkelenkamp@usoft.com)
 
-
-
 ## Change log
 |Version|Date|Author|Description|
 |  ---  |--- | ---  | --- |
