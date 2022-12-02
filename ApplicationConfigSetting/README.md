@@ -3,7 +3,6 @@ This template concerns the objects to use a table for aplication settings, which
 ## Overview
 This template consists of the following part(s):
 > ### Definer
-
 |TABLE||
 |-|-|
 |`APPLICATION_CONFIG_SETTING`|Holds the names and values for each config setting|
@@ -13,8 +12,8 @@ This template consists of the following part(s):
 |-|-|
 |`USER_CONFIG_SETTING_VALIDATION`| component which can validate an user setting by the format the value type is set by regular expression, like numbers, date, etc.|
 
-|-|-|
 |CONSTRAINT||
+|-|-|
 |`USER_CONFIG_SETTING_VALIDATION`|A constraint which execute the user config setting validation component to validate the value input for table user config setting.|
 ## Installation
 Install the template by downloading the wizard and changing the names.\
