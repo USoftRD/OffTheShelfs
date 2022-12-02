@@ -17,7 +17,7 @@ The newly imported template will be ready for use in the service definer.
 ## How to use
 1. Install the template
 2. In the service definer: Install the USoft.Utilities server in the service definer under Actions > Install
-3. Publish and restart the USoft.Utilities server under Publish > Publish and Restart|
+3. Publish and restart the USoft.Utilities server under Publish > Publish and Restart
 ## Change log
 > #### Created by [Peter Ekkelenkamp](mailto:peter.ekkelenkamp@usoft.com)
 |Version|Author|Date|Description|
