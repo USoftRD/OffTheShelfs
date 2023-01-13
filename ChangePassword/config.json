@@ -1,12 +1,16 @@
 {
+    "Version": "1.0.0.0",
+    "FormCaption": "Demo Wizard",
     "FormCaption": "Change password - Wizard",
     "FormWidth": 1000,
     "FormHeight": 300,
     "XmlReplacementFilePaths": [
-        ".\\ChangePasswordDefiner.xml",
-        ".\\ChangePasswordControls.xml",
-        ".\\ChangePasswordDatasource.xml"
+        ".\\input\\2_USoft_Definer\\ChangePasswordDefiner.xml",
+        ".\\input\\2_USoft_Definer\\ChangePasswordControls.xml",
+        ".\\input\\2_USoft_Definer\\ChangePasswordDatasource.xml"
     ],
+    "XmlInputFilePath": "\\input",
+    "XmlOutputFilePath": "\\output",
     "ShowInfobox": true,
     "IntroText": "This template concerns the changing of a password for a user. This consists of a couple of checks that ensures the old password is correct and a strong new password is to be set. The password is encrypted and stored in the user table.",
     "Steps": [

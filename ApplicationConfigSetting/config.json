@@ -1,12 +1,16 @@
 {
+    "Version": "1.0.0.0",
+    "FormCaption": "Demo Wizard",
     "FormWidth": 1600,
     "FormHeight": 500,
     "Title": "Import Wizard",
     "XmlReplacementFilePaths": [
-        ".\\input\\USoft_Definer\\1_table_ApplicationConfigSetting.xml",
-        ".\\input\\USoft_Definer\\2_component_UserConfigSettingValidation.xml",
-        ".\\input\\USoft_Definer\\3_constraint_UserConfigSettingValidation.xml"
+        ".\\input\\2_USoft_Definer\\1_table_ApplicationConfigSetting.xml",
+        ".\\input\\2_USoft_Definer\\2_component_UserConfigSettingValidation.xml",
+        ".\\input\\2_USoft_Definer\\3_constraint_UserConfigSettingValidation.xml"
     ],
+    "XmlInputFilePath": "\\input",
+    "XmlOutputFilePath": "\\output",
     "ShowInfobox": true,
     "IntroText": "\r\n\r\nThis XML wizard is used to create XML files from the <b,fc:blue>USER_CONFIG_SETTING_VALIDATION</b,fc>  component.\r\n\r\nThese generated output <b>XML files</b> can be used with function <fc:Blue>INVOKE XML.IMPORT WITH SELECT '<filename>' </fc> or its content can be pasted into the development tree in the USoft Definer.\r\n\r\n\r\nPlease follow the steps and proceed until the required result is reached.",
     "Steps": [{

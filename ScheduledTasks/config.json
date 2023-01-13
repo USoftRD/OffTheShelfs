@@ -1,12 +1,16 @@
 {
+    "Version": "1.0.0.0",
+    "FormCaption": "Demo Wizard",
     "FormWidth": 1600,
     "FormHeight": 620,
     "Title": "Import Wizard",
     "XmlReplacementFilePaths": [
-        ".\\input\\USoft_Definer\\1_table_SCHEDULED_TASK.xml",
-        ".\\input\\USoft_Definer\\2_job_SCHEDULE_RUN.xml",
-		".\\input\\USoft_Service_Definer\\1_server_USOFT_UTILITIES.xml"
+        ".\\input\\2_USoft_Definer\\1_table_SCHEDULED_TASK.xml",
+        ".\\input\\2_USoft_Definer\\2_job_SCHEDULE_RUN.xml",
+		".\\input\\3_USoft_Service_Definer\\1_server_USOFT_UTILITIES.xml"
     ],
+    "XmlInputFilePath": "\\input",
+    "XmlOutputFilePath": "\\output",
     "ShowInfobox": true,
     "IntroText": "\r\n\r\nThis XML wizard is used to create a XML files from the <b,fc:blue>SCHEDULED_TASKS</b,fc> component.\r\n\r\nThese generated output <b>XML files</b> can be used with function <fc:Blue>INVOKE XML.IMPORT WITH SELECT '<filename>'</fc> or itss content can be pasted into the development tree in the USoft Definer and USoft Service Definer.\r\n\r\n\r\nPlease follow the steps and proceed until the required result is reached.\r\n\r\nMultiple SQL-tasks can be renamed as desired. These are required to run the scheduled tasks correctly.",
     "Steps": [{

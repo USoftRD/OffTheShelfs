@@ -1,11 +1,15 @@
 {
+    "Version": "1.0.0.0",
+    "FormCaption": "Demo Wizard",
     "FormWidth": 1600,
     "FormHeight": 600,
     "Title": "Import Wizard",
     "XmlReplacementFilePaths": [
-        ".\\input\\USoft_Service_Definer\\1_server_USOFT_PUBLICATIONS.xml",
-		".\\input\\USoft_Web_Designer\\1_publicationconfiguration_USOFT.xml"
+        ".\\input\\3_USoft_Service_Definer\\1_server_USOFT_PUBLICATIONS.xml",
+		".\\input\\5_USoft_Web_Designer\\1_publicationconfiguration_USOFT.xml"
     ],
+    "XmlInputFilePath": "\\input",
+    "XmlOutputFilePath": "\\output",
     "ShowInfobox": true,
     "IntroText": "\r\n\r\nThis XML wizard is used to create a XML files from the <b,fc:blue>PUBLICATION SERVICE</b,fc>  component.\r\n\r\nThis generated output <b>XML files</b> can be used with function <fc:Blue>INVOKE XML.IMPORT WITH SELECT '<filename>'</fc> or its content can be pasted into the development tree in the USoft Service Definer and USoft Web Designer.\r\n\r\n\r\nPlease follow the steps and proceed until the required result is reached.",
     "Steps": [{
