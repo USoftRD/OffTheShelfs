@@ -1,0 +1,21 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Export_Definitions documentName="Export Definitions">
+	<T_EXP_DEF EXPORT_ID="184" EXPORT_NAME="OTS_WIN_PORT_INFO" DEFINED_BY="P3100027" DEF_FILE_NAME="C:\OTS_GITHUB\OffTheShelfs\OTS_WIN_PORT_INFO\OTS_WIN_PORT_INFO.xml" EXP_RES_WORDS="N">
+		<COMMENTS><![CDATA[The OTS_WIN_PORT_INFO retrieves port information on a windows computer.
+A table component OTS_WIN_PORT_INFO is available to query all ports in use and their status.
+Additionally, the below set of utility methods is available:
+
+select OTS_WIN_PORT_INFO.freePort()
+
+select OTS_WIN_PORT_INFO.isFreePort(80)
+
+select OTS_WIN_PORT_INFO.portdetails(80)
+
+invoke OTS_WIN_PORT_INFO.Query with select null]]></COMMENTS>
+	</T_EXP_DEF>
+</Export_Definitions><Export_Action_Tasks documentName="Export Action Tasks"/><Export_Business_Objects documentName="Export Business Objects"/><Export_Business_Areas documentName="Export Business Areas"/><Export_Constraints documentName="Export Constraints"/><Export_Decisions documentName="Export Decisions"/><Export_Domains documentName="Export Domains"/><Export_Export_Tasks documentName="Export Export Tasks"/><Export_External_Sets documentName="Export External Sets"/><Export_Import_Tasks documentName="Export Import Tasks"/><Export_Jobs documentName="Export Jobs"/><Export_RDMI_Components documentName="Export RDMI Components">
+	<T_EXP_RDMI_COMPONENT EXPORT_ID="184" COMPONENT_NAME="OTS_WIN_PORT_INFO"/>
+</Export_RDMI_Components><Export_Relationships documentName="Export Relationships"/><Export_Roles documentName="Export Roles"/><Export_Business_Rule_Sets documentName="Export Business Rule Sets"/><Export_SQL_Tasks documentName="Export SQL Tasks"/><Export_Tables documentName="Export Tables">
+	<T_EXP_TABLE EXPORT_ID="184" TABLE_NAME="OTS_WIN_PORT_INFO" INCL_DOMAINS="Y" INCL_SUBTYPES="N"/>
+</Export_Tables></MultiImport>

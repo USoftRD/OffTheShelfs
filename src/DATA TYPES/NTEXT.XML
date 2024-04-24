@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Data_Types documentName="Data Types">
+	<T_DATATYPE DATATYPE="NTEXT" VALID_ON="..&#x20;deprecated" BASE_DATA_TYPE="STRING" G_U_K="D1E55F8089C14BA9AD78837D936CD5AF"/>
+</Data_Types></MultiImport>

@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<UDDI_Registries documentName="UDDI Registries">
+	<T_WS_UDDI_REGISTRY UDDI_REGISTRY="IBM" QUERY_URL="http://uddi.ibm.com/ubr/inquiryapi" G_U_K="676F3E30B8F84F7E85C2698E12FB5FE3"/>
+</UDDI_Registries></MultiImport>

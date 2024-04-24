@@ -1,0 +1,476 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_XML_SIGNING" ACTIVE="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-16T17:11:24" G_U_K="43789B3AFC2F4845AC0F604AEB714448">
+		<CONSTRUCTOR_SQL><![CDATA[]]></CONSTRUCTOR_SQL>
+		<DESCRIPTION><![CDATA[This OTS_XML_SIGNING example component has methods to add a signature, verify a signature and remove a signature from an XML document.
+
+In the application, using SqlCommand, you can test the methods with the following examples:
+
+-1- Adding a signature. Assuming a certificate with private key  available for company.com:
+
+	select OTS_XML_SIGNING.AddSignature
+	(
+		'c:\temp\yourxmlfile.xml',  '*.company.com', 'c:\temp\yoursignedxmlfile.xml'
+	)
+	or e.g. signing xml export data directly:
+	select OTS_XML_SIGNING.AddSignature
+	(
+		(invoke xml.export with select * from mytable),  '*.company.com', 'c:\temp\yoursignedxmlfile.xml'
+	)
+
+-2- Verifying the signature:
+	select OTS_XML_SIGNING.VerifySignature
+	(
+		'c:\temp\yoursignedxmlfile.xml', '*.company.com'
+	)
+
+-3- Removing the signature (assuming the signature is valid):
+	select OTS_XML_SIGNING.RemoveSignature
+	(
+		'c:\temp\yoursignedxmlfile.xml', '*.company.com', ''
+	)
+	This removal allows further processing of the xml file without the extra <Signature>... data]]></DESCRIPTION>
+	</T_RDMI_COMPONENT_CONSTRUCTOR>
+</Component_Constructors><DotNet_Components documentName="DotNet Components">
+	<T_RDMI_DOTNET_COMPONENT COMPONENT_NAME="OTS_XML_SIGNING" DOTNET_ACTIVE="Y" LANGUAGE="C#" APP_DOMAIN="Default" INCLUDE_WINDOWS_APP_DLL="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-16T17:11:24" G_U_K="43789B3AFC2F4845AC0F604AEB714448">
+		<ASSEMBLYREFS><![CDATA[System.Xml.dll;System.Security.dll;]]></ASSEMBLYREFS>
+		<PROGRAM_SOURCE><![CDATA[using System;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Security.Cryptography.Xml;
+using System.Xml;
+using System.IO;
+using System.Net;
+using System.Xml.Xsl;
+using System.Xml.XPath;
+
+class OTS_XML_SIGNING
+{
+	public OTS_XML_SIGNING()
+	{
+		const string x = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+		CryptoConfig.AddAlgorithm(typeof (RSAPKCS1SHA512SignatureDescription), x);
+	}
+	public  string AddSignature(string xmlDoc, string subjectName, string result)
+    {
+        if (string.IsNullOrEmpty(xmlDoc))
+		{
+			throw new ArgumentNullException("xmlDoc argument is empty");
+		}
+        if (string.IsNullOrEmpty(subjectName)) 
+		{
+			throw new ArgumentNullException("No Certificate subjectName was specified");
+		}
+        X509Certificate2 cert = GetCertificateBySubject(subjectName);
+        XmlDocument doc = new XmlDocument();
+        doc.PreserveWhitespace = false;
+		if(xmlDoc.StartsWith("<"))
+		{
+			doc.LoadXml(xmlDoc);
+		}
+		else
+		{
+			doc.Load(xmlDoc);
+		}
+        SignedXml signedXml = new SignedXml(doc);
+        signedXml.SigningKey = cert.PrivateKey;
+        Reference reference = new Reference();
+        reference.Uri = "";
+        XmlDsigEnvelopedSignatureTransform env = new XmlDsigEnvelopedSignatureTransform();
+        reference.AddTransform(env);
+        signedXml.AddReference(reference);
+        KeyInfo keyInfo = new KeyInfo();
+        keyInfo.AddClause(new KeyInfoX509Data(cert));
+        signedXml.KeyInfo = keyInfo;
+        signedXml.ComputeSignature();
+        XmlElement xmlDigitalSignature = signedXml.GetXml();
+        doc.DocumentElement.AppendChild(doc.ImportNode(xmlDigitalSignature, true));
+        if (doc.FirstChild is XmlDeclaration)
+        {
+            doc.RemoveChild(doc.FirstChild);
+        }
+		if(!string.IsNullOrEmpty(result))
+		{
+			using (XmlTextWriter xmltw = new XmlTextWriter(result, new UTF8Encoding(false)))
+			{
+				if(!string.IsNullOrEmpty(result))
+				{
+					doc.WriteTo(xmltw);
+				}
+				xmltw.Close();
+			}
+			return result;
+		}
+		else
+		{
+			using (TextWriter writer = new Utf8StringWriter())
+			{
+				using (XmlWriter xmltw = XmlWriter.Create(writer))
+				{
+					doc.WriteTo(xmltw);
+				}
+				return writer.ToString(); 
+			}
+		}
+    }
+	public string RemoveSignature(string xmlDoc, string certificateSubject, string filePath)
+	{
+		if (string.IsNullOrEmpty(xmlDoc)) 
+		{
+			throw new ArgumentNullException("xmlDocument argument is empty");
+		}
+        if (string.IsNullOrEmpty(certificateSubject)) 
+		{
+			throw new ArgumentNullException("No Certificate Subject was specified");
+		}
+        X509Certificate2 cert = GetCertificateBySubject(certificateSubject);
+        XmlDocument xmlDocument = new XmlDocument();
+		if(xmlDoc.StartsWith("<"))
+		{
+			xmlDocument.LoadXml(xmlDoc);
+		}
+		else
+		{
+			xmlDocument.Load(xmlDoc);
+		}
+		if(!VerifySignatureOfDocument(xmlDocument, cert))
+		{
+			throw new Exception("Verification of the signature failed");
+		}
+        XmlNodeList nodeList = xmlDocument.GetElementsByTagName("Signature", "*");
+		for (int i = 0; i < nodeList.Count; i++)  
+		{
+			nodeList[i].ParentNode.RemoveChild(nodeList[i]);
+		}
+		if(string.IsNullOrEmpty(filePath))
+		{	
+			return xmlDocument.InnerXml;
+		}
+		xmlDocument.Save(filePath);
+		return filePath;
+	}
+
+    // Verify the signature of an XML file against an asymetric  algorithm and return the result.
+    public Boolean VerifySignature(string xmlDoc, string certificateSubject)
+    {
+        if (string.IsNullOrEmpty(xmlDoc)) throw new ArgumentNullException("xmlDoc");
+        if (string.IsNullOrEmpty(certificateSubject)) throw new ArgumentNullException("certificateSubject");
+        X509Certificate2 cert = GetCertificateBySubject(certificateSubject);
+        XmlDocument xmlDocument = new XmlDocument();
+		if(xmlDoc.StartsWith("<"))
+		{
+			xmlDocument.LoadXml(xmlDoc);
+		}
+		else
+		{
+			xmlDocument.Load(xmlDoc);
+		}
+		return VerifySignatureOfDocument(xmlDocument, cert);
+    }
+	private Boolean VerifySignatureOfDocument(XmlDocument xmlDocument, X509Certificate2 cert)
+	{
+        SignedXml signedXml = new SignedXml(xmlDocument);
+        XmlNodeList nodeList = xmlDocument.GetElementsByTagName("Signature", "*");
+        signedXml.LoadXml((XmlElement)nodeList[0]);
+        return signedXml.CheckSignature(cert, true);		
+	}
+	public Boolean VerifySignatureWithKey(string xmlDoc, string mimeKey)
+	{
+		byte[] binaryCertData = Convert.FromBase64String(mimeKey);
+		X509Certificate2 cert = new X509Certificate2(binaryCertData);
+		Console.WriteLine(cert.PublicKey.Key.ToXmlString(false));
+		return _VerifySignatureWithKey(xmlDoc, cert/*cert.PublicKey.Key*/);
+	}
+    private Boolean _VerifySignatureWithKey(string xmlDoc, X509Certificate2 cert /*RSA key*/)
+    {
+        if (string.IsNullOrEmpty(xmlDoc)) throw new ArgumentNullException("xmlDoc");
+        XmlDocument xmlDocument = new XmlDocument();
+		if(xmlDoc.StartsWith("<"))
+		{
+			xmlDocument.LoadXml(xmlDoc);
+		}
+		else
+		{
+			xmlDocument.Load(xmlDoc);
+		}
+        SignedXml signedXml = new SignedXml(xmlDocument);
+        XmlNodeList nodeList = xmlDocument.GetElementsByTagName("Signature", "*");
+        signedXml.LoadXml((XmlElement)nodeList[0]);
+        return signedXml.CheckSignature(cert, true);
+    }
+
+    private static X509Certificate2 GetCertificateBySubject(string certificateSubject)
+    {
+        if (string.IsNullOrEmpty(certificateSubject))
+		{
+			throw new ArgumentNullException("certificateSubject");
+		}
+        // Load the certificate from the certificate store.
+        X509Certificate2 cert = null;
+        X509Store store = new X509Store("My", StoreLocation.CurrentUser);
+
+        try
+        {
+            store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+            X509Certificate2Collection certCol = store.Certificates;
+            // Find the certificate with the specified subject.
+            foreach (X509Certificate2 c in certCol)
+            {
+				Console.WriteLine(c.Subject);
+                if (c.Subject.Contains(certificateSubject))
+                {
+                    cert = c;
+                    break;
+                }
+            }
+            if (cert == null)
+            {
+                throw new CryptographicException("The certificate could not be found.");
+            }
+        }
+        finally
+        {
+            store.Close();
+        }
+        return cert;
+    }
+
+	public static string SigningCertFromFederationMetaData(string url)
+	{
+		WebClient wc = new WebClient();
+		string xml = wc.DownloadString(url);
+		if(!string.IsNullOrEmpty(xml))
+		{
+			return eval(xml,
+				"/_:EntityDescriptor/_:IDPSSODescriptor/_:KeyDescriptor[@use='signing']/xmldsig:KeyInfo/xmldsig:X509Data/*",
+			new Object[2] { "xmldsig", "http://www.w3.org/2000/09/xmldsig#" });
+		}
+		return "failed";
+	}
+	public static string eval(string xmlDoc, string xpath, Object[] namespaceAliasPairs)
+	{
+		StringBuilder result = new StringBuilder();
+		XmlDocument doc = new XmlDocument();
+        if (xmlDoc.StartsWith("<"))
+        {
+            doc.LoadXml(xmlDoc);
+        }
+        else
+        {
+            doc.Load(xmlDoc);
+        }
+		XmlNamespaceManager nsm = new XmlNamespaceManager(doc.NameTable);
+		XmlNodeList nsList = doc.SelectNodes(@"//namespace::*[not(. = ../../namespace::*)]");
+		foreach(XmlNode nsNode in nsList)
+		{
+			if(nsNode.LocalName.Equals("xmlns"))
+			{
+				continue;
+			}
+			nsm.AddNamespace(nsNode.LocalName,nsNode.Value);
+		}
+		nsm.AddNamespace("_", doc.DocumentElement.NamespaceURI);
+		for(int i=0; namespaceAliasPairs!=null && i < namespaceAliasPairs.Length - 1; i+=2)
+		{
+			nsm.AddNamespace((string)namespaceAliasPairs[i], (string)namespaceAliasPairs[i+1]);
+		}
+        XPathNavigator pn = doc.CreateNavigator();
+        pn.MoveToRoot();
+        pn.MoveToFirstChild();
+        XPathNodeIterator ni = pn.Select(xpath, nsm);
+		while(ni.MoveNext())
+		{
+			result.Append(ni.Current.InnerXml);
+		}
+		return result.ToString();
+	}
+
+	private class Utf8StringWriter : StringWriter
+	{
+		public override Encoding Encoding
+		{
+			 get { return Encoding.UTF8; }
+		}
+	}
+}
+
+
+public sealed class RSAPKCS1SHA512SignatureDescription : SignatureDescription
+{
+    public RSAPKCS1SHA512SignatureDescription()
+    {
+		KeyAlgorithm = "System.Security.Cryptography.RSACryptoServiceProvider";
+		DigestAlgorithm = "System.Security.Cryptography.SHA256Managed";
+		FormatterAlgorithm = "System.Security.Cryptography.RSAPKCS1SignatureFormatter";
+		DeformatterAlgorithm = "System.Security.Cryptography.RSAPKCS1SignatureDeformatter";
+    }
+
+    public override AsymmetricSignatureDeformatter CreateDeformatter(AsymmetricAlgorithm key)
+    {
+        if( key == null )
+		{
+			throw new ArgumentNullException("AsymmetricAlgorithm key is not defined");
+		}
+		var asymmetricSignatureDeformatter = (AsymmetricSignatureDeformatter)CryptoConfig.CreateFromName(DeformatterAlgorithm);
+		asymmetricSignatureDeformatter.SetKey(key);
+		asymmetricSignatureDeformatter.SetHashAlgorithm("SHA256");
+		return asymmetricSignatureDeformatter;
+    }
+
+    public override AsymmetricSignatureFormatter CreateFormatter( AsymmetricAlgorithm key )
+    {
+        if( key == null )
+		{
+			throw new ArgumentNullException( "AsymmetricAlgorithm key is not defined" );
+		}
+		var asymmetricSignatureFormatter = (AsymmetricSignatureFormatter)CryptoConfig.CreateFromName(FormatterAlgorithm);
+		asymmetricSignatureFormatter.SetKey(key);
+		asymmetricSignatureFormatter.SetHashAlgorithm("SHA256");
+		return asymmetricSignatureFormatter;		
+    }
+}]]></PROGRAM_SOURCE>
+		<ORIGIN><![CDATA[]]></ORIGIN>
+		<DESCRIPTION><![CDATA[This OTS_XML_SIGNING example component has methods to add a signature, verify a signature and remove a signature from an XML document.
+
+In the application, using SqlCommand, you can test the methods with the following examples:
+
+-1- Adding a signature. Assuming a certificate with private key  available for company.com:
+
+	select OTS_XML_SIGNING.AddSignature
+	(
+		'c:\temp\yourxmlfile.xml',  '*.company.com', 'c:\temp\yoursignedxmlfile.xml'
+	)
+	or e.g. signing xml export data directly:
+	select OTS_XML_SIGNING.AddSignature
+	(
+		(invoke xml.export with select * from mytable),  '*.company.com', 'c:\temp\yoursignedxmlfile.xml'
+	)
+
+-2- Verifying the signature:
+	select OTS_XML_SIGNING.VerifySignature
+	(
+		'c:\temp\yoursignedxmlfile.xml', '*.company.com'
+	)
+
+-3- Removing the signature (assuming the signature is valid):
+	select OTS_XML_SIGNING.RemoveSignature
+	(
+		'c:\temp\yoursignedxmlfile.xml', '*.company.com', ''
+	)
+	This removal allows further processing of the xml file without the extra <Signature>... data]]></DESCRIPTION>
+	</T_RDMI_DOTNET_COMPONENT>
+</DotNet_Components><J2EE_Components documentName="J2EE Components"/><Stateful_Components documentName="Stateful Components">
+	<T_RDMI_STATEFUL_COMPONENT COMPONENT_NAME="OTS_XML_SIGNING" LIFETIME="SESSION" TRANSACTIONAL="N" SUPPORTS_COMMIT="N" SUPPORTS_ROLLBACK="N" SUPPORTS_PRECOMMIT="N" SUPPORTS_TABLECOMPONENT="N" SUPPORTS_UPDATE="N" SUPPORTS_INSERT="N" SUPPORTS_DELETE="N" SUPPORTS_CONDITIONS="N" SUPPORTS_ROWSETSIZEHINT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-16T17:11:24" G_U_K="43789B3AFC2F4845AC0F604AEB714448">
+		<DESCRIPTION><![CDATA[This OTS_XML_SIGNING example component has methods to add a signature, verify a signature and remove a signature from an XML document.
+
+In the application, using SqlCommand, you can test the methods with the following examples:
+
+-1- Adding a signature. Assuming a certificate with private key  available for company.com:
+
+	select OTS_XML_SIGNING.AddSignature
+	(
+		'c:\temp\yourxmlfile.xml',  '*.company.com', 'c:\temp\yoursignedxmlfile.xml'
+	)
+	or e.g. signing xml export data directly:
+	select OTS_XML_SIGNING.AddSignature
+	(
+		(invoke xml.export with select * from mytable),  '*.company.com', 'c:\temp\yoursignedxmlfile.xml'
+	)
+
+-2- Verifying the signature:
+	select OTS_XML_SIGNING.VerifySignature
+	(
+		'c:\temp\yoursignedxmlfile.xml', '*.company.com'
+	)
+
+-3- Removing the signature (assuming the signature is valid):
+	select OTS_XML_SIGNING.RemoveSignature
+	(
+		'c:\temp\yoursignedxmlfile.xml', '*.company.com', ''
+	)
+	This removal allows further processing of the xml file without the extra <Signature>... data]]></DESCRIPTION>
+	</T_RDMI_STATEFUL_COMPONENT>
+</Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_XML_SIGNING" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-16T17:11:24" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="43789B3AFC2F4845AC0F604AEB714448">
+		<DESCRIPTION><![CDATA[This OTS_XML_SIGNING example component has methods to add a signature, verify a signature and remove a signature from an XML document.
+
+In the application, using SqlCommand, you can test the methods with the following examples:
+
+-1- Adding a signature. Assuming a certificate with private key  available for company.com:
+
+	select OTS_XML_SIGNING.AddSignature
+	(
+		'c:\temp\yourxmlfile.xml',  '*.company.com', 'c:\temp\yoursignedxmlfile.xml'
+	)
+	or e.g. signing xml export data directly:
+	select OTS_XML_SIGNING.AddSignature
+	(
+		(invoke xml.export with select * from mytable),  '*.company.com', 'c:\temp\yoursignedxmlfile.xml'
+	)
+
+-2- Verifying the signature:
+	select OTS_XML_SIGNING.VerifySignature
+	(
+		'c:\temp\yoursignedxmlfile.xml', '*.company.com'
+	)
+
+-3- Removing the signature (assuming the signature is valid):
+	select OTS_XML_SIGNING.RemoveSignature
+	(
+		'c:\temp\yoursignedxmlfile.xml', '*.company.com', ''
+	)
+	This removal allows further processing of the xml file without the extra <Signature>... data]]></DESCRIPTION>
+	</T_RDMI_COMPONENT>
+</Components><Methods documentName="Methods">
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_XML_SIGNING" METHOD_NAME="ADDSIGNATURE" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-16T17:11:24">
+		<PHYSICAL_METHOD_NAME><![CDATA[AddSignature]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_XML_SIGNING" METHOD_NAME="EVAL" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-16T17:11:24">
+		<PHYSICAL_METHOD_NAME><![CDATA[eval]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_XML_SIGNING" METHOD_NAME="OTS_XML_SIGNING" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-16T17:11:24">
+		<PHYSICAL_METHOD_NAME><![CDATA[OTS_XML_SIGNING]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_XML_SIGNING" METHOD_NAME="REMOVESIGNATURE" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-16T17:11:24">
+		<PHYSICAL_METHOD_NAME><![CDATA[RemoveSignature]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_XML_SIGNING" METHOD_NAME="SIGNINGCERTFROMFEDERATIONMETADATA" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-16T17:11:24">
+		<PHYSICAL_METHOD_NAME><![CDATA[SigningCertFromFederationMetaData]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_XML_SIGNING" METHOD_NAME="VERIFYSIGNATURE" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-16T17:11:24">
+		<PHYSICAL_METHOD_NAME><![CDATA[VerifySignature]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_XML_SIGNING" METHOD_NAME="VERIFYSIGNATUREWITHKEY" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-16T17:11:24">
+		<PHYSICAL_METHOD_NAME><![CDATA[VerifySignatureWithKey]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+</Methods><Parameters documentName="Parameters">
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="0" METHOD_NAME="ADDSIGNATURE" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_AddSignature" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="0" METHOD_NAME="EVAL" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_eval" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="0" METHOD_NAME="REMOVESIGNATURE" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_RemoveSignature" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="0" METHOD_NAME="SIGNINGCERTFROMFEDERATIONMETADATA" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_SigningCertFromFederationMetaData" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="0" METHOD_NAME="VERIFYSIGNATURE" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_VerifySignature" KIND="RETURN" PRIMITIVE_DATA_TYPE="BOOLEAN" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="0" METHOD_NAME="VERIFYSIGNATUREWITHKEY" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_VerifySignatureWithKey" KIND="RETURN" PRIMITIVE_DATA_TYPE="BOOLEAN" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="1" METHOD_NAME="ADDSIGNATURE" METHOD_SEQNO="1" PARAMETER_NAME="xmldoc" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="1" METHOD_NAME="EVAL" METHOD_SEQNO="1" PARAMETER_NAME="xmldoc" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="1" METHOD_NAME="REMOVESIGNATURE" METHOD_SEQNO="1" PARAMETER_NAME="xmldoc" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="1" METHOD_NAME="SIGNINGCERTFROMFEDERATIONMETADATA" METHOD_SEQNO="1" PARAMETER_NAME="url" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="1" METHOD_NAME="VERIFYSIGNATURE" METHOD_SEQNO="1" PARAMETER_NAME="xmldoc" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="1" METHOD_NAME="VERIFYSIGNATUREWITHKEY" METHOD_SEQNO="1" PARAMETER_NAME="xmldoc" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="2" METHOD_NAME="ADDSIGNATURE" METHOD_SEQNO="1" PARAMETER_NAME="SubjectName" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="2" METHOD_NAME="EVAL" METHOD_SEQNO="1" PARAMETER_NAME="xpath" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="2" METHOD_NAME="REMOVESIGNATURE" METHOD_SEQNO="1" PARAMETER_NAME="CertificateSubject" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="2" METHOD_NAME="VERIFYSIGNATURE" METHOD_SEQNO="1" PARAMETER_NAME="CertificateSubject" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="2" METHOD_NAME="VERIFYSIGNATUREWITHKEY" METHOD_SEQNO="1" PARAMETER_NAME="mimeKey" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="3" METHOD_NAME="ADDSIGNATURE" METHOD_SEQNO="1" PARAMETER_NAME="result" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="3" METHOD_NAME="EVAL" METHOD_SEQNO="1" PARAMETER_NAME="namespacealiaspairs" KIND="INLIST" PRIMITIVE_DATA_TYPE="VARIABLE" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XML_SIGNING" PARAMETER_SEQNO="3" METHOD_NAME="REMOVESIGNATURE" METHOD_SEQNO="1" PARAMETER_NAME="filepath" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+</Parameters><AggregateProtocol_Associations documentName="AggregateProtocol Associations"/><Query_Protocol_Associations documentName="Query Protocol Associations"/><Named_Protocols documentName="Named Protocols"/></MultiImport>

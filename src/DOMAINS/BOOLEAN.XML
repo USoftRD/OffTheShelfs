@@ -1,0 +1,10 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Domains documentName="Domains">
+	<T_DOMAIN DOMAIN_NAME="BOOLEAN" BASE_DATA_TYPE_YN="Y" BASE_DATA_TYPE="BOOLEAN" SUPER_DOMAIN="" DATATYPE="VARCHAR" TOTAL_LENGTH="1" LENGTH_AFTER_PERIOD="" F_DATATYPE="CHECK" F_TOTAL_LENGTH="1" F_LENGTH_AFTER_PERIOD="" DISPLAY_LENGTH="" UPPERCASE="Y" FIXED_LENGTH="Y" IS_SEQNO="N" DEF_VALUE="N" RANGE_LOW="" RANGE_HIGH="" HELP_TEXT="" IOFORMAT="" DBFORMAT="" DESCR="" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-04-24T15:20:51" SEQNO_COMPONENT="" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" REGEXP="" G_U_K="236d8dab3b4d446fbe58e8856df4be45">
+		<COM_TEXT><![CDATA[]]></COM_TEXT>
+	</T_DOMAIN>
+</Domains><Alternative_Input_Formats documentName="Alternative Input Formats"/><Domain_Constraints documentName="Domain Constraints"/><Domain_Values documentName="Domain Values">
+	<T_DOMAIN_ENUM DOMAIN_NAME="BOOLEAN" VALUE="N" SEQNO="1" PROMPT="No" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" G_U_K="bc645d907f73439c8dd7709e8beb7bc9"/>
+	<T_DOMAIN_ENUM DOMAIN_NAME="BOOLEAN" VALUE="Y" SEQNO="2" PROMPT="Yes" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" G_U_K="40f353e358a741129a1f76f57ad9ce3d"/>
+</Domain_Values><Sequence_Definitions documentName="Sequence Definitions"/></MultiImport>

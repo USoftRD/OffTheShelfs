@@ -1,0 +1,843 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" ACTIVE="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100021" CREATED_ON="2021-07-22T11:29:41" G_U_K="1406A32FF5954DB08D7BC06E29FC0369">
+		<CONSTRUCTOR_SQL><![CDATA[]]></CONSTRUCTOR_SQL>
+		<DESCRIPTION><![CDATA[This component is a .Net Syslog client. It Supports both RFC 3164 and RFC 5424 Syslog standards as well as UDP and encrypted TCP transports.
+This component specifically uses the RFC 3164 standard.
+The example is a slightly adapted version of an open source example of a C# Syslog client as found here:  https://github.com/emertechie/SyslogNet
+The component (appropriately named OTS_SYSLOG_CLIENT_RFC3164) itself is kept fairly simple, and consists of a constructor and one method called SendLog.
+
+The constructor takes 3 input arguments, allowing you to specify:
+
+- host  : the host (string)
+- port  : the port number (integer)
+- tcp   : whether to use TCP or UDP (bool)
+
+By default, the address of this server is on “localhost” with port 514, using the UDP protocol.  
+
+an example of a sendLog call:
+
+invoke  OTS_SYSLOG_CLIENT_RFC3164.sendlog   
+with   
+select  adl.audit_type   
+,   adl.sidu   
+,  adl.logging   
+from    audit_log adl 
+
+sendLog which takes three arguments: 
+
+AUDIT_TYPE: depicting the kind of item being logged, e.g. a table update, batch job call, etc. 
+SIDU: depicting the kind of query being logged, i.e. Select, Insert, Delete or Update 
+LOGGING: the actual log message, which is formatted as a XML document 
+From these three data values, a one-line log message is generated, which is sent to the configured Syslog server. The resulting messages sent to a Syslog server could look like (mind escaping is used in this file): 
+
+        &lt;110&gt;Apr 17 12:20:33 AUDIT_EXAMPLE USR_ACC[U]: &lt;!-- On Thu 17 Apr 2021 12:20:33 test5 updated USR_ACC( ACC_ID, USR_ACC). ACC_ID: &apos;100&apos; USR_ACC: &apos;test123&apos; FIRST_NAME: &apos;John Doe&apos; changed to: &apos;John test&apos; --&gt;
+            &lt;USR_ACC TIMESTAMP=&quot;2020/1217122033&quot; USER=&quot;test5&quot;&gt;
+                &lt;ACC_ID key=&quot;100&quot; /&gt;
+                &lt;USR_ACC key=&quot;test123&quot; /&gt;
+                &lt;FIRST_NAME old=&quot;John Doe&quot; new=&quot;John test&quot; /&gt;
+            &lt;/USR_ACC&gt; 
+
+
+The remainder of the component consists of a few helper classes, to create and format the message correctly: 
+A SyslogMessage class to create the proper message and all of its required parameters, including enum classes to define logging level and logging facility more conveniently 
+An ISyslogMessageSender interface and two implementations of it (SyslogUdpSender and SyslogTcpSender) that define the method of transport being used, i.e. TCP or UDP. UDP is preferred, because TCP could take more than a second to execute, which can be bad for performance, but is included nonetheless if the target Syslog server requires it 
+An ISyslogMessageSerializer interface, and two implementations of it (SyslogRfc3164MessageSerializer and SyslogRfc5424MessageSerializer) for different message formats. Because we use XML as log message contents, and because SyslogRfc5424MessageSerializer has several strict rules on how a message should look like, we prefer to use the more simple SyslogRfc3164MessageSerializer class here as formatter class. 
+for the implementation you could use table constraints that trigger the call to the syslog client on any SIDU operation (post-commit) on a driving table “AUDIT_LOG”, as seen in the above exam.]]></DESCRIPTION>
+	</T_RDMI_COMPONENT_CONSTRUCTOR>
+</Component_Constructors><DotNet_Components documentName="DotNet Components">
+	<T_RDMI_DOTNET_COMPONENT COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" DOTNET_ACTIVE="Y" LANGUAGE="C#" APP_DOMAIN="Default" INCLUDE_WINDOWS_APP_DLL="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100021" CREATED_ON="2021-07-22T11:29:41" G_U_K="1406A32FF5954DB08D7BC06E29FC0369">
+		<ASSEMBLYREFS><![CDATA[System.Core.dll; System.Xml.dll; System.Collections.dll;System.Linq.dll;]]></ASSEMBLYREFS>
+		<PROGRAM_SOURCE><![CDATA[using System;
+using System.IO;
+using System.Text;
+using System.Linq;
+using System.Xml;
+using System.Threading;
+using System.Collections.Generic;
+using System.Net.Sockets;
+using System.Text;
+using SyslogNet.Client;
+using SyslogNet.Client.Serialization;
+using SyslogNet.Client.Transport;
+
+class OTS_SYSLOG_CLIENT_RFC3164 {
+
+	string SYSLOG_SERVER = "localhost";
+	int SYSLOG_PORT   = 514;
+	bool SYSLOG_TCP = false;
+
+	public OTS_SYSLOG_CLIENT_RFC3164(string host, int p, bool tcp)
+	{
+		if(host!=null){
+			SYSLOG_SERVER = host;
+		}
+		if(p!=null){
+			SYSLOG_PORT = p;
+		}
+		if(tcp!=null){
+			SYSLOG_TCP = tcp;
+		}
+			
+	}
+
+
+	public void SendLog(string AUDIT_TYPE, string SIDU, string LOGGING) {
+		XmlDocument result = new XmlDocument();
+		result.LoadXml(LOGGING);
+		string tableName = result.GetElementsByTagName("*").Item(0).Name;
+		//File.AppendAllText(@"c:\temp\Audit.log", SIDU+":"+tableName + Environment.NewLine);
+
+		string logMessage =  "";
+		logMessage += tableName+"["+SIDU+"]: ";							//log line tag: "<tableName>[<SIDU>]:"
+		logMessage += LOGGING.Replace("\r\n", " ").Replace("\t", " ");		//remove all new-lines and tabs from the log message (so that only one line is submitted)
+
+		string hostName = System.Environment.GetEnvironmentVariable("COMPUTERNAME");
+
+		SyslogMessage sMessage = new SyslogMessage(DateTimeOffset.Now, Facility.LogAudit, Severity.Info, hostName, "", logMessage+Environment.NewLine);
+
+		try {
+			ISyslogMessageSender client = null;
+
+			if(SYSLOG_TCP){
+				client = new SyslogTcpSender(SYSLOG_SERVER, SYSLOG_PORT);
+			}else{
+				client = new SyslogUdpSender(SYSLOG_SERVER, SYSLOG_PORT);
+			}
+			ISyslogMessageSerializer serializer = new SyslogRfc3164MessageSerializer ();
+
+			client.Send(sMessage, serializer);
+			//File.AppendAllText(@"c:\temp\Audit.log",  "sent"+ Environment.NewLine);	
+		}
+			catch (Exception ex)
+			{
+				//File.AppendAllText(@"c:\temp\Audit.log",  "ERROR: " + ex + Environment.NewLine);
+				Console.WriteLine("ERROR: " + ex);
+			}
+		//File.AppendAllText(@"c:\temp\Audit.log",  logMessage+ Environment.NewLine);
+	}
+}
+
+/***
+	Syslog .NET messenge constructor + client from: https://github.com/emertechie/SyslogNet/blob/master/SyslogNet.Client/
+	MIT license applies here: https://github.com/emertechie/SyslogNet/blob/master/licence.md
+***/
+
+namespace SyslogNet.Client
+{
+	public class SyslogMessage
+	{
+		public static Facility DefaultFacility = Facility.LogAudit;
+		public static Severity DefaultSeverity = Severity.Info;
+
+		/// <summary>
+		/// Convenience overload for sending local syslog messages with default facility (UserLevelMessages)
+		/// </summary>
+		public SyslogMessage(
+			Severity severity,
+			string appName,
+			string message)
+		: this(DefaultFacility, severity, appName, message)
+		{
+		}
+
+		/// <summary>
+		/// Constructor for use when sending local syslog messages
+		/// </summary>
+		public SyslogMessage(
+			Facility facility,
+			Severity severity,
+			string appName,
+			string message)
+		{
+			Facility = facility;
+			Severity = severity;
+			AppName = appName;
+			Message = message;
+		}
+
+		/// <summary>
+		/// Constructor for use when sending RFC 3164 messages
+		/// </summary>
+		public SyslogMessage(
+			DateTimeOffset? dateTimeOffset,
+			Facility facility,
+			Severity severity,
+			string hostName,
+			string appName,
+			string message)
+		{
+			DateTimeOffset = dateTimeOffset;
+			Facility = facility;
+			Severity = severity;
+			HostName = hostName;
+			AppName = appName;
+			Message = message;
+		}
+
+		/// <summary>
+		/// Constructor for use when sending RFC 5424 messages
+		/// </summary>
+		public SyslogMessage(
+			DateTimeOffset? dateTimeOffset,
+			Facility facility,
+			Severity severity,
+			string hostName,
+			string appName,
+			string procId,
+			string msgId,
+			string message,
+			params StructuredDataElement[] structuredDataElements)
+			: this(dateTimeOffset, facility, severity, hostName, appName, message)
+		{
+			ProcId = procId;
+			MsgId = msgId;
+			StructuredDataElements = structuredDataElements;
+		}
+
+		public int Version
+		{
+			get { return 1; }
+		}
+
+		public Facility Facility { get; set; }
+
+		public Severity Severity { get; set; }
+
+		public DateTimeOffset? DateTimeOffset { get; set; }
+
+		public string HostName { get; set; }
+
+		public string AppName { get; set; }
+
+		public string ProcId { get; set; }
+
+		public string MsgId { get; set; }
+
+		public string Message { get; set; }
+
+		public IEnumerable<StructuredDataElement> StructuredDataElements { get; set; }
+	}
+
+public enum Severity
+	{
+		Emergency = 0,
+		Alert = 1,
+		Critical = 2,
+		Error = 3,
+		Warning = 4,
+		Notice = 5,
+		Info = 6,
+		Debug = 7
+	}
+
+	public enum Facility
+	{
+		KernelMessages = 0,
+		UserLevelMessages = 1,
+		MailSystem = 2,
+		SystemDaemons = 3,
+		SecurityOrAuthorizationMessages1 = 4,
+		InternalMessages = 5,
+		LinePrinterSubsystem = 6,
+		NetworkNewsSubsystem = 7,
+		UUCPSubsystem = 8,
+		ClockDaemon1 = 9,
+		SecurityOrAuthorizationMessages2 = 10,
+		FTPDaemon = 11,
+		NTPSubsystem = 12,
+		LogAudit = 13,
+		LogAlert = 14,
+		ClockDaemon2 = 15,
+		LocalUse0 = 16,
+		LocalUse1 = 17,
+		LocalUse2 = 18,
+		LocalUse3 = 19,
+		LocalUse4 = 20,
+		LocalUse5 = 21,
+		LocalUse6 = 22,
+		LocalUse7 = 23
+	}
+
+public class StructuredDataElement
+	{
+		// RFC 5424 specifies that you must provide a private enterprise number. If none specified, using example number reserved for documentation (see RFC)
+		public const string DefaultPrivateEnterpriseNumber = "32473";
+
+		private readonly string sdId;
+		private readonly Dictionary<string, string> parameters;
+
+		public StructuredDataElement(string sdId, Dictionary<string, string> parameters)
+		{
+			this.sdId = sdId.Contains("@") ? sdId : sdId + "@" + DefaultPrivateEnterpriseNumber;
+			this.parameters = parameters;
+		}
+
+		public string SdId
+		{
+			get { return sdId; }
+		}
+
+		public Dictionary<string, string> Parameters
+		{
+			get { return parameters; }
+		}
+	}
+}
+
+namespace SyslogNet.Client.Transport
+{
+	public interface ISyslogMessageSender : IDisposable
+	{
+		void Dispose();
+		void Reconnect();
+		void Send(SyslogMessage message, ISyslogMessageSerializer serializer);
+		void Send(IEnumerable<SyslogMessage> messages, ISyslogMessageSerializer serializer);
+	}
+	
+	public class SyslogUdpSender : ISyslogMessageSender, IDisposable
+	{
+		private UdpClient udpClient;
+		private string hostname;
+		private int port;
+
+		public SyslogUdpSender(string hostname, int port)
+		{
+			this.hostname = hostname;
+			this.port = port;
+		}
+
+		public void Send(SyslogMessage message, ISyslogMessageSerializer serializer)
+		{
+			udpClient = new UdpClient();
+			udpClient.Connect(hostname, port);
+			udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveBuffer, 0);
+			byte[] datagramBytes = serializer.Serialize(message);
+			udpClient.Send(datagramBytes, datagramBytes.Length);
+			udpClient.Close();
+		}
+
+		public void Send(IEnumerable<SyslogMessage> messages, ISyslogMessageSerializer serializer)
+		{
+			foreach(SyslogMessage message in messages)
+			{
+				Send(message, serializer);
+			}
+		}
+
+		public void Reconnect() { /* UDP is connectionless */ }
+
+		public void Dispose()
+		{
+			udpClient.Close();
+		}
+	}
+
+	class SyslogTransportException : Exception
+	{
+		public SyslogTransportException(string message) : base(message)
+		{
+
+		}
+	}
+
+public enum MessageTransfer {
+		OctetCounting		= 0,
+		NonTransparentFraming	= 1
+	}
+
+	public class SyslogTcpSender : ISyslogMessageSender, IDisposable
+	{
+		protected String hostname;
+		protected int port;
+
+		protected TcpClient tcpClient = null;
+		protected Stream transportStream = null;
+
+		public virtual MessageTransfer messageTransfer { get; set; }
+		public byte trailer { get; set; }
+
+		public SyslogTcpSender(string hostname, int port, bool shouldAutoConnect = true)
+		{
+			this.hostname = hostname;
+			this.port = port;
+
+			if (shouldAutoConnect)
+			{
+				Connect();
+			}
+
+			messageTransfer = MessageTransfer.OctetCounting;
+			trailer = 10; // LF
+		}
+
+		public void Connect()
+		{
+			try
+			{
+				tcpClient = new TcpClient(hostname, port);
+				transportStream = tcpClient.GetStream();
+			}
+			catch
+			{
+				Disconnect();
+				throw;
+			}
+		}
+
+		public virtual void Reconnect()
+		{
+			Disconnect();
+			Connect();
+		}
+
+		public void Disconnect()
+		{
+			if (transportStream != null)
+			{
+				transportStream.Close();
+				transportStream = null;
+			}
+
+			if (tcpClient != null)
+			{
+				tcpClient.Close();
+				tcpClient = null;
+			}
+		}
+
+		public void Send(SyslogMessage message, ISyslogMessageSerializer serializer)
+		{
+			Send(message, serializer, true);
+			Disconnect();
+		}
+
+		protected void Send(SyslogMessage message, ISyslogMessageSerializer serializer, bool flush = true)
+		{
+			if(transportStream == null)
+			{
+				throw new IOException("No transport stream exists");
+			}
+
+			using (MemoryStream memoryStream = new MemoryStream())
+			{
+				var datagramBytes = serializer.Serialize(message);
+
+				if (messageTransfer.Equals(MessageTransfer.OctetCounting))
+				{
+					byte[] messageLength = Encoding.ASCII.GetBytes(datagramBytes.Length.ToString());
+					memoryStream.Write(messageLength, 0, messageLength.Length);
+					memoryStream.WriteByte(32); // Space
+				}
+
+				memoryStream.Write(datagramBytes, 0, datagramBytes.Length);
+
+				if (messageTransfer.Equals(MessageTransfer.NonTransparentFraming))
+				{
+					memoryStream.WriteByte(trailer); // LF
+				}
+
+				transportStream.Write(memoryStream.GetBuffer(), 0, (int)memoryStream.Length);
+			}
+
+			if (flush && !(transportStream is NetworkStream))
+				transportStream.Flush();
+		}
+
+		public void Send(IEnumerable<SyslogMessage> messages, ISyslogMessageSerializer serializer)
+		{
+			foreach (SyslogMessage message in messages)
+			{
+				Send(message, serializer, false);
+			}
+
+			if (!(transportStream is NetworkStream))
+				transportStream.Flush();
+		}
+
+		public void Dispose()
+		{
+			Disconnect();
+		}
+	}
+}
+
+namespace SyslogNet.Client.Serialization
+{
+	public interface ISyslogMessageSerializer
+	{
+		void Serialize(SyslogMessage message, Stream stream);
+	}
+
+	public abstract class SyslogMessageSerializerBase
+	{
+		protected static int CalculatePriorityValue(Facility facility, Severity severity)
+		{
+			return ((int)facility * 8) + (int)severity;
+		}
+	}
+
+	public class SyslogRfc3164MessageSerializer : SyslogMessageSerializerBase, ISyslogMessageSerializer
+	{
+		public void Serialize(SyslogMessage message, Stream stream)
+		{
+		//File.AppendAllText(@"c:\temp\Audit.log",  message.Facility+" "+message.Severity+ Environment.NewLine);
+
+			var priorityValue = CalculatePriorityValue(message.Facility, message.Severity);
+
+			string timestamp = null;
+			if (message.DateTimeOffset.HasValue)
+			{
+				var dt = message.DateTimeOffset.Value;
+				var day = dt.Day < 10 ? " " + dt.Day : dt.Day.ToString(); // Yes, this is stupid but it's in the spec
+				timestamp = String.Concat(dt.ToString("MMM "), day, dt.ToString(" HH:mm:ss"));
+			}
+
+			var headerBuilder = new StringBuilder();
+			headerBuilder.Append("<").Append(priorityValue).Append(">");
+			headerBuilder.Append(timestamp).Append(" ");
+			headerBuilder.Append(message.HostName).Append(" ");
+			headerBuilder.Append(message.AppName.IfNotNullOrWhitespace(x => x.EnsureMaxLength(32) + ":"));
+			headerBuilder.Append(message.Message ?? "");
+
+			byte[] asciiBytes = Encoding.ASCII.GetBytes(headerBuilder.ToString());
+
+			//File.AppendAllText(@"c:\temp\Audit.log",  headerBuilder.ToString()+ Environment.NewLine);
+
+			stream.Write(asciiBytes, 0, asciiBytes.Length);
+		}
+	}
+
+	public static class SyslogMessageSerializerExtensions
+	{
+		public static byte[] Serialize(this ISyslogMessageSerializer serializer, SyslogMessage message)
+		{
+			byte[] datagramBytes;
+			using (var stream = new MemoryStream())
+			{
+				serializer.Serialize(message, stream);
+
+				stream.Position = 0;
+
+				datagramBytes = new byte[stream.Length];
+				stream.Read(datagramBytes, 0, (int)stream.Length);
+			}
+			return datagramBytes;
+		}		
+	}
+
+	public class SyslogLocalMessageSerializer : SyslogMessageSerializerBase, ISyslogMessageSerializer
+	{
+		public Encoding Encoding { get; set; }
+
+		// Default constructor: produce no BOM in local syslog messages
+		public SyslogLocalMessageSerializer() : this(false) { ; }
+
+		// Optionally produce a BOM in local syslog messages by passing true here
+		// (This can produce problems with some older syslog programs, so default is false)
+		public SyslogLocalMessageSerializer(bool useBOM) {
+			Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: useBOM);
+		}
+
+		public void Serialize(SyslogMessage message, Stream stream)
+		{
+			// Local syslog serialization only cares about the Message string
+			if (!String.IsNullOrWhiteSpace(message.Message))
+			{
+				byte[] streamBytes = Encoding.GetBytes(message.Message);
+				stream.Write(streamBytes, 0, streamBytes.Length);
+			}
+		}
+	}
+
+	public class SyslogRfc5424MessageSerializer : SyslogMessageSerializerBase, ISyslogMessageSerializer
+	{
+		public const string NilValue = "-";
+		public static readonly HashSet<char> sdNameDisallowedChars = new HashSet<char>() {' ', '=', ']', '"' };
+
+		private readonly char[] asciiCharsBuffer = new char[255];
+
+		public void Serialize(SyslogMessage message, Stream stream)
+		{
+			var priorityValue = CalculatePriorityValue(message.Facility, message.Severity);
+
+			// Note: The .Net ISO 8601 "o" format string uses 7 decimal places for fractional second. Syslog spec only allows 6, hence the custom format string
+			var timestamp = message.DateTimeOffset.HasValue
+				? message.DateTimeOffset.Value.ToString("yyyy-MM-ddTHH:mm:ss.ffffffK")
+				: null;
+
+			var messageBuilder = new StringBuilder();
+			messageBuilder.Append("<").Append(priorityValue).Append(">");
+			messageBuilder.Append(message.Version);
+			messageBuilder.Append(" ").Append(timestamp.FormatSyslogField(NilValue));
+			messageBuilder.Append(" ").Append(message.HostName.FormatSyslogAsciiField(NilValue, 255, asciiCharsBuffer));
+			messageBuilder.Append(" ").Append(message.AppName.FormatSyslogAsciiField(NilValue, 48, asciiCharsBuffer));
+			messageBuilder.Append(" ").Append(message.ProcId.FormatSyslogAsciiField(NilValue, 128, asciiCharsBuffer));
+			messageBuilder.Append(" ").Append(message.MsgId.FormatSyslogAsciiField(NilValue, 32, asciiCharsBuffer));
+
+			writeStream(stream, Encoding.ASCII, messageBuilder.ToString());
+
+			var structuredData = message.StructuredDataElements == null ? null : message.StructuredDataElements.ToList();
+			if (structuredData != null && structuredData.Any())
+			{
+			    // Space
+			    stream.WriteByte(32);
+
+                // Structured data
+                foreach (StructuredDataElement sdElement in structuredData)
+				{
+					messageBuilder.Clear()
+						.Append("[")
+						.Append(sdElement.SdId.FormatSyslogSdnameField(asciiCharsBuffer));
+
+					writeStream(stream, Encoding.ASCII, messageBuilder.ToString());
+
+					foreach(System.Collections.Generic.KeyValuePair<string, string> sdParam in sdElement.Parameters)
+					{
+						messageBuilder.Clear()
+							.Append(" ")
+							.Append(sdParam.Key.FormatSyslogSdnameField(asciiCharsBuffer))
+							.Append("=")
+							.Append("\"")
+							.Append(
+								sdParam.Value != null ?
+									sdParam.Value
+										.Replace("\\", "\\\\")
+										.Replace("\"", "\\\"")
+										.Replace("]", "\\]")
+									:
+									String.Empty
+							)
+							.Append("\"");
+
+						writeStream(stream, Encoding.UTF8, messageBuilder.ToString());
+					}
+
+					// ]
+					stream.WriteByte(93);
+				}
+			}
+			else
+			{
+				writeStream(stream, Encoding.ASCII, " ");
+				writeStream(stream, Encoding.ASCII, NilValue);
+			}
+
+			if (!String.IsNullOrWhiteSpace(message.Message))
+			{
+				// Space
+				stream.WriteByte(32);
+
+				stream.Write(Encoding.UTF8.GetPreamble(), 0, Encoding.UTF8.GetPreamble().Length);
+				writeStream(stream, Encoding.UTF8, message.Message);
+			}
+		}
+
+		private void writeStream(Stream stream, Encoding encoding, String data)
+		{
+			byte[] streamBytes = encoding.GetBytes(data);
+			stream.Write(streamBytes, 0, streamBytes.Length);
+		}
+	}
+
+	internal static class StringExtensions
+	{
+		public static string IfNotNullOrWhitespace(this string s, Func<string, string> action)
+		{
+			return String.IsNullOrWhiteSpace(s) ? s : action(s);
+		}
+
+		public static string FormatSyslogField(this string s, string replacementValue, int? maxLength = null)
+		{
+			return String.IsNullOrWhiteSpace(s)
+				? replacementValue
+				: maxLength.HasValue ? EnsureMaxLength(s, maxLength.Value) : s;
+		}
+
+		public static string EnsureMaxLength(this string s, int maxLength)
+		{
+			return String.IsNullOrWhiteSpace(s)
+				? s
+				: s.Length > maxLength ? s.Substring(0, maxLength) : s;
+		}
+
+		public static string FormatSyslogAsciiField(this string s, string replacementValue, int maxLength, char[] charBuffer, Boolean sdName = false)
+		{
+			s = FormatSyslogField(s, replacementValue, maxLength);
+
+			int bufferIndex = 0;
+			for (int i = 0; i < s.Length; i++)
+			{
+				char c = s[i];
+				if (c >= 33 && c <= 126)
+				{
+					if (!sdName || !SyslogRfc5424MessageSerializer.sdNameDisallowedChars.Contains(c))
+					{
+						charBuffer[bufferIndex++] = c;
+					}
+				}
+			}
+
+			return new string(charBuffer, 0, bufferIndex);
+		}
+
+		public static string FormatSyslogSdnameField(this string s, char[] charBuffer)
+		{
+			return FormatSyslogAsciiField(s, SyslogRfc5424MessageSerializer.NilValue, 32, charBuffer, true);
+		}
+	}
+}]]></PROGRAM_SOURCE>
+		<ORIGIN><![CDATA[]]></ORIGIN>
+		<DESCRIPTION><![CDATA[This component is a .Net Syslog client. It Supports both RFC 3164 and RFC 5424 Syslog standards as well as UDP and encrypted TCP transports.
+This component specifically uses the RFC 3164 standard.
+The example is a slightly adapted version of an open source example of a C# Syslog client as found here:  https://github.com/emertechie/SyslogNet
+The component (appropriately named OTS_SYSLOG_CLIENT_RFC3164) itself is kept fairly simple, and consists of a constructor and one method called SendLog.
+
+The constructor takes 3 input arguments, allowing you to specify:
+
+- host  : the host (string)
+- port  : the port number (integer)
+- tcp   : whether to use TCP or UDP (bool)
+
+By default, the address of this server is on “localhost” with port 514, using the UDP protocol.  
+
+an example of a sendLog call:
+
+invoke  OTS_SYSLOG_CLIENT_RFC3164.sendlog   
+with   
+select  adl.audit_type   
+,   adl.sidu   
+,  adl.logging   
+from    audit_log adl 
+
+sendLog which takes three arguments: 
+
+AUDIT_TYPE: depicting the kind of item being logged, e.g. a table update, batch job call, etc. 
+SIDU: depicting the kind of query being logged, i.e. Select, Insert, Delete or Update 
+LOGGING: the actual log message, which is formatted as a XML document 
+From these three data values, a one-line log message is generated, which is sent to the configured Syslog server. The resulting messages sent to a Syslog server could look like (mind escaping is used in this file): 
+
+        &lt;110&gt;Apr 17 12:20:33 AUDIT_EXAMPLE USR_ACC[U]: &lt;!-- On Thu 17 Apr 2021 12:20:33 test5 updated USR_ACC( ACC_ID, USR_ACC). ACC_ID: &apos;100&apos; USR_ACC: &apos;test123&apos; FIRST_NAME: &apos;John Doe&apos; changed to: &apos;John test&apos; --&gt;
+            &lt;USR_ACC TIMESTAMP=&quot;2020/1217122033&quot; USER=&quot;test5&quot;&gt;
+                &lt;ACC_ID key=&quot;100&quot; /&gt;
+                &lt;USR_ACC key=&quot;test123&quot; /&gt;
+                &lt;FIRST_NAME old=&quot;John Doe&quot; new=&quot;John test&quot; /&gt;
+            &lt;/USR_ACC&gt; 
+
+
+The remainder of the component consists of a few helper classes, to create and format the message correctly: 
+A SyslogMessage class to create the proper message and all of its required parameters, including enum classes to define logging level and logging facility more conveniently 
+An ISyslogMessageSender interface and two implementations of it (SyslogUdpSender and SyslogTcpSender) that define the method of transport being used, i.e. TCP or UDP. UDP is preferred, because TCP could take more than a second to execute, which can be bad for performance, but is included nonetheless if the target Syslog server requires it 
+An ISyslogMessageSerializer interface, and two implementations of it (SyslogRfc3164MessageSerializer and SyslogRfc5424MessageSerializer) for different message formats. Because we use XML as log message contents, and because SyslogRfc5424MessageSerializer has several strict rules on how a message should look like, we prefer to use the more simple SyslogRfc3164MessageSerializer class here as formatter class. 
+for the implementation you could use table constraints that trigger the call to the syslog client on any SIDU operation (post-commit) on a driving table “AUDIT_LOG”, as seen in the above exam.]]></DESCRIPTION>
+	</T_RDMI_DOTNET_COMPONENT>
+</DotNet_Components><J2EE_Components documentName="J2EE Components"/><Stateful_Components documentName="Stateful Components">
+	<T_RDMI_STATEFUL_COMPONENT COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" LIFETIME="SESSION" TRANSACTIONAL="N" SUPPORTS_COMMIT="N" SUPPORTS_ROLLBACK="N" SUPPORTS_PRECOMMIT="N" SUPPORTS_TABLECOMPONENT="Y" SUPPORTS_UPDATE="Y" SUPPORTS_INSERT="Y" SUPPORTS_DELETE="Y" SUPPORTS_CONDITIONS="N" SUPPORTS_ROWSETSIZEHINT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100021" CREATED_ON="2021-07-22T11:29:41" G_U_K="1406A32FF5954DB08D7BC06E29FC0369">
+		<DESCRIPTION><![CDATA[This component is a .Net Syslog client. It Supports both RFC 3164 and RFC 5424 Syslog standards as well as UDP and encrypted TCP transports.
+This component specifically uses the RFC 3164 standard.
+The example is a slightly adapted version of an open source example of a C# Syslog client as found here:  https://github.com/emertechie/SyslogNet
+The component (appropriately named OTS_SYSLOG_CLIENT_RFC3164) itself is kept fairly simple, and consists of a constructor and one method called SendLog.
+
+The constructor takes 3 input arguments, allowing you to specify:
+
+- host  : the host (string)
+- port  : the port number (integer)
+- tcp   : whether to use TCP or UDP (bool)
+
+By default, the address of this server is on “localhost” with port 514, using the UDP protocol.  
+
+an example of a sendLog call:
+
+invoke  OTS_SYSLOG_CLIENT_RFC3164.sendlog   
+with   
+select  adl.audit_type   
+,   adl.sidu   
+,  adl.logging   
+from    audit_log adl 
+
+sendLog which takes three arguments: 
+
+AUDIT_TYPE: depicting the kind of item being logged, e.g. a table update, batch job call, etc. 
+SIDU: depicting the kind of query being logged, i.e. Select, Insert, Delete or Update 
+LOGGING: the actual log message, which is formatted as a XML document 
+From these three data values, a one-line log message is generated, which is sent to the configured Syslog server. The resulting messages sent to a Syslog server could look like (mind escaping is used in this file): 
+
+        &lt;110&gt;Apr 17 12:20:33 AUDIT_EXAMPLE USR_ACC[U]: &lt;!-- On Thu 17 Apr 2021 12:20:33 test5 updated USR_ACC( ACC_ID, USR_ACC). ACC_ID: &apos;100&apos; USR_ACC: &apos;test123&apos; FIRST_NAME: &apos;John Doe&apos; changed to: &apos;John test&apos; --&gt;
+            &lt;USR_ACC TIMESTAMP=&quot;2020/1217122033&quot; USER=&quot;test5&quot;&gt;
+                &lt;ACC_ID key=&quot;100&quot; /&gt;
+                &lt;USR_ACC key=&quot;test123&quot; /&gt;
+                &lt;FIRST_NAME old=&quot;John Doe&quot; new=&quot;John test&quot; /&gt;
+            &lt;/USR_ACC&gt; 
+
+
+The remainder of the component consists of a few helper classes, to create and format the message correctly: 
+A SyslogMessage class to create the proper message and all of its required parameters, including enum classes to define logging level and logging facility more conveniently 
+An ISyslogMessageSender interface and two implementations of it (SyslogUdpSender and SyslogTcpSender) that define the method of transport being used, i.e. TCP or UDP. UDP is preferred, because TCP could take more than a second to execute, which can be bad for performance, but is included nonetheless if the target Syslog server requires it 
+An ISyslogMessageSerializer interface, and two implementations of it (SyslogRfc3164MessageSerializer and SyslogRfc5424MessageSerializer) for different message formats. Because we use XML as log message contents, and because SyslogRfc5424MessageSerializer has several strict rules on how a message should look like, we prefer to use the more simple SyslogRfc3164MessageSerializer class here as formatter class. 
+for the implementation you could use table constraints that trigger the call to the syslog client on any SIDU operation (post-commit) on a driving table “AUDIT_LOG”, as seen in the above exam.]]></DESCRIPTION>
+	</T_RDMI_STATEFUL_COMPONENT>
+</Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100021" CREATED_ON="2021-07-22T11:29:41" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="1406A32FF5954DB08D7BC06E29FC0369">
+		<DESCRIPTION><![CDATA[This component is a .Net Syslog client. It Supports both RFC 3164 and RFC 5424 Syslog standards as well as UDP and encrypted TCP transports.
+This component specifically uses the RFC 3164 standard.
+The example is a slightly adapted version of an open source example of a C# Syslog client as found here:  https://github.com/emertechie/SyslogNet
+The component (appropriately named OTS_SYSLOG_CLIENT_RFC3164) itself is kept fairly simple, and consists of a constructor and one method called SendLog.
+
+The constructor takes 3 input arguments, allowing you to specify:
+
+- host  : the host (string)
+- port  : the port number (integer)
+- tcp   : whether to use TCP or UDP (bool)
+
+By default, the address of this server is on “localhost” with port 514, using the UDP protocol.  
+
+an example of a sendLog call:
+
+invoke  OTS_SYSLOG_CLIENT_RFC3164.sendlog   
+with   
+select  adl.audit_type   
+,   adl.sidu   
+,  adl.logging   
+from    audit_log adl 
+
+sendLog which takes three arguments: 
+
+AUDIT_TYPE: depicting the kind of item being logged, e.g. a table update, batch job call, etc. 
+SIDU: depicting the kind of query being logged, i.e. Select, Insert, Delete or Update 
+LOGGING: the actual log message, which is formatted as a XML document 
+From these three data values, a one-line log message is generated, which is sent to the configured Syslog server. The resulting messages sent to a Syslog server could look like (mind escaping is used in this file): 
+
+        &lt;110&gt;Apr 17 12:20:33 AUDIT_EXAMPLE USR_ACC[U]: &lt;!-- On Thu 17 Apr 2021 12:20:33 test5 updated USR_ACC( ACC_ID, USR_ACC). ACC_ID: &apos;100&apos; USR_ACC: &apos;test123&apos; FIRST_NAME: &apos;John Doe&apos; changed to: &apos;John test&apos; --&gt;
+            &lt;USR_ACC TIMESTAMP=&quot;2020/1217122033&quot; USER=&quot;test5&quot;&gt;
+                &lt;ACC_ID key=&quot;100&quot; /&gt;
+                &lt;USR_ACC key=&quot;test123&quot; /&gt;
+                &lt;FIRST_NAME old=&quot;John Doe&quot; new=&quot;John test&quot; /&gt;
+            &lt;/USR_ACC&gt; 
+
+
+The remainder of the component consists of a few helper classes, to create and format the message correctly: 
+A SyslogMessage class to create the proper message and all of its required parameters, including enum classes to define logging level and logging facility more conveniently 
+An ISyslogMessageSender interface and two implementations of it (SyslogUdpSender and SyslogTcpSender) that define the method of transport being used, i.e. TCP or UDP. UDP is preferred, because TCP could take more than a second to execute, which can be bad for performance, but is included nonetheless if the target Syslog server requires it 
+An ISyslogMessageSerializer interface, and two implementations of it (SyslogRfc3164MessageSerializer and SyslogRfc5424MessageSerializer) for different message formats. Because we use XML as log message contents, and because SyslogRfc5424MessageSerializer has several strict rules on how a message should look like, we prefer to use the more simple SyslogRfc3164MessageSerializer class here as formatter class. 
+for the implementation you could use table constraints that trigger the call to the syslog client on any SIDU operation (post-commit) on a driving table “AUDIT_LOG”, as seen in the above exam.]]></DESCRIPTION>
+	</T_RDMI_COMPONENT>
+</Components><Methods documentName="Methods">
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" METHOD_NAME="OTS_SYSLOG_CLIENT_RFC3164" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100021" CREATED_ON="2021-07-22T11:29:41">
+		<PHYSICAL_METHOD_NAME><![CDATA[OTS_SYSLOG_CLIENT_RFC3164]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" METHOD_NAME="SENDLOG" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100021" CREATED_ON="2021-07-22T11:29:41">
+		<PHYSICAL_METHOD_NAME><![CDATA[SendLog]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[## select OTS_SYSLOG_CLIENT.sendlog(audit_type, sidu, logging) from auth_audit_log where audit_log_id=21
+
+Line 33/34 can change the protocol type (TCP/UDP). TCP is port 1514, UDP is 514 (change the lines 15/16 for that)]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+</Methods><Parameters documentName="Parameters">
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" PARAMETER_SEQNO="1" METHOD_NAME="OTS_SYSLOG_CLIENT_RFC3164" METHOD_SEQNO="1" PARAMETER_NAME="host" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" PARAMETER_SEQNO="1" METHOD_NAME="SENDLOG" METHOD_SEQNO="1" PARAMETER_NAME="AUDIT_TYPE" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" PARAMETER_SEQNO="2" METHOD_NAME="OTS_SYSLOG_CLIENT_RFC3164" METHOD_SEQNO="1" PARAMETER_NAME="p" KIND="IN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" PARAMETER_SEQNO="2" METHOD_NAME="SENDLOG" METHOD_SEQNO="1" PARAMETER_NAME="SIDU" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" PARAMETER_SEQNO="3" METHOD_NAME="OTS_SYSLOG_CLIENT_RFC3164" METHOD_SEQNO="1" PARAMETER_NAME="tcp" KIND="IN" PRIMITIVE_DATA_TYPE="BOOLEAN" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" PARAMETER_SEQNO="3" METHOD_NAME="SENDLOG" METHOD_SEQNO="1" PARAMETER_NAME="LOGGING" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+</Parameters><AggregateProtocol_Associations documentName="AggregateProtocol Associations"/><Query_Protocol_Associations documentName="Query Protocol Associations"/><Named_Protocols documentName="Named Protocols"/></MultiImport>

@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Data_Types documentName="Data Types">
+	<T_DATATYPE DATATYPE="CLOB" VALID_ON="Ora,&#x20;Oledb&#x20;(varchar(max))" BASE_DATA_TYPE="TEXT" G_U_K="E5F6D5AE524F468C88AC1142487FC41B"/>
+</Data_Types></MultiImport>

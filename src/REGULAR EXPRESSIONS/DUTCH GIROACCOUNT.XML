@@ -1,0 +1,10 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Regular_Expressions documentName="Regular Expressions">
+	<T_REGEXP NAME="DUTCH&#x20;GIROACCOUNT" REGEXP="^[0-9]{1,7}$" G_U_K="B7A51FB7989647D1912C81C8589CE450">
+		<DESCRIPTION><![CDATA[Dutch giro account number validation]]></DESCRIPTION>
+		<CUSTOM_MESSAGE><![CDATA[]]></CUSTOM_MESSAGE>
+		<REGEXP_SAMPLE><![CDATA[]]></REGEXP_SAMPLE>
+		<TEST_RESULT><![CDATA[]]></TEST_RESULT>
+	</T_REGEXP>
+</Regular_Expressions></MultiImport>

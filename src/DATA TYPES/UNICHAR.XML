@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Data_Types documentName="Data Types">
+	<T_DATATYPE DATATYPE="UNICHAR" VALID_ON="OpenClient" BASE_DATA_TYPE="X" G_U_K="39EE764E6DA445B5A65892AC78A45422"/>
+</Data_Types></MultiImport>

@@ -1,0 +1,10 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<System_Languages documentName="System Languages">
+	<T_SYS_LNG LNG_CODE="default" G_U_K="7a05c352a2d7480fbda7c26b1f0c0682"/>
+</System_Languages><System_Language_Properties documentName="System Language Properties">
+	<T_SYS_LNG_PROP LNG_CODE="default" PROPERTY_NAME="CURRENCYDECIMALSEPARATOR" PROPERTY_VALUE="."/>
+	<T_SYS_LNG_PROP LNG_CODE="default" PROPERTY_NAME="CURRENCYGROUPSEPARATOR" PROPERTY_VALUE=","/>
+	<T_SYS_LNG_PROP LNG_CODE="default" PROPERTY_NAME="NUMBERDECIMALSEPARATOR" PROPERTY_VALUE="."/>
+	<T_SYS_LNG_PROP LNG_CODE="default" PROPERTY_NAME="NUMBERGROUPSEPARATOR" PROPERTY_VALUE=","/>
+</System_Language_Properties></MultiImport>

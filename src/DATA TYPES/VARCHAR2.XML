@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Data_Types documentName="Data Types">
+	<T_DATATYPE DATATYPE="VARCHAR2" VALID_ON="Ora" BASE_DATA_TYPE="STRING" G_U_K="0BEDE65CA5B044B19BFFDF7E022025AE"/>
+</Data_Types></MultiImport>

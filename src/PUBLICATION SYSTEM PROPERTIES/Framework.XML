@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Publication_System_Properties documentName="Publication System Properties">
+	<T_PUB_SYS_PROPERTY NAME="Framework" DISPLAYED_YN="N" MANDATORY_YN="Y" DEFAULT_VALUE="auto" G_U_K="22AC121F102B414888916A80C4063306"/>
+</Publication_System_Properties></MultiImport>

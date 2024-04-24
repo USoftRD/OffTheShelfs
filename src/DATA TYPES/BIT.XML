@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Data_Types documentName="Data Types">
+	<T_DATATYPE DATATYPE="BIT" VALID_ON="ODBC,&#x20;Oledb" BASE_DATA_TYPE="BOOLEAN" G_U_K="EA7F8DE718CE4BB79A423704C8754C2B"/>
+</Data_Types></MultiImport>

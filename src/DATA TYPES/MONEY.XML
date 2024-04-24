@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Data_Types documentName="Data Types">
+	<T_DATATYPE DATATYPE="MONEY" VALID_ON="Oledb" BASE_DATA_TYPE="NUMBER" G_U_K="A76B4D0268FF47EBA51D2F98107B3F3C"/>
+</Data_Types></MultiImport>

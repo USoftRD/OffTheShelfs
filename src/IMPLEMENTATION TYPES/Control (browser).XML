@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Implementation_Types documentName="Implementation Types">
+	<T_BO_IMPLEMENT_TYPE IMPL_TYPE="Control&#x20;(browser)" DESCRIPTION="USoft&#x20;Implementation&#x20;Type" G_U_K="9782de5a2dc94b72a56ceac7a65ed0ce"/>
+</Implementation_Types></MultiImport>

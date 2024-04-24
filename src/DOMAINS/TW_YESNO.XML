@@ -1,0 +1,10 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Domains documentName="Domains">
+	<T_DOMAIN DOMAIN_NAME="TW_YESNO" BASE_DATA_TYPE_YN="N" BASE_DATA_TYPE="BOOLEAN" SUPER_DOMAIN="" DATATYPE="VARCHAR2" TOTAL_LENGTH="1" LENGTH_AFTER_PERIOD="" F_DATATYPE="CHECK" F_TOTAL_LENGTH="1" F_LENGTH_AFTER_PERIOD="" DISPLAY_LENGTH="" UPPERCASE="Y" FIXED_LENGTH="Y" IS_SEQNO="N" DEF_VALUE="N" RANGE_LOW="" RANGE_HIGH="" HELP_TEXT="" IOFORMAT="" DBFORMAT="" DESCR="Domain&#x20;is&#x20;used&#x20;by&#x20;USoft&#x20;Production." CREATED_BY="USD_COMPONENTS61" CREATED_ON="2002-08-09T09:41:02" SEQNO_COMPONENT="" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" REGEXP="" G_U_K="8CFB1EFBA98B43B8B626768B32BF5F7D">
+		<COM_TEXT><![CDATA[]]></COM_TEXT>
+	</T_DOMAIN>
+</Domains><Alternative_Input_Formats documentName="Alternative Input Formats"/><Domain_Constraints documentName="Domain Constraints"/><Domain_Values documentName="Domain Values">
+	<T_DOMAIN_ENUM DOMAIN_NAME="TW_YESNO" VALUE="N" SEQNO="1" PROMPT="" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" G_U_K="F38898A2E5DB40B18FD90E66340C96EA"/>
+	<T_DOMAIN_ENUM DOMAIN_NAME="TW_YESNO" VALUE="Y" SEQNO="2" PROMPT="" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" G_U_K="80390D9955F34B06B520D02DC0B8B141"/>
+</Domain_Values><Sequence_Definitions documentName="Sequence Definitions"/></MultiImport>

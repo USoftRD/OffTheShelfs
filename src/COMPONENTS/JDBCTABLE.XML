@@ -1,0 +1,352 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="JDBCTABLE" ACTIVE="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="FRANK" CREATED_ON="2001-10-30T14:24:09" G_U_K="F9DCDEC884D74E8F9943AED88E42F7C9">
+		<CONSTRUCTOR_SQL><![CDATA[select     
+'<Connection String>',
+'<Account Name>',
+'<Account Password>',
+'<Table Name>',
+'<Column Name List>',
+'<Primary Key Column List >'
+
+/*select     
+'<Connection String>',   (e.g. 'jdbc:odbc:mydb?)    
+'<Account Name>',   (e.g. 'user')    
+'<Account Password>',  (e.g. 'pwd')    
+'<Table Name>',   (e.g. 'myTableName')    
+'<Column Name List>',  (e.g. 'myPrimaryKey;myColumnName')     
+'<Primary Key Column List >'   (e.g. 'myPrimaryKey')*/]]></CONSTRUCTOR_SQL>
+		<DESCRIPTION><![CDATA[You can use the JDBCTable component to connect to an external data source using JDBC. The JDBCTable component represents a remote table from a data source that can be accessed from a JDBC connection. This remote table is specified by the field names of primary key columns and other columns in the Constructor SQL. A connection string specifies the remote JDBC data source.    
+
+By default the JDBCTable component uses the USoft JDBC Driver for the Rules Service. If you want to specify another driver, you can load it by adding the 'Class.forName' method to the physical method of the JDBCTABLE constructor.    
+For example, to load the sun JdbcOdbc driver, add:    
+ java.lang.Class.forName("sun.jdbc.odbc.JdbcOdbcDriver")    
+
+If you want to connect to an ODBC Data Source, the physical method of the JDBCTABLE method must look like this:    
+java.lang.Class.forName("sun.jdbc.odbc.JdbcOdbcDriver")    
+this = new com.usoft.connectors.JdbcTable(:3, :4, :5)      
+this.setConnection(:0, :1, :2)    
+
+with parameters:     
+0 connection string    
+1 account name    
+2 account password    
+3 table name    
+4 column name list ( ; as separator)    
+5 key list ( ; as separator)    
+
+In the default setting, separate USoft applications use the JDBCTable component together with the USoft Rules Service to exchange data. In this case, one USoft application uses a JDBCTable component that connects to another USoft application running as a Rules Service.    
+     
+In the constructor SQL you must specify the connection string, the account name and password, the table name, all column names and the primary column names of the table. With this information, the component behaves as an RDBMS table that accepts SELECTS, INSERTS, and UPDATES, but these requests are handled by the JDBC data source. The current (example) JDBCTABLE component table contains two columns.    
+
+For example, a typical constructor SQL looks like this:    
+select     
+'<connection string>',   (e.g. 'jdbc:odbc:mydb?)    
+'<account name>',   (e.g. 'user')    
+'<account password>',  (e.g. 'pwd')    
+'<table name>',   (e.g. 'myTableName')    
+'<colum name list>',    (e.g. 'myPrimaryKey;myColumnName')     
+'<key list>'    (e.g. 'myPrimaryKey')    
+
+After you have configured the constructor SQL, don't forget to check the constructor SQL on the 'State' tabpage and save the changes.  
+
+Be aware that your  '<colum name list>' specified above must be equivalent with the columns definitions of your component table.
+(Default it only contains two columns) You must set these columns by hand.
+
+EXAMPLES     
+1 Connection String examples:    
+- If you want to connect to the USoft RulesService you use the connection string given by the configuration of the Rules Service: 'jdbc:jrec:<application>@<host>:7777'.    
+- If you want to connect to an ODBC data source, first load the JDBC-ODBC driver as described above, then specify the connection string. URLs for this protocol are of the form:     
+ jdbc:odbc:<data-source-name>[;<attribute-name>=<attribute-value>]    
+ For example:     
+     jdbc:odbc:sybase    
+     jdbc:odbc:mydb;UID=me;PWD=secret    
+     jdbc:odbc:ora123;Cachesize=300    
+The column name list must be a string separated by semi-column (?;?), e.g.: ?ID;USERNAME;ADDRESS?    
+The primary key list must list all primary key column names, also separated by a semi-column, e.g.: ?ID1;ID2?    
+
+2 Connecting to an Oracle 10 database.     
+You can also use the JDBCTable component to connect to a remote table in an Oracle 10 database:     
+(1)  Add a reference to the classes12.zip file in the Classpath environment variable of your  computer, or in your current classpath. With a default Oracle 10 installation, the path is:    
+c:\oracle\product\10.2.0\db_2\jdbc\lib\classes12.zip     
+(2) Change the physical method of the JDBCTABLE Constructor method to:    
+java.lang.Class.forName("oracle.jdbc.driver.OracleDriver")     
+this = new com.usoft.connectors.JdbcTable(:3, :4, :5)    this.setConnection("jdbc:oracle:thin:@<host>:<port>:<SID>" , :1, :2)    
+If you have defined an alias for this connection, you can also specify: this.setConnection("jdbc:oracle:oci:@<alias>" ,:1, :2)   
+
+Notes:   
+1) The date format of the JdbcTable component can be set in the constructor. Check the constructor description.  
+2) This import has example setting to connect to a USoft service. It reads a table named PROPERTIES in the (remote) USoft application.
+3) The JdbcTable has a timeout set per default to 20 seconds. If you want to change it, add in the JDBCTABLE method, the setTimeout() physical method: e.g. this.setTimeout('30')]]></DESCRIPTION>
+	</T_RDMI_COMPONENT_CONSTRUCTOR>
+</Component_Constructors><DotNet_Components documentName="DotNet Components"/><J2EE_Components documentName="J2EE Components">
+	<T_RDMI_JAVA_COMPONENT COMPONENT_NAME="JDBCTABLE" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="FRANK" CREATED_ON="2001-10-30T14:24:09" G_U_K="F9DCDEC884D74E8F9943AED88E42F7C9">
+		<DESCRIPTION><![CDATA[You can use the JDBCTable component to connect to an external data source using JDBC. The JDBCTable component represents a remote table from a data source that can be accessed from a JDBC connection. This remote table is specified by the field names of primary key columns and other columns in the Constructor SQL. A connection string specifies the remote JDBC data source.    
+
+By default the JDBCTable component uses the USoft JDBC Driver for the Rules Service. If you want to specify another driver, you can load it by adding the 'Class.forName' method to the physical method of the JDBCTABLE constructor.    
+For example, to load the sun JdbcOdbc driver, add:    
+ java.lang.Class.forName("sun.jdbc.odbc.JdbcOdbcDriver")    
+
+If you want to connect to an ODBC Data Source, the physical method of the JDBCTABLE method must look like this:    
+java.lang.Class.forName("sun.jdbc.odbc.JdbcOdbcDriver")    
+this = new com.usoft.connectors.JdbcTable(:3, :4, :5)      
+this.setConnection(:0, :1, :2)    
+
+with parameters:     
+0 connection string    
+1 account name    
+2 account password    
+3 table name    
+4 column name list ( ; as separator)    
+5 key list ( ; as separator)    
+
+In the default setting, separate USoft applications use the JDBCTable component together with the USoft Rules Service to exchange data. In this case, one USoft application uses a JDBCTable component that connects to another USoft application running as a Rules Service.    
+     
+In the constructor SQL you must specify the connection string, the account name and password, the table name, all column names and the primary column names of the table. With this information, the component behaves as an RDBMS table that accepts SELECTS, INSERTS, and UPDATES, but these requests are handled by the JDBC data source. The current (example) JDBCTABLE component table contains two columns.    
+
+For example, a typical constructor SQL looks like this:    
+select     
+'<connection string>',   (e.g. 'jdbc:odbc:mydb?)    
+'<account name>',   (e.g. 'user')    
+'<account password>',  (e.g. 'pwd')    
+'<table name>',   (e.g. 'myTableName')    
+'<colum name list>',    (e.g. 'myPrimaryKey;myColumnName')     
+'<key list>'    (e.g. 'myPrimaryKey')    
+
+After you have configured the constructor SQL, don't forget to check the constructor SQL on the 'State' tabpage and save the changes.  
+
+Be aware that your  '<colum name list>' specified above must be equivalent with the columns definitions of your component table.
+(Default it only contains two columns) You must set these columns by hand.
+
+EXAMPLES     
+1 Connection String examples:    
+- If you want to connect to the USoft RulesService you use the connection string given by the configuration of the Rules Service: 'jdbc:jrec:<application>@<host>:7777'.    
+- If you want to connect to an ODBC data source, first load the JDBC-ODBC driver as described above, then specify the connection string. URLs for this protocol are of the form:     
+ jdbc:odbc:<data-source-name>[;<attribute-name>=<attribute-value>]    
+ For example:     
+     jdbc:odbc:sybase    
+     jdbc:odbc:mydb;UID=me;PWD=secret    
+     jdbc:odbc:ora123;Cachesize=300    
+The column name list must be a string separated by semi-column (?;?), e.g.: ?ID;USERNAME;ADDRESS?    
+The primary key list must list all primary key column names, also separated by a semi-column, e.g.: ?ID1;ID2?    
+
+2 Connecting to an Oracle 10 database.     
+You can also use the JDBCTable component to connect to a remote table in an Oracle 10 database:     
+(1)  Add a reference to the classes12.zip file in the Classpath environment variable of your  computer, or in your current classpath. With a default Oracle 10 installation, the path is:    
+c:\oracle\product\10.2.0\db_2\jdbc\lib\classes12.zip     
+(2) Change the physical method of the JDBCTABLE Constructor method to:    
+java.lang.Class.forName("oracle.jdbc.driver.OracleDriver")     
+this = new com.usoft.connectors.JdbcTable(:3, :4, :5)    this.setConnection("jdbc:oracle:thin:@<host>:<port>:<SID>" , :1, :2)    
+If you have defined an alias for this connection, you can also specify: this.setConnection("jdbc:oracle:oci:@<alias>" ,:1, :2)   
+
+Notes:   
+1) The date format of the JdbcTable component can be set in the constructor. Check the constructor description.  
+2) This import has example setting to connect to a USoft service. It reads a table named PROPERTIES in the (remote) USoft application.
+3) The JdbcTable has a timeout set per default to 20 seconds. If you want to change it, add in the JDBCTABLE method, the setTimeout() physical method: e.g. this.setTimeout('30')]]></DESCRIPTION>
+	</T_RDMI_JAVA_COMPONENT>
+</J2EE_Components><Stateful_Components documentName="Stateful Components">
+	<T_RDMI_STATEFUL_COMPONENT COMPONENT_NAME="JDBCTABLE" LIFETIME="TRANSACTION" TRANSACTIONAL="Y" SUPPORTS_COMMIT="Y" SUPPORTS_ROLLBACK="Y" SUPPORTS_PRECOMMIT="Y" SUPPORTS_TABLECOMPONENT="Y" SUPPORTS_UPDATE="Y" SUPPORTS_INSERT="Y" SUPPORTS_DELETE="Y" SUPPORTS_CONDITIONS="N" SUPPORTS_ROWSETSIZEHINT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="FRANK" CREATED_ON="2001-10-30T14:24:09" G_U_K="F9DCDEC884D74E8F9943AED88E42F7C9">
+		<DESCRIPTION><![CDATA[You can use the JDBCTable component to connect to an external data source using JDBC. The JDBCTable component represents a remote table from a data source that can be accessed from a JDBC connection. This remote table is specified by the field names of primary key columns and other columns in the Constructor SQL. A connection string specifies the remote JDBC data source.    
+
+By default the JDBCTable component uses the USoft JDBC Driver for the Rules Service. If you want to specify another driver, you can load it by adding the 'Class.forName' method to the physical method of the JDBCTABLE constructor.    
+For example, to load the sun JdbcOdbc driver, add:    
+ java.lang.Class.forName("sun.jdbc.odbc.JdbcOdbcDriver")    
+
+If you want to connect to an ODBC Data Source, the physical method of the JDBCTABLE method must look like this:    
+java.lang.Class.forName("sun.jdbc.odbc.JdbcOdbcDriver")    
+this = new com.usoft.connectors.JdbcTable(:3, :4, :5)      
+this.setConnection(:0, :1, :2)    
+
+with parameters:     
+0 connection string    
+1 account name    
+2 account password    
+3 table name    
+4 column name list ( ; as separator)    
+5 key list ( ; as separator)    
+
+In the default setting, separate USoft applications use the JDBCTable component together with the USoft Rules Service to exchange data. In this case, one USoft application uses a JDBCTable component that connects to another USoft application running as a Rules Service.    
+     
+In the constructor SQL you must specify the connection string, the account name and password, the table name, all column names and the primary column names of the table. With this information, the component behaves as an RDBMS table that accepts SELECTS, INSERTS, and UPDATES, but these requests are handled by the JDBC data source. The current (example) JDBCTABLE component table contains two columns.    
+
+For example, a typical constructor SQL looks like this:    
+select     
+'<connection string>',   (e.g. 'jdbc:odbc:mydb?)    
+'<account name>',   (e.g. 'user')    
+'<account password>',  (e.g. 'pwd')    
+'<table name>',   (e.g. 'myTableName')    
+'<colum name list>',    (e.g. 'myPrimaryKey;myColumnName')     
+'<key list>'    (e.g. 'myPrimaryKey')    
+
+After you have configured the constructor SQL, don't forget to check the constructor SQL on the 'State' tabpage and save the changes.  
+
+Be aware that your  '<colum name list>' specified above must be equivalent with the columns definitions of your component table.
+(Default it only contains two columns) You must set these columns by hand.
+
+EXAMPLES     
+1 Connection String examples:    
+- If you want to connect to the USoft RulesService you use the connection string given by the configuration of the Rules Service: 'jdbc:jrec:<application>@<host>:7777'.    
+- If you want to connect to an ODBC data source, first load the JDBC-ODBC driver as described above, then specify the connection string. URLs for this protocol are of the form:     
+ jdbc:odbc:<data-source-name>[;<attribute-name>=<attribute-value>]    
+ For example:     
+     jdbc:odbc:sybase    
+     jdbc:odbc:mydb;UID=me;PWD=secret    
+     jdbc:odbc:ora123;Cachesize=300    
+The column name list must be a string separated by semi-column (?;?), e.g.: ?ID;USERNAME;ADDRESS?    
+The primary key list must list all primary key column names, also separated by a semi-column, e.g.: ?ID1;ID2?    
+
+2 Connecting to an Oracle 10 database.     
+You can also use the JDBCTable component to connect to a remote table in an Oracle 10 database:     
+(1)  Add a reference to the classes12.zip file in the Classpath environment variable of your  computer, or in your current classpath. With a default Oracle 10 installation, the path is:    
+c:\oracle\product\10.2.0\db_2\jdbc\lib\classes12.zip     
+(2) Change the physical method of the JDBCTABLE Constructor method to:    
+java.lang.Class.forName("oracle.jdbc.driver.OracleDriver")     
+this = new com.usoft.connectors.JdbcTable(:3, :4, :5)    this.setConnection("jdbc:oracle:thin:@<host>:<port>:<SID>" , :1, :2)    
+If you have defined an alias for this connection, you can also specify: this.setConnection("jdbc:oracle:oci:@<alias>" ,:1, :2)   
+
+Notes:   
+1) The date format of the JdbcTable component can be set in the constructor. Check the constructor description.  
+2) This import has example setting to connect to a USoft service. It reads a table named PROPERTIES in the (remote) USoft application.
+3) The JdbcTable has a timeout set per default to 20 seconds. If you want to change it, add in the JDBCTABLE method, the setTimeout() physical method: e.g. this.setTimeout('30')]]></DESCRIPTION>
+	</T_RDMI_STATEFUL_COMPONENT>
+</Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
+	<T_RDMI_COMPONENT COMPONENT_NAME="JDBCTABLE" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="Y" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="FRANK" CREATED_ON="2001-10-30T14:24:09" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="N" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="F9DCDEC884D74E8F9943AED88E42F7C9">
+		<DESCRIPTION><![CDATA[You can use the JDBCTable component to connect to an external data source using JDBC. The JDBCTable component represents a remote table from a data source that can be accessed from a JDBC connection. This remote table is specified by the field names of primary key columns and other columns in the Constructor SQL. A connection string specifies the remote JDBC data source.    
+
+By default the JDBCTable component uses the USoft JDBC Driver for the Rules Service. If you want to specify another driver, you can load it by adding the 'Class.forName' method to the physical method of the JDBCTABLE constructor.    
+For example, to load the sun JdbcOdbc driver, add:    
+ java.lang.Class.forName("sun.jdbc.odbc.JdbcOdbcDriver")    
+
+If you want to connect to an ODBC Data Source, the physical method of the JDBCTABLE method must look like this:    
+java.lang.Class.forName("sun.jdbc.odbc.JdbcOdbcDriver")    
+this = new com.usoft.connectors.JdbcTable(:3, :4, :5)      
+this.setConnection(:0, :1, :2)    
+
+with parameters:     
+0 connection string    
+1 account name    
+2 account password    
+3 table name    
+4 column name list ( ; as separator)    
+5 key list ( ; as separator)    
+
+In the default setting, separate USoft applications use the JDBCTable component together with the USoft Rules Service to exchange data. In this case, one USoft application uses a JDBCTable component that connects to another USoft application running as a Rules Service.    
+     
+In the constructor SQL you must specify the connection string, the account name and password, the table name, all column names and the primary column names of the table. With this information, the component behaves as an RDBMS table that accepts SELECTS, INSERTS, and UPDATES, but these requests are handled by the JDBC data source. The current (example) JDBCTABLE component table contains two columns.    
+
+For example, a typical constructor SQL looks like this:    
+select     
+'<connection string>',   (e.g. 'jdbc:odbc:mydb?)    
+'<account name>',   (e.g. 'user')    
+'<account password>',  (e.g. 'pwd')    
+'<table name>',   (e.g. 'myTableName')    
+'<colum name list>',    (e.g. 'myPrimaryKey;myColumnName')     
+'<key list>'    (e.g. 'myPrimaryKey')    
+
+After you have configured the constructor SQL, don't forget to check the constructor SQL on the 'State' tabpage and save the changes.  
+
+Be aware that your  '<colum name list>' specified above must be equivalent with the columns definitions of your component table.
+(Default it only contains two columns) You must set these columns by hand.
+
+EXAMPLES     
+1 Connection String examples:    
+- If you want to connect to the USoft RulesService you use the connection string given by the configuration of the Rules Service: 'jdbc:jrec:<application>@<host>:7777'.    
+- If you want to connect to an ODBC data source, first load the JDBC-ODBC driver as described above, then specify the connection string. URLs for this protocol are of the form:     
+ jdbc:odbc:<data-source-name>[;<attribute-name>=<attribute-value>]    
+ For example:     
+     jdbc:odbc:sybase    
+     jdbc:odbc:mydb;UID=me;PWD=secret    
+     jdbc:odbc:ora123;Cachesize=300    
+The column name list must be a string separated by semi-column (?;?), e.g.: ?ID;USERNAME;ADDRESS?    
+The primary key list must list all primary key column names, also separated by a semi-column, e.g.: ?ID1;ID2?    
+
+2 Connecting to an Oracle 10 database.     
+You can also use the JDBCTable component to connect to a remote table in an Oracle 10 database:     
+(1)  Add a reference to the classes12.zip file in the Classpath environment variable of your  computer, or in your current classpath. With a default Oracle 10 installation, the path is:    
+c:\oracle\product\10.2.0\db_2\jdbc\lib\classes12.zip     
+(2) Change the physical method of the JDBCTABLE Constructor method to:    
+java.lang.Class.forName("oracle.jdbc.driver.OracleDriver")     
+this = new com.usoft.connectors.JdbcTable(:3, :4, :5)    this.setConnection("jdbc:oracle:thin:@<host>:<port>:<SID>" , :1, :2)    
+If you have defined an alias for this connection, you can also specify: this.setConnection("jdbc:oracle:oci:@<alias>" ,:1, :2)   
+
+Notes:   
+1) The date format of the JdbcTable component can be set in the constructor. Check the constructor description.  
+2) This import has example setting to connect to a USoft service. It reads a table named PROPERTIES in the (remote) USoft application.
+3) The JdbcTable has a timeout set per default to 20 seconds. If you want to change it, add in the JDBCTABLE method, the setTimeout() physical method: e.g. this.setTimeout('30')]]></DESCRIPTION>
+	</T_RDMI_COMPONENT>
+</Components><Methods documentName="Methods">
+	<T_RDMI_METHOD COMPONENT_NAME="JDBCTABLE" METHOD_NAME="COMMIT" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS61" CREATED_ON="2002-08-09T09:45:12">
+		<PHYSICAL_METHOD_NAME><![CDATA[this.Commit]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[Saves all changes in the external table.]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="JDBCTABLE" METHOD_NAME="DELETEROW" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS61" CREATED_ON="2002-08-09T09:45:12">
+		<PHYSICAL_METHOD_NAME><![CDATA[this.DeleteRow(argv)]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[Deletes a record in the external table.]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="JDBCTABLE" METHOD_NAME="INSERTROW" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS61" CREATED_ON="2002-08-09T09:45:12">
+		<PHYSICAL_METHOD_NAME><![CDATA[this.InsertRow(argv)]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[Inserts a record in the external table.]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="JDBCTABLE" METHOD_NAME="JDBCTABLE" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS61" CREATED_ON="2002-08-09T09:45:12">
+		<PHYSICAL_METHOD_NAME><![CDATA[this = new com.usoft.connectors.JdbcTable(:3, :4, :5)    
+this.setConnection(:0, :1, :2)
+this.loadDriverClass()]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[This is the constructor method. All parameters can be specified in the Constructor SQL.   
+
+The date format used by the component can be set by adding a call to the constructors physical method, e.g.:   
+this.setDateFormat("DD-MON-YYYY");  
+
+The default applies the oracle specific to_date() function:   
+this.setDateFormat(" 'to_date(' ''dd-MMM-yyyy'' ', ' '''DD-MON-YYYY''' ')' "); 
+
+// see the Time Format Description of Java Class SimpleDateFormat, http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.html]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="JDBCTABLE" METHOD_NAME="PRECOMMIT" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS61" CREATED_ON="2002-08-09T09:45:12">
+		<PHYSICAL_METHOD_NAME><![CDATA[this.PreCommit]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[This method is used internally.]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="JDBCTABLE" METHOD_NAME="QUERYEXE" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS61" CREATED_ON="2002-08-09T09:45:12">
+		<PHYSICAL_METHOD_NAME><![CDATA[this.QueryExe(argv)]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[This method is used within the QUERY protocol.]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="JDBCTABLE" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS61" CREATED_ON="2002-08-09T09:45:12">
+		<PHYSICAL_METHOD_NAME><![CDATA[this.QueryFetch(argv)]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[This method is used within the QUERY protocol.]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="JDBCTABLE" METHOD_NAME="ROLLBACK" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS61" CREATED_ON="2002-08-09T09:45:12">
+		<PHYSICAL_METHOD_NAME><![CDATA[this.Rollback]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[This method rollbacks all changes in the external table that were made in the current transaction.]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="JDBCTABLE" METHOD_NAME="UPDATEROW" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS61" CREATED_ON="2002-08-09T09:45:12">
+		<PHYSICAL_METHOD_NAME><![CDATA[this.UpdateRow(argv)]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[Updates a record in the external table.]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+</Methods><Parameters documentName="Parameters">
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="0" METHOD_NAME="JDBCTABLE" METHOD_SEQNO="1" PARAMETER_NAME="Connection&#x20;String" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="1" METHOD_NAME="DELETEROW" METHOD_SEQNO="1" PARAMETER_NAME="PROPERTYKEY" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="1" METHOD_NAME="INSERTROW" METHOD_SEQNO="1" PARAMETER_NAME="PROPERTYKEY" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="1" METHOD_NAME="JDBCTABLE" METHOD_SEQNO="1" PARAMETER_NAME="Account&#x20;Name" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="1" METHOD_NAME="QUERYEXE" METHOD_SEQNO="1" PARAMETER_NAME="PROPERTYKEY" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="1" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="PROPERTYKEY" KIND="OUT" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="1" METHOD_NAME="UPDATEROW" METHOD_SEQNO="1" PARAMETER_NAME="PROPERTYKEY" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="2" METHOD_NAME="INSERTROW" METHOD_SEQNO="1" PARAMETER_NAME="PROPERTYVALUE" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="2" METHOD_NAME="JDBCTABLE" METHOD_SEQNO="1" PARAMETER_NAME="Account&#x20;Password" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="2" METHOD_NAME="QUERYEXE" METHOD_SEQNO="1" PARAMETER_NAME="PROPERTYVALUE" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="2" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="PROPERTYVALUE" KIND="OUT" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="2" METHOD_NAME="UPDATEROW" METHOD_SEQNO="1" PARAMETER_NAME="PROPERTYVALUE" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="3" METHOD_NAME="JDBCTABLE" METHOD_SEQNO="1" PARAMETER_NAME="Table&#x20;Name" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="4" METHOD_NAME="JDBCTABLE" METHOD_SEQNO="1" PARAMETER_NAME="Column&#x20;Name&#x20;List&#x20;(&#x20;;&#x20;as&#x20;separator)" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="5" METHOD_NAME="JDBCTABLE" METHOD_SEQNO="1" PARAMETER_NAME="Primary&#x20;Key&#x20;Column&#x20;List&#x20;(&#x20;;&#x20;as&#x20;separator)" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="999" METHOD_NAME="PRECOMMIT" METHOD_SEQNO="1" PARAMETER_NAME="return" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="999" METHOD_NAME="QUERYEXE" METHOD_SEQNO="1" PARAMETER_NAME="return" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="JDBCTABLE" PARAMETER_SEQNO="999" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="return" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+</Parameters><AggregateProtocol_Associations documentName="AggregateProtocol Associations"/><Query_Protocol_Associations documentName="Query Protocol Associations">
+	<T_RDMI_QUERY_PROTOCOL COMPONENT_NAME="JDBCTABLE" PROTOCOL_NAME="QUERY" QP_EXE_METHOD_NAME="QUERYEXE" QP_EXE_COMPONENT_NAME="JDBCTABLE" QP_EXE_METHOD_SEQNO="1" QP_FETCH_COMPONENT_NAME="JDBCTABLE" QP_FETCH_METHOD_NAME="QUERYFETCH" QP_FETCH_METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y">
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_QUERY_PROTOCOL>
+</Query_Protocol_Associations><Named_Protocols documentName="Named Protocols">
+	<T_RDMI_NAMED_PROTOCOL COMPONENT_NAME="JDBCTABLE" PROTOCOL_NAME="QUERY" T_RDMI_QUERY_PROTOCOL="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" T_RDMI_AGGREGATE_PROTOCOL="N">
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_NAMED_PROTOCOL>
+</Named_Protocols></MultiImport>

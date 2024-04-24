@@ -1,0 +1,7 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Domains documentName="Domains">
+	<T_DOMAIN DOMAIN_NAME="OTS_WIN_PORT_INFO_ADDRESS" BASE_DATA_TYPE_YN="N" BASE_DATA_TYPE="SHORT_TEXT" SUPER_DOMAIN="" DATATYPE="NVARCHAR" TOTAL_LENGTH="30" LENGTH_AFTER_PERIOD="" F_DATATYPE="CHAR" F_TOTAL_LENGTH="1" F_LENGTH_AFTER_PERIOD="" DISPLAY_LENGTH="16" UPPERCASE="N" FIXED_LENGTH="N" IS_SEQNO="N" DEF_VALUE="" RANGE_LOW="" RANGE_HIGH="" HELP_TEXT="" IOFORMAT="" DBFORMAT="" DESCR="" CREATED_BY="RDMI91" CREATED_ON="2020-01-11T22:46:55" SEQNO_COMPONENT="" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" REGEXP="" G_U_K="F6A788C7760844728DDB146B93EF97D2">
+		<COM_TEXT><![CDATA[]]></COM_TEXT>
+	</T_DOMAIN>
+</Domains><Alternative_Input_Formats documentName="Alternative Input Formats"/><Domain_Constraints documentName="Domain Constraints"/><Domain_Values documentName="Domain Values"/><Sequence_Definitions documentName="Sequence Definitions"/></MultiImport>

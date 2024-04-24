@@ -1,0 +1,198 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Export_Definitions documentName="Export Definitions">
+	<T_EXP_DEF EXPORT_ID="121" EXPORT_NAME="OTS_WORD_LETTER" DEFINED_BY="P3100027" DEF_FILE_NAME="C:\OTS_GITHUB\OffTheShelfs\OTS_WORD_LETTER\OTS_WORD_LETTER.xml" EXP_RES_WORDS="N">
+		<COMMENTS><![CDATA[This component provides a way to automatically generate word letter/reports in Microsoft Word format.
+It does so by copying a Microsoft Word document template and then replacing all data fields in that copy by content from data passed to this component.
+The expected  template format is the Microsoft docx format.
+A Microsoft Word installation is NOT needed on the computer where this component is run, as the component uses the Office Open XML file format for generating a result document.
+
+The Microsoft Word document template must contain placeholders, so called Controls, where  information from the data model will be represented in the final result document.
+How to create such a document is described below. A sample Microsoft Word template is also available and used in the given examples.
+
+The component offers two methods:
+	-1- A method ControlInfo(templatefilepath)  that will show the available Controls in the template.
+		This serves to do a sanity check: are the Controls you want to fill present in the template?
+		In the Application/SqlCommand window you can try this on the sample template, execute:
+			select OTS_WORD_LETTER.ControlInfo(  RulesEngine.Getproperty('TEMPDIR') || '.OffTheShelfs\OTS_WORD_LETTER\OTS_Sample_WordReport.docx'  );
+		The thought behind this method can be developed further  to automatically categorize and maintain the set of templates in an organization.
+	-2- A method Run(templatefilepath, resultfilepath, [parameters, ...]) that will produce the result document from the template and data passed.
+		In the application/SqlCommand window you can try:
+			invoke OTS_WORD_LETTER.RUN with select 
+				RulesEngine.Getproperty('TEMPDIR') || '.OffTheShelfs\OTS_WORD_LETTER\OTS_Sample_WordReport.docx', 
+				RulesEngine.Getproperty('TEMPDIR') || 'Result.docx',
+				RulesEngine.Getproperty('TEMPDIR') || '.OffTheShelfs\OTS_WORD_LETTER\OTS_Sample_Xml.xml'
+		The Run method produces the location of the result document that can be opened with Microsoft Word to see the result document.
+		This example fills data from an xml document into the copy of the template document.
+
+The Run method has a number of ways to pass data for the Controls. 
+	-a- Passing a single filepath argument with a propriety xml format that contains the data. Inspect the example above. It contains plain values and a table.
+	-b- Passing name - value pairs as data for Controls. 
+		Try for example:
+			invoke OTS_WORD_LETTER.RUN with select 
+				RulesEngine.Getproperty('TEMPDIR') || '.OffTheShelfs\OTS_WORD_LETTER\OTS_Sample_WordReport.docx', 
+				RulesEngine.Getproperty('TEMPDIR') || 'Result.docx',
+				'PAS_NUMBER', 'AX123',
+				'NAME', user
+		In this example, the result document has PAS_NUMBER and NAME resolved but the other Controls are not filled.
+	-c- Passing name - xml pairs as data  for Controls. This allows filling in table Controls.
+		Try for example:
+			invoke OTS_WORD_LETTER.RUN with select 
+				RulesEngine.Getproperty('TEMPDIR') || '.OffTheShelfs\OTS_WORD_LETTER\OTS_Sample_WordReport.docx', 
+				RulesEngine.Getproperty('TEMPDIR') || 'Result.docx',
+				'PAS_NUMBER', 'AX123',
+				'NAME', user,
+				'BOOK_TABLE',
+					'<Books>
+							<Book NAME="My life as a developer" AUTHOR="Dilbert" DUE_DATE="01-JAN-2020"></Book>
+							<Book NAME="Why Nations Fail" AUTHOR="James A. Robinson " DUE_DATE="17-FEB-2020"></Book>
+					</Books>'
+		Now also the books on loan table has data in the result.
+		Note that you could have used data from your data model in the call by taking column values for the plain values and xml.[sql]export result for the Controls that show table data.
+
+Before showing some examples that use data from your data model, first a few words on how to create a template document with Controls.
+
+A template document can be any Word document stored in docx format. You will have to add Controls to that document that will act as placeholders for the data.
+	-1- Create a word template document that contains the desired layout, fixed text, images etc.
+	-2- If the menu bar in Microsoft Word does NOT show a "Developer" menu, you will have to activate the Developer menu first.
+		Depending on the version of Microsoft Word you would activate this by opening the File menu, Options. Then click "Customize Ribbon". 
+		Choose "Main Tabs" from the "Customize the Ribbon" dropdown. Make sure [v]Developer is marked active.
+	-3- How to add a Control in your Microsoft Word template to hold a plain value:
+		Choose "Developer" from the main menu.
+		Click "Design Mode"
+		Click in the document at the position you want the Control.
+		Click the Plain Text Control (or the Rich text Control) symbol (symbol Aa left from "Design Mode)"
+			Now you will see the Control in the document. 
+		Click "Properties" (just under "Design Mode")
+			In the Tag field, fill the name that you will use when passing data, e.g. MYFIELD
+		Save the template and, in the application, invoke the Run method for this template. Specify a value for MYFIELD.
+			Assuming you added the MYFIELD text Control to the example template, see a result by executing:
+			invoke OTS_WORD_LETTER.RUN with select 
+				RulesEngine.Getproperty('TEMPDIR') || '.OffTheShelfs\OTS_WORD_LETTER\OTS_Sample_WordReport.docx', 
+				RulesEngine.Getproperty('TEMPDIR') || 'Result.docx',
+				'MYFILED', 'Hello Controls'
+			Use the ControlInfo method (as shown before) to see the MYFIELD control is indeed available.
+			Note that currently no rtf (rich text format) data is supported in the component.
+	-4- To add repeated content (table data)
+		-add a rich text content control
+		-set the Tag property of this control to the same value as the NAME attribute in the xml document
+		-add a table inside the control with one row, 
+			-in that row add new (rich text) content control for each field.
+	-5- The other Microsoft Word controls are not implemented except the Date Picker Control.
+		For the Date Picker Control, the component will try to parse the data as DateTime and format the DateTime according to the format specified for the Date Picker Control. The advanced example below uses the Date Picker control.
+		
+The following advanced examples assume that you are working with the USoft Travel Agency example (a course material example).
+Note that you can copy the templates to your own (template) directory to avoid the paths to the USoft OffTheShelf directory in the examples.
+That also allows you to experiment and change the templates while keeping the original.
+Of course you can change the SQL used in the example (and/or the template) to match your own USoft data model.
+
+To find the Controls in the OTS_TravelTemplate.docx example, execute::
+	select OTS_WORD_LETTER.ControlInfo( RulesEngine.Getproperty('TEMPDIR') || '.OffTheShelfs\OTS_WORD_LETTER\OTS_TravelTemplate.docx'  );
+Assuming you copied OTS_TravelTemplate.docx to c:\temp that would be:
+	select OTS_WORD_LETTER.ControlInfo(  'c:\temp\OTS_TravelTemplate.docx'  );
+	
+Now the idea is to fill the available Controls as follows:
+	-1- a list of reservations in a Control with tag "ALL_RESERVATIONS"
+		Note: you will need to import the OTS_STRING Off The Shelf component too for this example. It contains an record aggregate used for the data passed to ALL_RESERVATIONS
+	-2- to fill a Control with tag name "GENDER" using a SQL DECODE statement
+	-3- to fill a Control with tag name NAME using a concatenation
+	-4- to fill a Control RESERVATIONS_TABLE from an xml.sqlexport
+
+To produce the result document:
+
+invoke OTS_WORD_LETTER.RUN with select 
+	RulesEngine.Getproperty('TEMPDIR') || '.OffTheShelfs\OTS_WORD_LETTER\OTS_TravelTemplate.docx',
+	'c:\temp\Reservation' || p.person_id || '.docx',
+	'ALL_RESERVATIONS',
+	( invoke OTS_STRING.RecordConcat with select '', ',', res_id from reservations rr, tour ss relate p MAKES rr, ss "FOR WHICH IS MADE" rr),
+	'GENDER', decode(p.GENDER, 'M', 'Mr', 'F', 'Ms', ''),
+	'NAME',  p.FIRST_NAME || ' ' || p.FAMILY_NAME,
+	'RESERVATIONS_TABLE', 
+	(
+		invoke xml.sqlexport with select
+			r.RES_ID,
+			s.TOUR_TYPE, s.DESTINATION,
+			s.START_DATE, s.RETURN_DATE		
+		from
+			reservation r, tour s
+		relate
+			p MAKES r, s "FOR WHICH IS MADE" r
+	)
+FROM
+	PERSON p
+WHERE exists 
+(
+	select 
+		'has reservation' 
+	from
+		reservations rrr, tour sss 
+	relate
+        p MAKES rrr, sss "FOR WHICH IS MADE" rrr
+)
+AND
+	p.person_id = 1
+
+If you omit the condition "AND p.person_id=1" you will see that all documents for each person with reservations are produced instantly and fast.
+
+You could use this SQL (without the limitation on person_id) in a logical view to let it produce documents on demand.
+Make a logical view with name e.g. RESERVATION_REPORT and SQL:
+SELECT
+	p.PERSON_ID,
+	OTS_WORD_LETTER.RUN
+	(
+       RulesEngine.Getproperty('TEMPDIR') || '.OffTheShelfs\OTS_WORD_LETTER\OTS_TravelTemplate.docx',
+       'c:\temp\Reservation' || p.PERSON_ID || '.docx',
+       'ALL_RESERVATIONS',
+       ( invoke OTS_STRING.RecordConcat with select '', ', ', res_id from reservations rr, tour ss relate p MAKES rr, ss "FOR WHICH IS MADE" rr),
+       'GENDER', decode(p.GENDER, 'M', 'Mr.', 'F', 'Ms.', ''),
+       'NAME',  p.FIRST_NAME || ' ' || p.FAMILY_NAME,
+       'RESERVATIONS_TABLE', 
+       (
+             invoke xml.sqlexport with select
+                    r.RES_ID,
+                    s.TOUR_TYPE, s.DESTINATION,
+                    s.START_DATE, s.RETURN_DATE             
+             from
+                    reservation r, tour s
+             relate
+                    p MAKES r, s "FOR WHICH IS MADE" r
+       )
+	) "FILEPATH"
+FROM
+       PERSON p
+WHERE exists 
+(
+	select 
+		'has reservation' 
+	from
+		reservations rrr, tour sss 
+	relate
+        p MAKES rrr, sss "FOR WHICH IS MADE" rrr
+)
+Try this logical view in the application by querying a person that has reservations (a reservation report will be generated), querying a person with no reservations and finally querying all (all reports will be generated).
+As a final example that passes all data via a propriety xml format (as opposed to passing name - vale/xml.[sql]export pairs), try in the Application/SqlCommand this call with inline data:
+
+invoke OTS_WORD_LETTER.RUN with select 
+	RulesEngine.Getproperty('TEMPDIR') || '.OffTheShelfs\OTS_WORD_LETTER\OTS_Sample_WordReport.docx', 
+	'c:\temp\Result.docx',
+	'<Report>
+	<PAS_NUMBER>000</PAS_NUMBER>
+	<GENDER>Mr.</GENDER>
+	<NAME>Whoever</NAME>
+	<Table NAME="BOOK_TABLE">
+		<Row>
+			<NAME><![CDATA[Harry Potter and the Philosopher''s Stone]]]]><![CDATA[></NAME>
+			<AUTHOR><![CDATA[J. K. Rowling]]]]><![CDATA[></AUTHOR>
+			<DUE_DATE>01-JAN-2020</DUE_DATE>
+		</Row>
+		<Row>
+			<NAME><![CDATA[Harry Potter and the Chamber of Secrets]]]]><![CDATA[></NAME>
+			<AUTHOR><![CDATA[J. K. Rowling]]]]><![CDATA[></AUTHOR>
+			<DUE_DATE>01-MAR-2020</DUE_DATE>
+		</Row>	
+	</Table>
+</Report>']]></COMMENTS>
+	</T_EXP_DEF>
+</Export_Definitions><Export_Action_Tasks documentName="Export Action Tasks"/><Export_Business_Objects documentName="Export Business Objects"/><Export_Business_Areas documentName="Export Business Areas"/><Export_Constraints documentName="Export Constraints"/><Export_Decisions documentName="Export Decisions"/><Export_Domains documentName="Export Domains"/><Export_Export_Tasks documentName="Export Export Tasks"/><Export_External_Sets documentName="Export External Sets"/><Export_Import_Tasks documentName="Export Import Tasks"/><Export_Jobs documentName="Export Jobs"/><Export_RDMI_Components documentName="Export RDMI Components">
+	<T_EXP_RDMI_COMPONENT EXPORT_ID="121" COMPONENT_NAME="OTS_WORD_LETTER"/>
+</Export_RDMI_Components><Export_Relationships documentName="Export Relationships"/><Export_Roles documentName="Export Roles"/><Export_Business_Rule_Sets documentName="Export Business Rule Sets"/><Export_SQL_Tasks documentName="Export SQL Tasks"/><Export_Tables documentName="Export Tables"/></MultiImport>

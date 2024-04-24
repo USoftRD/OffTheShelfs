@@ -1,0 +1,304 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_WIN_NETWORK" ACTIVE="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2020-01-11T22:18:32" G_U_K="71DF3CBFD55645ECA474DD6D81F6FF00">
+		<CONSTRUCTOR_SQL><![CDATA[]]></CONSTRUCTOR_SQL>
+		<DESCRIPTION><![CDATA[This OTS_WIN_NETWORK component interacts with the Windows network.
+A table component OTS_WIN_NETWORK is also available to instantly query networks as records.
+Once the OTS_WIN_NETWORK component is added to the USoft Definer you can:
+	-Open the application and query the Windows Network table (i.e. the OTS_WIN_NETWORK table)
+	-Open SqlCommand in the application and use method calls.
+
+Method call examples:
+
+select OTS_WIN_NETWORK.hostname()
+
+select OTS_WIN_NETWORK.DnsHostAddresses('localhost')
+
+select OTS_WIN_NETWORK.LocalIPAddress()
+
+select OTS_WIN_NETWORK.WIFIADDRESS()
+
+select OTS_WIN_NETWORK.IsNetworkAvailable()
+
+select OTS_WIN_NETWORK.ListNetwork()
+
+invoke OTS_WIN_NETWORK.Query with select null
+
+select OTS_WIN_NETWORK.Wifi()
+
+select OTS_WIN_NETWORK.wificonnected('USoftGuest')
+
+select OTS_WIN_NETWORK.ping('localhost')]]></DESCRIPTION>
+	</T_RDMI_COMPONENT_CONSTRUCTOR>
+</Component_Constructors><DotNet_Components documentName="DotNet Components">
+	<T_RDMI_DOTNET_COMPONENT COMPONENT_NAME="OTS_WIN_NETWORK" DOTNET_ACTIVE="Y" LANGUAGE="C#" APP_DOMAIN="Default" INCLUDE_WINDOWS_APP_DLL="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2020-01-11T22:18:32" G_U_K="71DF3CBFD55645ECA474DD6D81F6FF00">
+		<ASSEMBLYREFS><![CDATA[System.Xml.dll]]></ASSEMBLYREFS>
+		<PROGRAM_SOURCE><![CDATA[using System;
+using System.Xml.XPath;
+using USoft.Net;
+
+class OTS_WIN_NETWORK
+{
+	XPathNodeIterator m_nodes;
+
+	public string HostName()
+	{
+		return WNetwork.HostName();
+	}
+	public string LocalIPAddress()
+	{
+		return WNetwork.LocalIPAddress();
+	}
+	public string DnsHostAddresses(string hostname)
+	{
+		XPathNodeIterator n = WNetwork.DnsHostAddresses(hostname);
+		if(!n.MoveNext())
+		{
+			return string.Empty;
+		}
+		return n.Current.InnerXml;
+	}
+	public bool IsNetworkAvailable()
+	{
+		return WNetwork.IsNetworkAvailable();
+	}
+	public string WifiAddress()
+	{
+		XPathNodeIterator n = WNetwork.ListNetwork();
+		if(!n.MoveNext())
+		{
+			return string.Empty;
+		}
+		XPathNodeIterator wifis = n.Current.Select("/NetworkInfo/Adapter[@OperationalStatus='Up'][contains(@NetworkInterfaceType, 'Wireless')]/*[contains(name(),'IPAd')]"); 
+		// IPADDRESS but old version had spelling error IPAdress
+		if(!wifis.MoveNext())
+		{
+			return string.Empty;
+		}
+		string address = wifis.Current.GetAttribute("Address", string.Empty);
+		if(string.IsNullOrEmpty(address)) address = wifis.Current.GetAttribute("Adress", string.Empty);
+		return address;
+	}
+	public string ListNetwork()
+	{
+		XPathNodeIterator n = WNetwork.ListNetwork();
+		if(!n.MoveNext()) return string.Empty;
+		return n.Current.InnerXml;
+	}
+	public string Wifi()
+	{
+		XPathNodeIterator n = WNetwork.wifi();
+		if(!n.MoveNext()) return string.Empty;
+			return n.Current.InnerXml;
+	}
+	public bool WifiConnected(string ssid)
+	{
+		XPathNodeIterator n = WNetwork.wifi();
+		if(!n.MoveNext()) return false;
+		XPathNodeIterator connectedwifi = n.Current.Select(string.Format("//nic[@ssid='{0}']", ssid));
+		if(!connectedwifi.MoveNext()) return false;
+		return true;
+	}
+	// returns IPStatus (e.g. Success) followed by roundtrip time in milliseconds 
+	public string Ping(string hostname)
+	{
+		return WNetwork.Ping(hostname);
+	}
+	public int QueryExe(string dummy)
+	{
+		XPathNodeIterator n = WNetwork.ListNetwork();
+		if(!n.MoveNext()) return 0;
+		m_nodes = n.Current.Select("//Adapter");
+		return 1;
+	}
+	public int QueryFetch(out string name, out string status, out string interfaceType, out string description, out string IPAddress, out string GWAddress)
+	{
+		name = status = interfaceType = description = IPAddress = GWAddress = string.Empty;
+		if(!m_nodes.MoveNext()) return 0;
+		name = m_nodes.Current.GetAttribute("Name", string.Empty);
+		status = m_nodes.Current.GetAttribute("OperationalStatus", string.Empty);
+		interfaceType = m_nodes.Current.GetAttribute("NetworkInterfaceType", string.Empty);
+		description = m_nodes.Current.GetAttribute("Description", string.Empty);
+		XPathNodeIterator itIPAddress = m_nodes.Current.Select("IPAddress");
+		if(itIPAddress.MoveNext())
+		{
+			IPAddress = itIPAddress.Current.GetAttribute("Address", string.Empty);
+		}
+		XPathNodeIterator itGWAddress = m_nodes.Current.Select("Address");
+		if(itGWAddress.MoveNext())
+		{
+			GWAddress = itGWAddress.Current.GetAttribute("Address", string.Empty);
+		}
+		return 1;
+	}
+}]]></PROGRAM_SOURCE>
+		<ORIGIN><![CDATA[]]></ORIGIN>
+		<DESCRIPTION><![CDATA[This OTS_WIN_NETWORK component interacts with the Windows network.
+A table component OTS_WIN_NETWORK is also available to instantly query networks as records.
+Once the OTS_WIN_NETWORK component is added to the USoft Definer you can:
+	-Open the application and query the Windows Network table (i.e. the OTS_WIN_NETWORK table)
+	-Open SqlCommand in the application and use method calls.
+
+Method call examples:
+
+select OTS_WIN_NETWORK.hostname()
+
+select OTS_WIN_NETWORK.DnsHostAddresses('localhost')
+
+select OTS_WIN_NETWORK.LocalIPAddress()
+
+select OTS_WIN_NETWORK.WIFIADDRESS()
+
+select OTS_WIN_NETWORK.IsNetworkAvailable()
+
+select OTS_WIN_NETWORK.ListNetwork()
+
+invoke OTS_WIN_NETWORK.Query with select null
+
+select OTS_WIN_NETWORK.Wifi()
+
+select OTS_WIN_NETWORK.wificonnected('USoftGuest')
+
+select OTS_WIN_NETWORK.ping('localhost')]]></DESCRIPTION>
+	</T_RDMI_DOTNET_COMPONENT>
+</DotNet_Components><J2EE_Components documentName="J2EE Components"/><Stateful_Components documentName="Stateful Components">
+	<T_RDMI_STATEFUL_COMPONENT COMPONENT_NAME="OTS_WIN_NETWORK" LIFETIME="SESSION" TRANSACTIONAL="N" SUPPORTS_COMMIT="N" SUPPORTS_ROLLBACK="N" SUPPORTS_PRECOMMIT="N" SUPPORTS_TABLECOMPONENT="Y" SUPPORTS_UPDATE="N" SUPPORTS_INSERT="N" SUPPORTS_DELETE="N" SUPPORTS_CONDITIONS="Y" SUPPORTS_ROWSETSIZEHINT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2020-01-11T22:18:32" G_U_K="71DF3CBFD55645ECA474DD6D81F6FF00">
+		<DESCRIPTION><![CDATA[This OTS_WIN_NETWORK component interacts with the Windows network.
+A table component OTS_WIN_NETWORK is also available to instantly query networks as records.
+Once the OTS_WIN_NETWORK component is added to the USoft Definer you can:
+	-Open the application and query the Windows Network table (i.e. the OTS_WIN_NETWORK table)
+	-Open SqlCommand in the application and use method calls.
+
+Method call examples:
+
+select OTS_WIN_NETWORK.hostname()
+
+select OTS_WIN_NETWORK.DnsHostAddresses('localhost')
+
+select OTS_WIN_NETWORK.LocalIPAddress()
+
+select OTS_WIN_NETWORK.WIFIADDRESS()
+
+select OTS_WIN_NETWORK.IsNetworkAvailable()
+
+select OTS_WIN_NETWORK.ListNetwork()
+
+invoke OTS_WIN_NETWORK.Query with select null
+
+select OTS_WIN_NETWORK.Wifi()
+
+select OTS_WIN_NETWORK.wificonnected('USoftGuest')
+
+select OTS_WIN_NETWORK.ping('localhost')]]></DESCRIPTION>
+	</T_RDMI_STATEFUL_COMPONENT>
+</Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_WIN_NETWORK" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2020-01-11T22:18:32" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="71DF3CBFD55645ECA474DD6D81F6FF00">
+		<DESCRIPTION><![CDATA[This OTS_WIN_NETWORK component interacts with the Windows network.
+A table component OTS_WIN_NETWORK is also available to instantly query networks as records.
+Once the OTS_WIN_NETWORK component is added to the USoft Definer you can:
+	-Open the application and query the Windows Network table (i.e. the OTS_WIN_NETWORK table)
+	-Open SqlCommand in the application and use method calls.
+
+Method call examples:
+
+select OTS_WIN_NETWORK.hostname()
+
+select OTS_WIN_NETWORK.DnsHostAddresses('localhost')
+
+select OTS_WIN_NETWORK.LocalIPAddress()
+
+select OTS_WIN_NETWORK.WIFIADDRESS()
+
+select OTS_WIN_NETWORK.IsNetworkAvailable()
+
+select OTS_WIN_NETWORK.ListNetwork()
+
+invoke OTS_WIN_NETWORK.Query with select null
+
+select OTS_WIN_NETWORK.Wifi()
+
+select OTS_WIN_NETWORK.wificonnected('USoftGuest')
+
+select OTS_WIN_NETWORK.ping('localhost')]]></DESCRIPTION>
+	</T_RDMI_COMPONENT>
+</Components><Methods documentName="Methods">
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_WIN_NETWORK" METHOD_NAME="DNSHOSTADDRESSES" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2020-01-13T14:29:05">
+		<PHYSICAL_METHOD_NAME><![CDATA[DnsHostAddresses]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_WIN_NETWORK" METHOD_NAME="HOSTNAME" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2020-01-13T14:29:05">
+		<PHYSICAL_METHOD_NAME><![CDATA[HostName]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_WIN_NETWORK" METHOD_NAME="ISNETWORKAVAILABLE" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2020-01-13T14:29:05">
+		<PHYSICAL_METHOD_NAME><![CDATA[IsNetworkAvailable]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_WIN_NETWORK" METHOD_NAME="LISTNETWORK" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2020-01-13T14:29:05">
+		<PHYSICAL_METHOD_NAME><![CDATA[ListNetwork]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_WIN_NETWORK" METHOD_NAME="LOCALIPADDRESS" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2020-01-13T14:29:05">
+		<PHYSICAL_METHOD_NAME><![CDATA[LocalIPAddress]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_WIN_NETWORK" METHOD_NAME="OTS_WIN_NETWORK" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2020-01-13T14:29:05">
+		<PHYSICAL_METHOD_NAME><![CDATA[OTS_WIN_NETWORK]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_WIN_NETWORK" METHOD_NAME="PING" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2020-01-13T14:29:05">
+		<PHYSICAL_METHOD_NAME><![CDATA[Ping]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_WIN_NETWORK" METHOD_NAME="QUERYEXE" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2020-01-13T14:29:05">
+		<PHYSICAL_METHOD_NAME><![CDATA[QueryExe]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_WIN_NETWORK" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2020-01-13T14:29:05">
+		<PHYSICAL_METHOD_NAME><![CDATA[QueryFetch]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_WIN_NETWORK" METHOD_NAME="WIFI" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2020-01-13T14:29:05">
+		<PHYSICAL_METHOD_NAME><![CDATA[Wifi]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_WIN_NETWORK" METHOD_NAME="WIFIADDRESS" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2020-01-13T14:29:05">
+		<PHYSICAL_METHOD_NAME><![CDATA[WifiAddress]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_WIN_NETWORK" METHOD_NAME="WIFICONNECTED" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2020-01-13T14:29:05">
+		<PHYSICAL_METHOD_NAME><![CDATA[WifiConnected]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+</Methods><Parameters documentName="Parameters">
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="0" METHOD_NAME="DNSHOSTADDRESSES" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_DnsHostAddresses" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="0" METHOD_NAME="HOSTNAME" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_HostName" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="0" METHOD_NAME="ISNETWORKAVAILABLE" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_IsNetworkAvailable" KIND="RETURN" PRIMITIVE_DATA_TYPE="BOOLEAN" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="0" METHOD_NAME="LISTNETWORK" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_ListNetwork" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="0" METHOD_NAME="LOCALIPADDRESS" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_LocalIPAddress" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="0" METHOD_NAME="PING" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_Ping" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="0" METHOD_NAME="WIFI" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_Wifi" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="0" METHOD_NAME="WIFIADDRESS" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_WifiAddress" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="0" METHOD_NAME="WIFICONNECTED" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_WifiConnected" KIND="RETURN" PRIMITIVE_DATA_TYPE="BOOLEAN" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="1" METHOD_NAME="DNSHOSTADDRESSES" METHOD_SEQNO="1" PARAMETER_NAME="hostname" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="1" METHOD_NAME="PING" METHOD_SEQNO="1" PARAMETER_NAME="hostname" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="1" METHOD_NAME="QUERYEXE" METHOD_SEQNO="1" PARAMETER_NAME="CONDITIONS" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="1" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="NAME" KIND="OUT" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="1" METHOD_NAME="WIFICONNECTED" METHOD_SEQNO="1" PARAMETER_NAME="ssid" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="2" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="STATUS" KIND="OUT" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="3" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="INTERFACETYPE" KIND="OUT" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="4" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="DESCRIPTION" KIND="OUT" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="5" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="IPADDRESS" KIND="OUT" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="6" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="GWADDRESS" KIND="OUT" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="999" METHOD_NAME="QUERYEXE" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_QueryExe" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_WIN_NETWORK" PARAMETER_SEQNO="999" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_QueryFetch" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+</Parameters><AggregateProtocol_Associations documentName="AggregateProtocol Associations"/><Query_Protocol_Associations documentName="Query Protocol Associations">
+	<T_RDMI_QUERY_PROTOCOL COMPONENT_NAME="OTS_WIN_NETWORK" PROTOCOL_NAME="QUERY" QP_EXE_METHOD_NAME="QUERYEXE" QP_EXE_COMPONENT_NAME="OTS_WIN_NETWORK" QP_EXE_METHOD_SEQNO="1" QP_FETCH_COMPONENT_NAME="OTS_WIN_NETWORK" QP_FETCH_METHOD_NAME="QUERYFETCH" QP_FETCH_METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y">
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_QUERY_PROTOCOL>
+</Query_Protocol_Associations><Named_Protocols documentName="Named Protocols">
+	<T_RDMI_NAMED_PROTOCOL COMPONENT_NAME="OTS_WIN_NETWORK" PROTOCOL_NAME="QUERY" T_RDMI_QUERY_PROTOCOL="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" T_RDMI_AGGREGATE_PROTOCOL="N">
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_NAMED_PROTOCOL>
+</Named_Protocols></MultiImport>

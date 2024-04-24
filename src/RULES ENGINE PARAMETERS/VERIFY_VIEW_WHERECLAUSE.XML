@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Rules_Engine_Parameters documentName="Rules Engine Parameters">
+	<T_RE_PARAM NAME="VERIFY_VIEW_WHERECLAUSE" SETTING="True" DESCRIPTION="Specifies&#x20;if&#x20;manipulations&#x20;on&#x20;logical&#x20;views&#x20;should&#x20;be&#x20;checked&#x20;to&#x20;see&#x20;if&#x20;they&#x20;match&#x20;the&#x20;views&#x20;whereclause&#x20;or&#x20;not." G_U_K="79B6152BA5B741408DAB0430D873CE18"/>
+</Rules_Engine_Parameters></MultiImport>

@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Namespaces documentName="Namespaces">
+	<T_WS_NAMESPACE NAMESPACE_ALIAS="xsd" NAMESPACE="http://www.w3.org/2001/XMLSchema" LOCATION="" G_U_K="36D430318F834F88B53C305C6D81C7E5"/>
+</Namespaces></MultiImport>
