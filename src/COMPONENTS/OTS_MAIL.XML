@@ -2,8 +2,7 @@
 <MultiImport>
 <Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_MAIL" ACTIVE="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2017-12-21T11:07:49" G_U_K="CB963CF68B444D72ADD9F99DE8759831">
-		<CONSTRUCTOR_SQL><![CDATA[SELECT	outgoing_mail_server, outgoing_mail_account
-FROM	<some_table>]]></CONSTRUCTOR_SQL>
+		<CONSTRUCTOR_SQL><![CDATA[SELECT	'outgoing_mail_server', 'outgoing_mail_account']]></CONSTRUCTOR_SQL>
 		<DESCRIPTION><![CDATA[This component uses System.Net.Mail to send an email to one or more recipients.
 The body can be plain text or it can contain HTML.
 Optionally 1 ore more attachments can be added to the mail.
