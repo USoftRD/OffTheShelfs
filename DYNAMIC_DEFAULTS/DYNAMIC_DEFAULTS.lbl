@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <OTS>
-	<OTS_Type>Components required for webdefaults usoft-zero</OTS_Type>
-	<Description>@HARM TODO @HARM TODO https://usoftsupport.atlassian.net/browse/USD-6599</Description>
+	<OTS_Type>Components required for Dynamic default values in usoft-zero</OTS_Type>
+	<Description>Use this package if you want to use the “Dynamic default values” feature in you USoft web application that is based on the usoft-zero web template. 
+For full documentation of this feature and the “getting started” look in the USoft documentation for “Dynamic default values“.
+This package will add the following objects to the Definer:
+    The table “COLUMN_DEFAULT_VALUES” and the columns and their domains
+    The xsl stylesheets:
+
+        DYNAMIC_DEFAULT_VALUES
+
+        EXECUTE_DEFAULT_VALUES_SELECT
+
+        SUBSTITUTE_ROW</Description>
 </OTS>
