@@ -1,6 +1,6 @@
 <?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
 <MultiImport>
-<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+<Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_XML_SIGNING" ACTIVE="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-16T17:11:24" G_U_K="43789B3AFC2F4845AC0F604AEB714448">
 		<CONSTRUCTOR_SQL><![CDATA[]]></CONSTRUCTOR_SQL>
 		<DESCRIPTION><![CDATA[This OTS_XML_SIGNING example component has methods to add a signature, verify a signature and remove a signature from an XML document.
@@ -393,7 +393,7 @@ In the application, using SqlCommand, you can test the methods with the followin
 	This removal allows further processing of the xml file without the extra <Signature>... data]]></DESCRIPTION>
 	</T_RDMI_STATEFUL_COMPONENT>
 </Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_XML_SIGNING" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-16T17:11:24" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="43789B3AFC2F4845AC0F604AEB714448">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_XML_SIGNING" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-16T17:11:24" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="43789B3AFC2F4845AC0F604AEB714448">
 		<DESCRIPTION><![CDATA[This OTS_XML_SIGNING example component has methods to add a signature, verify a signature and remove a signature from an XML document.
 
 In the application, using SqlCommand, you can test the methods with the following examples:

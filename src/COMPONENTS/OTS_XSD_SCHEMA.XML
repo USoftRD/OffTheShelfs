@@ -1,6 +1,6 @@
 <?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
 <MultiImport>
-<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+<Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_XSD_SCHEMA" ACTIVE="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-12-06T08:19:52" G_U_K="33C546073938426785BC283B3133462C">
 		<CONSTRUCTOR_SQL><![CDATA[]]></CONSTRUCTOR_SQL>
 		<DESCRIPTION><![CDATA[This component validates xml against an XSD schema.
@@ -156,7 +156,7 @@ SELECT OTS_XSD_SCHEMA.VALIDATE( 'C:\Development\Digitrage\Standaard.xsd',  'c:\d
 SELECT OTS_XSD_SCHEMA.VALIDATE( 'C:\Development\Digitrage\Standaard.xsd',  'c:\development\digitrage\Invalid.xml' )]]></DESCRIPTION>
 	</T_RDMI_DOTNET_COMPONENT>
 </DotNet_Components><J2EE_Components documentName="J2EE Components"/><Stateful_Components documentName="Stateful Components"/><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_XSD_SCHEMA" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-12-06T08:19:52" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="33C546073938426785BC283B3133462C">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_XSD_SCHEMA" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-12-06T08:19:52" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="33C546073938426785BC283B3133462C">
 		<DESCRIPTION><![CDATA[This component validates xml against an XSD schema.
 
 Call example: 

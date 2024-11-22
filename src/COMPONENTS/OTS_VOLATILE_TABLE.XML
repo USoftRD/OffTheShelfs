@@ -1,6 +1,6 @@
 <?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
 <MultiImport>
-<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+<Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_VOLATILE_TABLE" ACTIVE="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09" G_U_K="124DB2330B4B474B910969BF2FF50F34">
 		<CONSTRUCTOR_SQL><![CDATA[/*select null, null */
 
@@ -264,7 +264,7 @@ Make sure that a constructor is always available, active and checked (validated)
 After importing this component, the constructor SQL must be checked!]]></DESCRIPTION>
 	</T_RDMI_STATEFUL_COMPONENT>
 </Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_VOLATILE_TABLE" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="124DB2330B4B474B910969BF2FF50F34">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_VOLATILE_TABLE" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="124DB2330B4B474B910969BF2FF50F34">
 		<DESCRIPTION><![CDATA[This component implements a volatile in-memory table with 1 up to 10 fields, intended to be used as a component table.
 The first field is interpreted as the key field.
 All fields are stored as strings,

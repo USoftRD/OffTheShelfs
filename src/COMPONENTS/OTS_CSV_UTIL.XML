@@ -1,6 +1,6 @@
 <?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
 <MultiImport>
-<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+<Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_CSV_UTIL" ACTIVE="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-21T08:14:09" G_U_K="8F4475067FAF42B3A29CF7E3D5BB1839">
 		<CONSTRUCTOR_SQL><![CDATA[]]></CONSTRUCTOR_SQL>
 		<DESCRIPTION><![CDATA[The OTS_CSVUTIL is a helper class to handle comma separated values.
@@ -237,7 +237,7 @@ select OTS_CSVUTIL.ToXmlImport(
 )]]></DESCRIPTION>
 	</T_RDMI_DOTNET_COMPONENT>
 </DotNet_Components><J2EE_Components documentName="J2EE Components"/><Stateful_Components documentName="Stateful Components"/><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_CSV_UTIL" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-21T08:14:09" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="8F4475067FAF42B3A29CF7E3D5BB1839">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_CSV_UTIL" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-21T08:14:09" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="8F4475067FAF42B3A29CF7E3D5BB1839">
 		<DESCRIPTION><![CDATA[The OTS_CSVUTIL is a helper class to handle comma separated values.
 
 To produce a csv from a SQL select statement:

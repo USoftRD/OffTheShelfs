@@ -1,6 +1,6 @@
 <?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
 <MultiImport>
-<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+<Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" ACTIVE="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100021" CREATED_ON="2021-07-22T11:29:41" G_U_K="1406A32FF5954DB08D7BC06E29FC0369">
 		<CONSTRUCTOR_SQL><![CDATA[]]></CONSTRUCTOR_SQL>
 		<DESCRIPTION><![CDATA[This component is a .Net Syslog client. It Supports both RFC 3164 and RFC 5424 Syslog standards as well as UDP and encrypted TCP transports.
@@ -778,7 +778,7 @@ An ISyslogMessageSerializer interface, and two implementations of it (Sy
 for the implementation you could use table constraints that trigger the call to the syslog client on any SIDU operation (post-commit) on a driving table “AUDIT_LOG”, as seen in the above exam.]]></DESCRIPTION>
 	</T_RDMI_STATEFUL_COMPONENT>
 </Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100021" CREATED_ON="2021-07-22T11:29:41" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="1406A32FF5954DB08D7BC06E29FC0369">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100021" CREATED_ON="2021-07-22T11:29:41" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="1406A32FF5954DB08D7BC06E29FC0369">
 		<DESCRIPTION><![CDATA[This component is a .Net Syslog client. It Supports both RFC 3164 and RFC 5424 Syslog standards as well as UDP and encrypted TCP transports.
 This component specifically uses the RFC 3164 standard.
 The example is a slightly adapted version of an open source example of a C# Syslog client as found here:  https://github.com/emertechie/SyslogNet

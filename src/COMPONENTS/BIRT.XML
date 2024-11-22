@@ -1,6 +1,6 @@
 <?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
 <MultiImport>
-<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+<Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="BIRT" ACTIVE="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100112" CREATED_ON="2011-05-10T09:37:49" G_U_K="B055EFA46AE048B48E410CAE14FCB4EB">
 		<CONSTRUCTOR_SQL><![CDATA[SELECT 'C:\Java\BIRT\runtime\ReportEngine', 'C:\temp', 'images']]></CONSTRUCTOR_SQL>
 		<DESCRIPTION><![CDATA[This component provides a way to automatically generate reports from report design files created with Business Intelligence and Reporting Tools (BIRT), without requiring interaction with the tool suite itself. It is required that the deployment components of BIRT (the Runtime) are installed before installing this component, 
@@ -32,7 +32,7 @@ http://www.eclipse.org/birt/phoenix/
 This component is designed to work with design files created with BIRT version 3.7.2, although design files created with newer versions of BIRT might work as well. Older versions however might not work properly with this component.]]></DESCRIPTION>
 	</T_RDMI_JAVA_COMPONENT>
 </J2EE_Components><Stateful_Components documentName="Stateful Components"/><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="BIRT" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="Y" T_RDMI_STATEFUL_COMPONENT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100112" CREATED_ON="2011-05-10T09:37:49" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="N" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="B055EFA46AE048B48E410CAE14FCB4EB">
+	<T_RDMI_COMPONENT COMPONENT_NAME="BIRT" T_RDMI_JAVA_COMPONENT="Y" T_RDMI_STATEFUL_COMPONENT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100112" CREATED_ON="2011-05-10T09:37:49" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="N" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="B055EFA46AE048B48E410CAE14FCB4EB">
 		<DESCRIPTION><![CDATA[This component provides a way to automatically generate reports from report design files created with Business Intelligence and Reporting Tools (BIRT), without requiring interaction with the tool suite itself. It is required that the deployment components of BIRT (the Runtime) are installed before installing this component, 
 
 The constructor of this component contains the ReportEngine folder of the runtime installation, a temp directory for writing temporary files, and a prefix for images when using HTML output, for example, if you install BIRT in 'C:\Java\BIRT\runtime', then the Constructor must be something like:

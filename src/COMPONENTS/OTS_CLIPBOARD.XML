@@ -1,6 +1,6 @@
 <?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
 <MultiImport>
-<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+<Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_CLIPBOARD" ACTIVE="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2020-01-07T13:03:12" G_U_K="26D7FCDE72EE40BFACB611FB06C23E8D">
 		<CONSTRUCTOR_SQL><![CDATA[]]></CONSTRUCTOR_SQL>
 		<DESCRIPTION><![CDATA[The OTS_CLIPBOARD component allows USoft C/S applications to interact with  the Windows Clipboard.
@@ -782,7 +782,7 @@ to_clob('iVBORw0KGgoAAAANSUhEUgAABoAAAAItCAYAAAAZlriRAAAAAXNSR0IArs4c6QAAAARnQU1
 )]]></DESCRIPTION>
 	</T_RDMI_STATEFUL_COMPONENT>
 </Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_CLIPBOARD" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2020-01-07T13:03:12" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="26D7FCDE72EE40BFACB611FB06C23E8D">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_CLIPBOARD" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2020-01-07T13:03:12" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="26D7FCDE72EE40BFACB611FB06C23E8D">
 		<DESCRIPTION><![CDATA[The OTS_CLIPBOARD component allows USoft C/S applications to interact with  the Windows Clipboard.
 
 This example has  a table component to interact with the Clipboard and show the Clipboard data as records.

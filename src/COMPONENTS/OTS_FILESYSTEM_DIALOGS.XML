@@ -1,6 +1,6 @@
 <?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
 <MultiImport>
-<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+<Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_FILESYSTEM_DIALOGS" ACTIVE="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2020-01-10T12:46:00" G_U_K="29A9DCC466984795A4BE9FE68B9A85E2">
 		<CONSTRUCTOR_SQL><![CDATA[]]></CONSTRUCTOR_SQL>
 		<DESCRIPTION><![CDATA[The OTS_FILESYSTEM_DIALOG allows USoft C/S applications to open the Windows File and Folder dialogs
@@ -63,7 +63,7 @@ select OTS_FILESYSTEM_DIALOGS.Files('c:\temp\', 'Select a file', '"My Text Files
 select OTS_FILESYSTEM_DIALOGS.Folders('c:\temp\', 'Select the folder to be used in this example')]]></DESCRIPTION>
 	</T_RDMI_STATEFUL_COMPONENT>
 </Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_FILESYSTEM_DIALOGS" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2020-01-10T12:46:00" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="29A9DCC466984795A4BE9FE68B9A85E2">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_FILESYSTEM_DIALOGS" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2020-01-10T12:46:00" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="29A9DCC466984795A4BE9FE68B9A85E2">
 		<DESCRIPTION><![CDATA[The OTS_FILESYSTEM_DIALOG allows USoft C/S applications to open the Windows File and Folder dialogs
 
 Method call Examples:

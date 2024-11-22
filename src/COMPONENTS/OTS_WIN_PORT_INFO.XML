@@ -1,6 +1,6 @@
 <?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
 <MultiImport>
-<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+<Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_WIN_PORT_INFO" ACTIVE="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2020-01-11T22:38:01" G_U_K="9316F5B13E194CBBB88D1F93499818ED">
 		<CONSTRUCTOR_SQL><![CDATA[]]></CONSTRUCTOR_SQL>
 		<DESCRIPTION><![CDATA[The OTS_WIN_PORT_INFO retrieves port information on a windows computer.
@@ -102,7 +102,7 @@ select OTS_WIN_PORT_INFO.portdetails(80)
 invoke OTS_WIN_PORT_INFO.Query with select null]]></DESCRIPTION>
 	</T_RDMI_STATEFUL_COMPONENT>
 </Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_WIN_PORT_INFO" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2020-01-11T22:38:01" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="9316F5B13E194CBBB88D1F93499818ED">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_WIN_PORT_INFO" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2020-01-11T22:38:01" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="9316F5B13E194CBBB88D1F93499818ED">
 		<DESCRIPTION><![CDATA[The OTS_WIN_PORT_INFO retrieves port information on a windows computer.
 A table component OTS_WIN_PORT_INFO is available to query all ports in use and their status.
 Additionally, the below set of utility methods is available:

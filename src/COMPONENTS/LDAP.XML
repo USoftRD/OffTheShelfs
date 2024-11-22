@@ -1,6 +1,6 @@
 <?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
 <MultiImport>
-<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+<Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="LDAP" ACTIVE="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS61" CREATED_ON="2003-02-05T11:41:23" G_U_K="D1D1F0B4CC2E4199845FA116A3BFAD9F">
 		<CONSTRUCTOR_SQL><![CDATA[SELECT
 '<LDAP Version number>',
@@ -184,7 +184,7 @@ Search Filter Definition:
         any = "*"]]></DESCRIPTION>
 	</T_RDMI_STATEFUL_COMPONENT>
 </Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="LDAP" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="Y" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS61" CREATED_ON="2003-02-05T11:41:23" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="N" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="D1D1F0B4CC2E4199845FA116A3BFAD9F">
+	<T_RDMI_COMPONENT COMPONENT_NAME="LDAP" T_RDMI_JAVA_COMPONENT="Y" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS61" CREATED_ON="2003-02-05T11:41:23" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="N" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="D1D1F0B4CC2E4199845FA116A3BFAD9F">
 		<DESCRIPTION><![CDATA[For the policy and limitations regarding Off the Shelf components, refer to Help topic: Off the Shelf components.        
 
 You can use the LDAPTable component to connect to an LDAP server for accessing modifying information in directories. A directory is a specialized database optimized for reading, browsing and searching. LDAP stands for Lightweight Directory Access Protocol. As the name suggests, it is a lightweight protocol for accessing directory services, specifically X.500-based directory services.   

@@ -1,6 +1,6 @@
 <?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
 <MultiImport>
-<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+<Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_CALENDAR_DAY" ACTIVE="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2019-10-02T17:32:04" G_U_K="F692C6226F00483DB49997388967B6BC">
 		<CONSTRUCTOR_SQL><![CDATA[select null /*'nl-NL'*/, 'MMMM', 'dddd', '1-1-2000', '31-12-2050', 1
 /*
@@ -737,7 +737,7 @@ An example of a query would be:
 select YEAR, MONTHNAME, DAYOFWEEK, DAYNAME from OTS_CALENDARDAY where PERIOD_START='now' and PERIOD_END='this week' and CULTURE_NAME='nl-NL']]></DESCRIPTION>
 	</T_RDMI_STATEFUL_COMPONENT>
 </Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_CALENDAR_DAY" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2019-10-02T17:32:04" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="F692C6226F00483DB49997388967B6BC">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_CALENDAR_DAY" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2019-10-02T17:32:04" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="F692C6226F00483DB49997388967B6BC">
 		<DESCRIPTION><![CDATA[This Calendar component is intended to be used in a Calendar table component.
 OTS_CALENDARDAY steps through the days in a certain period.
 The default period is specified in the constructor SQL, together with a default culture and default month and day name format.

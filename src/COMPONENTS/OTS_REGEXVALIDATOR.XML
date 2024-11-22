@@ -1,6 +1,6 @@
 <?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
 <MultiImport>
-<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+<Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_REGEXVALIDATOR" ACTIVE="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-04-24T15:13:41" G_U_K="bdf1b15adfdd4d77af565c103d836426">
 		<CONSTRUCTOR_SQL><![CDATA[]]></CONSTRUCTOR_SQL>
 		<DESCRIPTION><![CDATA[C# component for testing a regular expression pattern using the RegularExpressions functionality within .NET. 
@@ -51,7 +51,7 @@ input of type string, the string to be matched.
 returns a boolean for the match result.]]></DESCRIPTION>
 	</T_RDMI_DOTNET_COMPONENT>
 </DotNet_Components><J2EE_Components documentName="J2EE Components"/><Stateful_Components documentName="Stateful Components"/><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_REGEXVALIDATOR" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-04-24T15:13:41" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="bdf1b15adfdd4d77af565c103d836426">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_REGEXVALIDATOR" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-04-24T15:13:41" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="bdf1b15adfdd4d77af565c103d836426">
 		<DESCRIPTION><![CDATA[C# component for testing a regular expression pattern using the RegularExpressions functionality within .NET. 
 This component can be used as an alternative for the Regular Expression Patterns in Domains. For example, you can call this method in a Domain Constraint to implement custom messages based on regular expressions matching. An example of a Domain an Domain Constraint is included in this OTS component. The Domain constraint validates an email address domain. More information on Regular Expressions for Domains is explained here:
 

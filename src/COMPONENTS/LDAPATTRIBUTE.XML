@@ -1,6 +1,6 @@
 <?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
 <MultiImport>
-<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+<Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="LDAPATTRIBUTE" ACTIVE="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS61" CREATED_ON="2003-02-05T11:41:30" G_U_K="2BFAD6C43F014A878DA08FF9C0AF5B31">
 		<CONSTRUCTOR_SQL><![CDATA[SELECT
 '<LDAP Version number>',
@@ -70,7 +70,7 @@ select
 After you have configured the constructor SQL fot both the LDAP component as for the LDAPATTRIBUTE component, don't forget to check the constructor SQL's on the 'State' tabpage and to save the changes.]]></DESCRIPTION>
 	</T_RDMI_STATEFUL_COMPONENT>
 </Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="LDAPATTRIBUTE" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="Y" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS61" CREATED_ON="2003-02-05T11:41:30" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="N" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="2BFAD6C43F014A878DA08FF9C0AF5B31">
+	<T_RDMI_COMPONENT COMPONENT_NAME="LDAPATTRIBUTE" T_RDMI_JAVA_COMPONENT="Y" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS61" CREATED_ON="2003-02-05T11:41:30" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="N" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="2BFAD6C43F014A878DA08FF9C0AF5B31">
 		<DESCRIPTION><![CDATA[For the policy and limitations regarding Off the Shelf components, refer to Help topic: Off the Shelf components.
 
 LDAPATTRIBUTE is used together with the LDAP tableComponent.

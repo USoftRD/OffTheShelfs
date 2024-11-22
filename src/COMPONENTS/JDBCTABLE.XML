@@ -1,6 +1,6 @@
 <?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
 <MultiImport>
-<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+<Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="JDBCTABLE" ACTIVE="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="FRANK" CREATED_ON="2001-10-30T14:24:09" G_U_K="F9DCDEC884D74E8F9943AED88E42F7C9">
 		<CONSTRUCTOR_SQL><![CDATA[select     
 '<Connection String>',
@@ -211,7 +211,7 @@ Notes:
 3) The JdbcTable has a timeout set per default to 20 seconds. If you want to change it, add in the JDBCTABLE method, the setTimeout() physical method: e.g. this.setTimeout('30')]]></DESCRIPTION>
 	</T_RDMI_STATEFUL_COMPONENT>
 </Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="JDBCTABLE" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="Y" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="FRANK" CREATED_ON="2001-10-30T14:24:09" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="N" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="F9DCDEC884D74E8F9943AED88E42F7C9">
+	<T_RDMI_COMPONENT COMPONENT_NAME="JDBCTABLE" T_RDMI_JAVA_COMPONENT="Y" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="FRANK" CREATED_ON="2001-10-30T14:24:09" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="N" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="F9DCDEC884D74E8F9943AED88E42F7C9">
 		<DESCRIPTION><![CDATA[You can use the JDBCTable component to connect to an external data source using JDBC. The JDBCTable component represents a remote table from a data source that can be accessed from a JDBC connection. This remote table is specified by the field names of primary key columns and other columns in the Constructor SQL. A connection string specifies the remote JDBC data source.    
 
 By default the JDBCTable component uses the USoft JDBC Driver for the Rules Service. If you want to specify another driver, you can load it by adding the 'Class.forName' method to the physical method of the JDBCTABLE constructor.    

@@ -1,6 +1,6 @@
 <?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
 <MultiImport>
-<Automation_Servers documentName="Automation Servers"/><Component_Constructors documentName="Component Constructors">
+<Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_CALENDAR" ACTIVE="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="FRANK" CREATED_ON="2001-11-02T12:24:48" G_U_K="6F134F5911C64C15BEE32B7C46AD5EB0">
 		<CONSTRUCTOR_SQL><![CDATA[]]></CONSTRUCTOR_SQL>
 		<DESCRIPTION><![CDATA[For the policy and limitations regarding Off the Shelf components, refer to Help topic: Off the Shelf components.  
@@ -32,7 +32,7 @@ http://java.sun.com/j2se/1.3/docs/api/java/util/Calendar.html
 http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.html]]></DESCRIPTION>
 	</T_RDMI_STATEFUL_COMPONENT>
 </Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_CALENDAR" T_RDMI_AUTOMATION_SERVER="N" T_RDMI_JAVA_COMPONENT="Y" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="FRANK" CREATED_ON="2001-11-02T12:24:48" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="N" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="6F134F5911C64C15BEE32B7C46AD5EB0">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_CALENDAR" T_RDMI_JAVA_COMPONENT="Y" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="FRANK" CREATED_ON="2001-11-02T12:24:48" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="N" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="6F134F5911C64C15BEE32B7C46AD5EB0">
 		<DESCRIPTION><![CDATA[For the policy and limitations regarding Off the Shelf components, refer to Help topic: Off the Shelf components.  
 
 The calendar component gives access to a number of date conversion options as available in the java.util.Calendar and java.text.SimpleDateFormat classes. For example, you can convert a date to a string in a local representation according to a specified style. These functions are database-independent.  
