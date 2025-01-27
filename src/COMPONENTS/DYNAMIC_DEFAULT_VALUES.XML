@@ -53,8 +53,10 @@
 		]]]]><![CDATA[>
 	</xsl:variable>
 	<xsl:variable name="sqlTableNameReplaced" select="strings:Replace($sql, ':table_name', concat($apos, $table_name, $apos))"/>
-	<xsl:variable name="sqlOldValuesReplaced" select="strings:Replace($sqlTableNameReplaced, ':old_values', concat($apos, $old_values, $apos))"/>
-	<xsl:variable name="sqlNewValuesReplaced" select="strings:Replace($sqlOldValuesReplaced, ':new_values', concat($apos, $new_values, $apos))"/>
+	<xsl:variable name="oldValues" select="strings:Replace($old_values, $apos, concat($apos, $apos))"/> <!-- Single quotes must be doubled to escape them in sql -->
+	<xsl:variable name="sqlOldValuesReplaced" select="strings:Replace($sqlTableNameReplaced, ':old_values', concat($apos, $oldValues, $apos))"/>
+	<xsl:variable name="newValues" select="strings:Replace($new_values, $apos, concat($apos, $apos))"/> <!-- Single quotes must be doubled to escape them in sql -->
+	<xsl:variable name="sqlNewValuesReplaced" select="strings:Replace($sqlOldValuesReplaced, ':new_values', concat($apos, $newValues, $apos))"/>
 	<xsl:variable name="result" select="document(concat('invoke xml.sqlexport with ', $sqlNewValuesReplaced))/SQLXMLExport/Rows/Row[1]/Field[@alias='RESULT']"/>
 
 	<xsl:template match="/">
