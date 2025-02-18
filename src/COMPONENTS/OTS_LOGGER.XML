@@ -10,10 +10,12 @@
 		<ASSEMBLYREFS><![CDATA[]]></ASSEMBLYREFS>
 		<PROGRAM_SOURCE><![CDATA[using System;
 using System.IO;
+using System.Threading;
 
 public class OTS_LOGGER
 {
 	private string m_filepath = "C:\\temp\\mylog.log";
+	private static readonly Mutex logMutex = new Mutex();
 
 	public int WriteInformation(string message)
     {
@@ -60,12 +62,17 @@ public class OTS_LOGGER
         {
             try
             {
+				logMutex.WaitOne();
                 File.AppendAllText(filepath, logMessage + Environment.NewLine);
             }
             catch (Exception ex)
             {
 				throw new Exception(String.Format("Failed to write to log file: {0}", ex.Message));
             }
+			finally
+			{
+				logMutex.ReleaseMutex();
+			}
         }
 		return 1;
 	}
