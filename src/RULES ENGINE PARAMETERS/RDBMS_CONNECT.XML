@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Rules_Engine_Parameters documentName="Rules Engine Parameters">
-	<T_RE_PARAM NAME="RDBMS_CONNECT" SETTING="auto" DESCRIPTION="Specifies&#x20;whether&#x20;or&#x20;not&#x20;a&#x20;USoft&#x20;application&#x20;should&#x20;try&#x20;to&#x20;reconnect&#x20;to&#x20;the&#x20;database." G_U_K="42AE8A03A176446A92AC17119E8AAFA6"/>
-</Rules_Engine_Parameters></MultiImport>

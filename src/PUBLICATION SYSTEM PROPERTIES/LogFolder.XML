@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Publication_System_Properties documentName="Publication System Properties">
-	<T_PUB_SYS_PROPERTY NAME="LogFolder" DISPLAYED_YN="N" MANDATORY_YN="N" DEFAULT_VALUE="" G_U_K="AB158C7D51A24E98BEBD1914C0C7997F"/>
-</Publication_System_Properties></MultiImport>

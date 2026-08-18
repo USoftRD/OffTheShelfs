@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Publication_System_Properties documentName="Publication System Properties">
-	<T_PUB_SYS_PROPERTY NAME="JQueryUIVersion" DISPLAYED_YN="N" MANDATORY_YN="Y" DEFAULT_VALUE="1" G_U_K="3AD538D646CD4AFDA7452D07D68133DE"/>
-</Publication_System_Properties></MultiImport>

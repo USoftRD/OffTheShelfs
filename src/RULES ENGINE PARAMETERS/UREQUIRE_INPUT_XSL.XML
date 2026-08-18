@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Rules_Engine_Parameters documentName="Rules Engine Parameters">
-	<T_RE_PARAM NAME="UREQUIRE_INPUT_XSL" SETTING="(null)" DESCRIPTION="Specifies&#x20;the&#x20;filepath&#x20;and&#x20;filename&#x20;of&#x20;the&#x20;XSLT&#x20;transformation&#x20;(if&#x20;any)&#x20;that&#x20;must&#x20;be&#x20;applied&#x20;to&#x20;business&#x20;rule&#x20;input&#x20;from&#x20;URequire&#x20;before&#x20;it&#x20;is&#x20;imported&#x20;into&#x20;USoft&#x20;Teamwork." G_U_K="008D66F643CF43D69F8F005C071655C4"/>
-</Rules_Engine_Parameters></MultiImport>

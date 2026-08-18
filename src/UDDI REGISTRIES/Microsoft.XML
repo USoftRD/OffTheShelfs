@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<UDDI_Registries documentName="UDDI Registries">
-	<T_WS_UDDI_REGISTRY UDDI_REGISTRY="Microsoft" QUERY_URL="http://uddi.microsoft.com/inquire" G_U_K="49A3BE562FFD483EA2B62C8FF39690DF"/>
-</UDDI_Registries></MultiImport>

@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Implementation_Types documentName="Implementation Types">
-	<T_BO_IMPLEMENT_TYPE IMPL_TYPE="Decision" DESCRIPTION="USoft&#x20;Implementation&#x20;Type" G_U_K="e6cde052591e4376bb5e7109a17f3c27"/>
-</Implementation_Types></MultiImport>

@@ -1,7 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Domains documentName="Domains">
-	<T_DOMAIN DOMAIN_NAME="OTS_WIN_NETWORK_STRING" BASE_DATA_TYPE_YN="N" BASE_DATA_TYPE="SHORT_TEXT" SUPER_DOMAIN="" DATATYPE="NVARCHAR" TOTAL_LENGTH="255" LENGTH_AFTER_PERIOD="" F_DATATYPE="CHAR" F_TOTAL_LENGTH="1" F_LENGTH_AFTER_PERIOD="" DISPLAY_LENGTH="60" UPPERCASE="N" FIXED_LENGTH="N" IS_SEQNO="N" DEF_VALUE="" RANGE_LOW="" RANGE_HIGH="" HELP_TEXT="" IOFORMAT="" DBFORMAT="" DESCR="" CREATED_BY="RDMI91" CREATED_ON="2020-01-10T19:02:14" SEQNO_COMPONENT="" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" REGEXP="" G_U_K="6BDC1F2EB34E49B390C3E8F5BABA4BC3">
-		<COM_TEXT><![CDATA[]]></COM_TEXT>
-	</T_DOMAIN>
-</Domains><Alternative_Input_Formats documentName="Alternative Input Formats"/><Domain_Constraints documentName="Domain Constraints"/><Domain_Values documentName="Domain Values"/><Sequence_Definitions documentName="Sequence Definitions"/></MultiImport>

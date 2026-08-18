@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Data_Types documentName="Data Types">
-	<T_DATATYPE DATATYPE="FLOAT" VALID_ON="ODBC,&#x20;Ora[(1-126)],&#x20;Oledb[(1-53)]" BASE_DATA_TYPE="NUMBER" G_U_K="8A8BDF9E8D2B4341A1F85A07C38281F8"/>
-</Data_Types></MultiImport>

@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Data_Types documentName="Data Types">
-	<T_DATATYPE DATATYPE="BYTE" VALID_ON="Inf-OL" BASE_DATA_TYPE="X" G_U_K="64A6817A0C524E82AF5B4D6FFD4EBBEB"/>
-</Data_Types></MultiImport>

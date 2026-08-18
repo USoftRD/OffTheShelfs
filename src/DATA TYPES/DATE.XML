@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Data_Types documentName="Data Types">
-	<T_DATATYPE DATATYPE="DATE" VALID_ON="ODBC,&#x20;Ora" BASE_DATA_TYPE="DATE" G_U_K="B035E98851C44F08AE85E766DCFC594A"/>
-</Data_Types></MultiImport>

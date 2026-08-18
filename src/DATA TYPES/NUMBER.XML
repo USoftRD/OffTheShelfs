@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Data_Types documentName="Data Types">
-	<T_DATATYPE DATATYPE="NUMBER" VALID_ON="Ora[(n[,m])]" BASE_DATA_TYPE="NUMBER" G_U_K="D91C354DBE694CEF85C38ABF64497804"/>
-</Data_Types></MultiImport>

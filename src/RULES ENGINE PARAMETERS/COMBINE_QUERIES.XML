@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Rules_Engine_Parameters documentName="Rules Engine Parameters">
-	<T_RE_PARAM NAME="COMBINE_QUERIES" SETTING="True" DESCRIPTION="Specifies&#x20;if&#x20;the&#x20;Rules&#x20;Engine&#x20;should&#x20;combine&#x20;the&#x20;statement&#x20;used&#x20;to&#x20;retrieve&#x20;and&#x20;lock&#x20;the&#x20;records&#x20;to&#x20;be&#x20;updated&#x20;with&#x20;the&#x20;statement&#x20;used&#x20;to&#x20;determine&#x20;the&#x20;new&#x20;values" G_U_K="204BFAB7FECA4AE8BBC34B9B8A9C71EF"/>
-</Rules_Engine_Parameters></MultiImport>

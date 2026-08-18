@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Rules_Engine_Parameters documentName="Rules Engine Parameters">
-	<T_RE_PARAM NAME="DEFAULT_DATE_FORMAT" SETTING="DD-MON-YY" DESCRIPTION="Specifies&#x20;the&#x20;default&#x20;IO-Format&#x20;to&#x20;be&#x20;used&#x20;when&#x20;converting&#x20;a&#x20;date&#x20;into&#x20;a&#x20;string" G_U_K="DB78406A59B446DB98C8373885919A50"/>
-</Rules_Engine_Parameters></MultiImport>

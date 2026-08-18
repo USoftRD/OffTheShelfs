@@ -1,7 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Domains documentName="Domains">
-	<T_DOMAIN DOMAIN_NAME="OTS_CALENDAR_INT_1" BASE_DATA_TYPE_YN="N" BASE_DATA_TYPE="INTEGER" SUPER_DOMAIN="" DATATYPE="NUMBER" TOTAL_LENGTH="1" LENGTH_AFTER_PERIOD="0" F_DATATYPE="INT" F_TOTAL_LENGTH="1" F_LENGTH_AFTER_PERIOD="0" DISPLAY_LENGTH="" UPPERCASE="N" FIXED_LENGTH="N" IS_SEQNO="N" DEF_VALUE="" RANGE_LOW="" RANGE_HIGH="" HELP_TEXT="" IOFORMAT="" DBFORMAT="" DESCR="" CREATED_BY="P3100027" CREATED_ON="2019-10-14T11:33:33" SEQNO_COMPONENT="" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" REGEXP="" G_U_K="65445A890CAB4FA9A12507AC5451ABAD">
-		<COM_TEXT><![CDATA[]]></COM_TEXT>
-	</T_DOMAIN>
-</Domains><Alternative_Input_Formats documentName="Alternative Input Formats"/><Domain_Constraints documentName="Domain Constraints"/><Domain_Values documentName="Domain Values"/><Sequence_Definitions documentName="Sequence Definitions"/></MultiImport>

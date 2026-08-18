@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Rules_Engine_Parameters documentName="Rules Engine Parameters">
-	<T_RE_PARAM NAME="ALLOW_SET_MANIPULATIONS" SETTING="auto" DESCRIPTION="Specifies&#x20;whether&#x20;SQL&#x20;manipulations&#x20;are&#x20;handled&#x20;set-oriented&#x20;or&#x20;not." G_U_K="2D601E6CDC8B4F768563A23061D937CB"/>
-</Rules_Engine_Parameters></MultiImport>

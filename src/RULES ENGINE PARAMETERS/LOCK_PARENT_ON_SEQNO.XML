@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Rules_Engine_Parameters documentName="Rules Engine Parameters">
-	<T_RE_PARAM NAME="LOCK_PARENT_ON_SEQNO" SETTING="False" DESCRIPTION="Specifies&#x20;if&#x20;parent&#x20;records&#x20;must&#x20;be&#x20;locked&#x20;when&#x20;child&#x20;records&#x20;are&#x20;being&#x20;entered." G_U_K="138CD4AEA11E47D7B363D0866E0DB1E7"/>
-</Rules_Engine_Parameters></MultiImport>

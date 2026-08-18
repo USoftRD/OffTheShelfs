@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Implementation_Types documentName="Implementation Types">
-	<T_BO_IMPLEMENT_TYPE IMPL_TYPE="Job&#x20;Right" DESCRIPTION="USoft&#x20;Implementation&#x20;Type" G_U_K="9dba1b6ee6234f28be3254bc7727161e"/>
-</Implementation_Types></MultiImport>

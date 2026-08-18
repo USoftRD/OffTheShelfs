@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Data_Types documentName="Data Types">
-	<T_DATATYPE DATATYPE="NCLOB" VALID_ON="Ora,&#x20;Oledb&#x20;(nvarchar(max))" BASE_DATA_TYPE="STRING" G_U_K="BC8E3124E0704B41A03B106411E486F4"/>
-</Data_Types></MultiImport>

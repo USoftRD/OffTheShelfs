@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Data_Types documentName="Data Types">
-	<T_DATATYPE DATATYPE="RAW" VALID_ON="Ora(1-240)" BASE_DATA_TYPE="BINARY" G_U_K="87FC40CA54DB4CF2BB13569368AD40E4"/>
-</Data_Types></MultiImport>

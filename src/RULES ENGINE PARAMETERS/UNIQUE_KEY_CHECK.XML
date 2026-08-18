@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Rules_Engine_Parameters documentName="Rules Engine Parameters">
-	<T_RE_PARAM NAME="UNIQUE_KEY_CHECK" SETTING="True" DESCRIPTION="Specifies&#x20;whether&#x20;the&#x20;Rules&#x20;Engine&#x20;must&#x20;perform&#x20;unique&#x20;key&#x20;checks&#x20;in&#x20;the&#x20;case&#x20;of&#x20;non-manual&#x20;data&#x20;entry,&#x20;for&#x20;example&#x20;sql-script()&#x20;functions." G_U_K="B5A0078CC3474CB19C449C583CF09CB9"/>
-</Rules_Engine_Parameters></MultiImport>

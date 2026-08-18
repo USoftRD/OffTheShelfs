@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Publication_System_Properties documentName="Publication System Properties">
-	<T_PUB_SYS_PROPERTY NAME="Benchmark" DISPLAYED_YN="N" MANDATORY_YN="Y" DEFAULT_VALUE="False" G_U_K="90D16BCDFE0443E0A1CA634BD85E6894"/>
-</Publication_System_Properties></MultiImport>

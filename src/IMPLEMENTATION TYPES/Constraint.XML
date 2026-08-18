@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Implementation_Types documentName="Implementation Types">
-	<T_BO_IMPLEMENT_TYPE IMPL_TYPE="Constraint" DESCRIPTION="USoft&#x20;Implementation&#x20;Type" G_U_K="d0cf2ad366494a7ba0a3285a72d47b58"/>
-</Implementation_Types></MultiImport>

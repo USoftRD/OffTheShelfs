@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Data_Types documentName="Data Types">
-	<T_DATATYPE DATATYPE="TIMESTAMP" VALID_ON="ODBC" BASE_DATA_TYPE="DATETIME" G_U_K="E2990061E22249FF9C01EDB5DC530AE5"/>
-</Data_Types></MultiImport>

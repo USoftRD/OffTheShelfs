@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Data_Types documentName="Data Types">
-	<T_DATATYPE DATATYPE="LONGRAW" VALID_ON="..&#x20;deprecated" BASE_DATA_TYPE="TEXT" G_U_K="F9505E4A7E08412C8E984FDE6B912E85"/>
-</Data_Types></MultiImport>

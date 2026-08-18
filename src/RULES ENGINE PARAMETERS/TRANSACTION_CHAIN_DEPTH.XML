@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Rules_Engine_Parameters documentName="Rules Engine Parameters">
-	<T_RE_PARAM NAME="TRANSACTION_CHAIN_DEPTH" SETTING="500" DESCRIPTION="Specifies&#x20;the&#x20;maximum&#x20;number&#x20;of&#x20;chained&#x20;transactions." G_U_K="41E4DC58D4664F099B6BDFA8AF95E51C"/>
-</Rules_Engine_Parameters></MultiImport>

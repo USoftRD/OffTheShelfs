@@ -1,7 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Domains documentName="Domains">
-	<T_DOMAIN DOMAIN_NAME="TWI_INT_4" BASE_DATA_TYPE_YN="N" BASE_DATA_TYPE="INTEGER" SUPER_DOMAIN="" DATATYPE="NUMBER" TOTAL_LENGTH="4" LENGTH_AFTER_PERIOD="0" F_DATATYPE="INT" F_TOTAL_LENGTH="4" F_LENGTH_AFTER_PERIOD="0" DISPLAY_LENGTH="" UPPERCASE="N" FIXED_LENGTH="N" IS_SEQNO="N" DEF_VALUE="" RANGE_LOW="" RANGE_HIGH="" HELP_TEXT="" IOFORMAT="" DBFORMAT="" DESCR="Domain&#x20;is&#x20;used&#x20;by&#x20;USoft&#x20;Production." CREATED_BY="RDMI91" CREATED_ON="2019-09-03T12:44:33" SEQNO_COMPONENT="" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" REGEXP="" G_U_K="20D1EE03E742487E89D24505E7E02C96">
-		<COM_TEXT><![CDATA[]]></COM_TEXT>
-	</T_DOMAIN>
-</Domains><Alternative_Input_Formats documentName="Alternative Input Formats"/><Domain_Constraints documentName="Domain Constraints"/><Domain_Values documentName="Domain Values"/><Sequence_Definitions documentName="Sequence Definitions"/></MultiImport>

@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Publication_System_Properties documentName="Publication System Properties">
-	<T_PUB_SYS_PROPERTY NAME="BrowserTitle" DISPLAYED_YN="N" MANDATORY_YN="Y" DEFAULT_VALUE="USoft&#x20;Web&#x20;Application" G_U_K="16A93665FD3F4226AAEB74E31B0B5C54"/>
-</Publication_System_Properties></MultiImport>

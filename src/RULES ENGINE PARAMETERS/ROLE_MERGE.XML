@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Rules_Engine_Parameters documentName="Rules Engine Parameters">
-	<T_RE_PARAM NAME="ROLE_MERGE" SETTING="False" DESCRIPTION="Specifies&#x20;that&#x20;the&#x20;engine&#x20;must&#x20;merge&#x20;roles&#x20;when&#x20;a&#x20;user&#x20;is&#x20;assigned&#x20;to&#x20;multiple&#x20;roles" G_U_K="580E8843A587430C8725561926313F18"/>
-</Rules_Engine_Parameters></MultiImport>

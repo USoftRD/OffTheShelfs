@@ -1,5 +1,0 @@
-<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
-<MultiImport>
-<Rules_Engine_Parameters documentName="Rules Engine Parameters">
-	<T_RE_PARAM NAME="QUERY_ORDER_TURNING_POINT" SETTING="100" DESCRIPTION="Specifies&#x20;the&#x20;the&#x20;maximum&#x20;number&#x20;of&#x20;rows&#x20;that&#x20;can&#x20;be&#x20;returned&#x20;by&#x20;a&#x20;component&#x20;table&#x20;in&#x20;order&#x20;to&#x20;be&#x20;the&#x20;first&#x20;table&#x20;fetched" G_U_K="A8A965F2AA944F098F699032556314D1"/>
-</Rules_Engine_Parameters></MultiImport>
