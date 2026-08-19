@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Data_Types documentName="Data Types">
+	<T_DATATYPE DATATYPE="REAL" VALID_ON="ODBC,&#x20;Ora,&#x20;Oledb" BASE_DATA_TYPE="NUMBER" G_U_K="9ED9B66E360A4DA5878186F6FA704DAD"/>
+</Data_Types></MultiImport>

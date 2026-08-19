@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Reserved_Words documentName="Reserved Words">
+	<T_RESERVED_WORDS WORD="PREPARE"/>
+</Reserved_Words></MultiImport>

@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Rules_Engine_Parameters documentName="Rules Engine Parameters">
+	<T_RE_PARAM NAME="STARTUP_EVENT" SETTING="False" DESCRIPTION="Specifies&#x20;if&#x20;the&#x20;Rules&#x20;Engine&#x20;should&#x20;initiate&#x20;a&#x20;startup&#x20;event&#x20;by&#x20;inserting&#x20;a&#x20;record&#x20;in&#x20;table&#x20;T_EVENT&#x20;at&#x20;startup." G_U_K="B278B6F206C946679DB24257E4955D5F"/>
+</Rules_Engine_Parameters></MultiImport>

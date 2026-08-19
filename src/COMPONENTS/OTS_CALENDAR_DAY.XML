@@ -1,0 +1,898 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Component_Constructors documentName="Component Constructors">
+	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_CALENDAR_DAY" ACTIVE="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2019-10-02T17:32:04" G_U_K="F692C6226F00483DB49997388967B6BC">
+		<CONSTRUCTOR_SQL><![CDATA[select null /*'nl-NL'*/, 'MMMM', 'dddd', '1-1-2000', '31-12-2050', 1
+/*
+	The first argument: the default culture for day and month names. A null value defaults to the CurrentCulture. Call OTS_CALENDARDAY.ListCultures() for a list.
+	The second argument: format for month names
+	The third argument: format for daynames
+	The fourth argument: default start of period
+	The fifth argument: default end of period
+	The sixt argument: number of days to step through the period
+*/]]></CONSTRUCTOR_SQL>
+		<DESCRIPTION><![CDATA[This Calendar component is intended to be used in a Calendar table component.
+OTS_CALENDARDAY steps through the days in a certain period.
+The default period is specified in the constructor SQL, together with a default culture and default month and day name format.
+
+This component has to be considered as an example showing various programming techniques. For production purposes, the example can be extended or reduces to the actual requirements.
+This example shows:
+	-using C# calendar arithmetic
+	-a C# component using a query protocol to support a table component. i.e. usage of a table in USoft that can be queried to show calendar data
+	-an example of using query conditions; they are passed as parameters in an xml format to the QueryExe method when "Extended query conditions" are used.
+	-the use of  a regular expression
+	-parsing an Enum from a string
+		
+
+The component table OTS_CALENDARDAY can be queried to find all days in a certain period.
+In the USoft application, open the OTS_CALENDARDAY table and query all records to see the result.
+The default period is set in the constructor SQL. This period  can be overridden by specifying values for  the period start and end in the query (i.e. specify value(s) for PERIOD_START and/or PERIOD_END).
+Note that specifying PERIOD_START and PERIOD_END is a way of parameterizing the component and deviates from normal table behaviour.
+Operators <, <=, >, >=, % (LIKE) are not supported therefore on these fields.
+(For deployment purposes one could remove such fields from the component and only specify the period in the constructor SQL)
+The start and end period also support a basic date expression. Besides plain dates (as e.g. 2019 or 1-5-2020) one can specify expressions like: now
+
+
+The default culture (set by the constructor SQL) can be overridden by passing a culture name as e.g. en_US.
+The culture determines the language used to show month and day names
+This too this is a way of parameterizing the component with the same note above about operators applies.
+
+The year can be set (and must of course fall in the period to find any days at all). 
+The year can be used with conditions <, <=, >, >= and the component will use these conditions to reduce the number of days fetched for efficiency.
+Query conditions on the other fields (month number, day in month, day of week, day of year, month name, day name) are resolved by the rules engine.
+
+The OTS_CALENDARDAY also offers the following helper methods:
+select OTS_CALENDARDAY.ListFormats()		=> lists all DateTime input formats that can be used to specify the period (in the constructor SQL and/or as query condition)
+select OTS_CALENDARDAY.ListCultures()		=> lists all the culture names (with their display name)
+
+The OTS_CALENDARDAY also offers the following utility methods:
+select OTS_CALENDARDAY.AddDays( datestring, howmanydays, format)	
+	=> reads the datestring (according to the input formats). An empty input string is taken as the current datetime.
+	=> adds a number of days, e.g. 5  (which can also be a fraction, e.g. 1.5) 
+	=> produces a date string as output in the specified format. An empty format string is taken as the USoft default format ( yyyy/MMddHHmmss )
+
+select OTS_CALENDARDAY.DaysBetween(datestring1, datestring2)
+	=>reads both datestrings 
+	=>produces the number of days (can be a fraction) between the two dates
+
+Simple date expressions are supported for the start and end of period. (You could extend/change the basic grammar or use professional parsing techniques for more, or entirely leave out this example behaviour).
+Expression examples (the expressions are case insensitive. For details check the  implementation of the ParseDateExpr method):
+now
+yesterday
+tomorrow
+this  Monday
+next Monday
+following Monday
+next year
+last year
+yesterday + 2 weeks
+previous Monday + 1 week
+this day plus 1 year
+
+Note that only English day names and the English names year, month and day are supported.
+Note that the interpretation of "this year" would be January first for the start period but December 31 for the end period.
+In other words, to get all days in a year you can use in both period fields (start of period and end of period) the search condition: this year 
+This month likewise refers to the begin or the end of the month and this week refers to begin or end of this week. 
+Note that the following week can be addressed as:
+next week
+or
+this week + 1 week
+Also note that:
+yesterday + 1 
+adds one day (i.e. the default amount unit is days)
+yesterday + 1 week
+adds one week to yesterday
+this day
+is equivalent to
+now
+
+Finally,  note that fractions are not supported for year and month units. That is:
+now plus 1.5 year
+is not valid whereas
+now + 2.5 days 
+is valid
+
+An example of a query would be:
+select YEAR, MONTHNAME, DAYOFWEEK, DAYNAME from OTS_CALENDARDAY where PERIOD_START='now' and PERIOD_END='this week' and CULTURE_NAME='nl-NL']]></DESCRIPTION>
+	</T_RDMI_COMPONENT_CONSTRUCTOR>
+</Component_Constructors><DotNet_Components documentName="DotNet Components">
+	<T_RDMI_DOTNET_COMPONENT COMPONENT_NAME="OTS_CALENDAR_DAY" DOTNET_ACTIVE="Y" LANGUAGE="C#" APP_DOMAIN="Default" INCLUDE_WINDOWS_APP_DLL="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2019-10-02T17:32:04" G_U_K="F692C6226F00483DB49997388967B6BC">
+		<ASSEMBLYREFS><![CDATA[System.Xml.dll;System.Xml.Linq.dll]]></ASSEMBLYREFS>
+		<PROGRAM_SOURCE><![CDATA[using System;
+using System.Globalization;
+using System.Xml;
+using System.Xml.Linq;
+using System.Xml.XPath; 
+using System.Text.RegularExpressions;
+
+class OTS_CALENDAR_DAY
+{
+	private DayOfWeek	m_first_day_of_week;
+	private DayOfWeek	m_last_day_of_week;
+	private string		m_month_name_fmt;
+	private string		m_day_name_fmt;
+	private string		m_period_default_start_str;
+	private string		m_period_default_end_str;
+	private string		m_period_start_str;
+	private string		m_period_end_str;
+	private DateTime	m_period_start;
+	private DateTime	m_period_end;
+	private DateTime	m_dt_iterate;
+	private double		m_days_step = 1.0;
+	private string		m_cult_str;
+	private string		m_default_cult_str;
+	private CultureInfo	m_default_cult = CultureInfo.CurrentCulture;
+	private CultureInfo	m_cult = CultureInfo.CurrentCulture;
+	private readonly string[] m_formats= {
+		"dd MMMM yyyy", "dd MMM yyyy", "d MMMM yyyy", "d MMM yyyy", "d M yyyy", "d M yy",
+		"dd-MMMM-yyyy", "dd-MM-yyyy", "dd-MMM-yyyy", "dd-MMM-yy", 
+		"d-MMMM-yyyy", "d-M-yyyy", "d-MMM-yyyy", "d-MMM-yy",
+		"dd MM yyyy HH:mm:ss", "dd MMM yyyy HH:mm:ss", "dd MMM yyyy H:mm:ss", "dd MMMM yyyy HH:mm:ss", "dd MMMM yyyy H:mm:ss",
+		"dd MM yyyy HH:mm:ssZ", "dd MMM yyyy HH:mm:ssZ", "dd MMM yyyy H:mm:ssZ", "dd MMMM yyyy HH:mm:ssZ", "dd MMMM yyyy H:mm:ssZ",
+		"dd-MM-yyyy HH:mm:ss", "dd-MM-yyyy H:mm:ss", "dd-MMM-yy HH:mm:ss", "dd-MMM-yy H:mm:ss",
+		"dd-MM-yyyy HH:mm:ssZ", "dd-MM-yyyy H:mm:ssZ", "dd-MMM-yy HH:mm:ssZ", "dd-MMM-yy H:mm:ssZ",
+		"d M yyyy HH:mm:ss", "d M H:mm:ss", "d MMM yyyy HH:mm:ss", "d MMM yyyy H:mm:ss",
+		"d M yyyy HH:mm:ssZ", "d M H:mm:ssZ", "d MMM yyyy HH:mm:ssZ", "d MMM yyyy H:mm:ssZ",
+		"d-MMMM-yyyy HH:mm:ss", "d-MMMM-yyyy H:mm:ss", "d-M-yyyy HH:mm:ss", "d-M-yyyy H:mm:ss", "d-MMM-yy HH:mm:ss", "d-MMM-yy H:mm:ss",
+		"d-MMMM-yyyy HH:mm:ssZ", "d-MMMM-yyyy H:mm:ssZ", "d-M-yyyy HH:mm:ssZ", "d-M-yyyy H:mm:ssZ", "d-MMM-yy HH:mm:ssZ", "d-MMM-yy H:mm:ssZ",
+		"d-MMMM-yyyy HH:mm", "d-MMMM-yyyy H:mm", "d-M-yyyy HH:mm", "d-M-yyyy H:mm", "d-MMM-yy HH:mm", "d-MMM-yy H:mm",
+		"dd-MM-yyyy HH:mm", "dd-MM-yyyy H:mm", "dd-MMM-yy HH:mm", "dd-MMM-yy H:mm",
+		"d-MMMM-yyyy HHmm", "d-MMMM-yyyy Hmm", "d-M-yyyy HHmm", "d-M-yyyy Hmm", "d-MMM-yy HHmm", "d-MMM-yy Hmm",
+		"dd-MM-yyyy HHmm", "dd-MM-yyyy Hmm", "dd-MMM-yy HHmm", "dd-MMM-yy Hmm",
+		@"yyyy\/MMddHHmmss", // con date format
+		@"yyyy\/MMdd", // con date short format without time
+		"M/d/yyyy h:mm:ss tt", "M/d/yyyy h:mm tt", 
+		"MM/dd/yyyy hh:mm:ss", "M/d/yyyy h:mm:ss", 
+		"M/d/yyyy hh:mm tt", "M/d/yyyy hh tt", 
+		"M/d/yyyy h:mm", "M/d/yyyy h:mm", 
+		"MM/dd/yyyy hh:mm", "M/dd/yyyy hh:mm",
+		"MM/d/yyyy HH:mm:ss.ffffff",
+		"yyyy-MM-dd'T'HH:mm:ss.fffffff'Z'",
+		"yyyy-MM-dd'T'HH:mm:ss",
+		"M/d/yyyy",
+		"yyyy"
+	};
+	public OTS_CALENDAR_DAY(string cult_str, string month_name_fmt, string day_name_fmt, string period_start, string period_end, double days_step)
+	{
+		m_cult_str = m_default_cult_str = string.IsNullOrEmpty(cult_str) ? CultureInfo.CurrentCulture.Name : cult_str;
+		m_month_name_fmt = month_name_fmt;
+		m_day_name_fmt = day_name_fmt;
+		m_period_start_str =  m_period_default_start_str = period_start;
+		m_period_end_str = m_period_default_end_str = period_end;
+		m_days_step = days_step == 0 ? 1 : days_step;
+		m_default_cult = m_cult = new CultureInfo(m_cult_str);
+	}
+	private bool ParseDateTime(XElement el, ref DateTime dt, ref string used_date_str)
+	{
+		if(el!=null && el.Value!=null)
+		{
+			string op = el.Attribute("name")==null ? null : el.Attribute("name").Value;
+			if(!"=".Equals(op))
+			{
+				throw new Exception(string.Format("Operator {0} can not be used for period start or end, only literal date values can be used", op));
+			}
+			string col_name = el.XPathSelectElement("Column").Attribute("name").Value;
+			if(ParseDateExpr(el.Value, ref dt, col_name))
+			{
+				used_date_str = el.Value;
+			}
+			else
+			{
+				dt = ParseDateTime(el.Value, ref used_date_str);
+			}
+			return true;
+		}
+		return false;
+	}
+	private DateTime ParseDateTime(string date_str)
+	{
+		string ref_null = null;
+		return ParseDateTime(date_str, ref ref_null);
+	}
+	private DateTime ParseDateTime(string date_str, ref string used_date_str)
+	{
+		DateTime dt = DateTime.Now;
+		if(!string.IsNullOrEmpty(date_str))
+		{
+			if (DateTime.TryParseExact(date_str, m_formats, m_default_cult, DateTimeStyles.AllowWhiteSpaces, out dt))
+			{
+				if(used_date_str!=null) used_date_str = date_str;
+				return dt;
+			}
+		}
+		throw new Exception(string.Format("Failed to parse {0}, possible formats are: {1}", date_str, ListFormats()));
+	}
+	private bool ParseYearCondition(XElement el, ref int start_year, ref int last_year)
+	{
+		if(el == null)
+		{
+			return false;
+		}
+		string op = el.Attribute("name")==null ? null : el.Attribute("name").Value;
+		string year_str = el.Element("Value")==null? null : el.Element("Value").Value;
+		if(op==null || year_str==null)
+		{
+			return false;
+		}
+		switch(op)
+		{
+			case "=":
+				start_year = int.Parse(year_str);
+				last_year = start_year;
+			break;
+			case "&gt;":
+				start_year = int.Parse(year_str) + 1;	
+			break;
+			case "&gt;=":
+				start_year = int.Parse(year_str);
+			break;
+			case "&lt;":
+				last_year = int.Parse(year_str) - 1;
+			break;
+			case "&lt;=":
+				last_year = int.Parse(year_str) ;
+			break;
+			default: return false;
+			break;
+		}
+		return true;
+	}
+	public int RowsetSize()
+	{
+		m_period_start = ParseDateTime(m_period_start_str);
+		m_period_end = ParseDateTime(m_period_end_str);
+		return (int)((m_period_end - m_period_start).TotalDays / m_days_step);
+	}
+	public int QueryExe(string query_conditions)
+	{
+		m_period_start_str = m_period_default_start_str;
+		m_period_end_str = m_period_default_end_str;
+		m_period_start = ParseDateTime(m_period_start_str);
+		m_period_end = ParseDateTime(m_period_end_str);
+		m_cult_str = m_default_cult_str;
+		m_cult = m_default_cult;
+		bool has_query_conditions = false; 
+		XDocument qc = null;
+		try
+		{
+			qc = XDocument.Parse(query_conditions); 
+			has_query_conditions = true;
+		}
+		catch(Exception) {};
+		if(has_query_conditions)
+		{
+			ParseDateTime(qc.XPathSelectElement("/SqlNode//Operator[Column[@name='PERIOD_START']]"), ref m_period_start, ref m_period_start_str);
+			ParseDateTime(qc.XPathSelectElement("/SqlNode//Operator[Column[@name='PERIOD_END']]"), ref m_period_end, ref m_period_end_str);
+			int start_year = m_period_start.Year;
+			int last_year = m_period_end.Year;
+			if (ParseYearCondition(qc.XPathSelectElement("/SqlNode//Operator[Column[@name='YEAR']]"), ref start_year, ref last_year))
+			{
+				if(m_period_start < new DateTime(start_year, 01, 01))
+				{
+					m_period_start = new DateTime(start_year, 01, 01);
+				}
+				if(m_period_end > new DateTime(last_year, 12, 31))
+				{
+					m_period_end = new DateTime(start_year, 12, 31);
+				}
+			}
+			XElement cult_el = qc.XPathSelectElement("/SqlNode//Operator[Column[@name='CULTURE_NAME']]");
+			if(cult_el!=null && cult_el.Value !=null)
+			{
+				string op = cult_el.Attribute("name")==null ? null : cult_el.Attribute("name").Value;
+				if(!"=".Equals(op))
+				{
+					throw new Exception("Operator " + op + " not supported to specify a culture.");
+				}
+				m_cult_str = (string)cult_el.Value;
+			}	
+		}
+		try
+		{
+			if(!m_default_cult_str.Equals(m_cult_str))
+			{
+				m_cult = new CultureInfo(m_cult_str);
+			}
+			m_first_day_of_week = m_cult.DateTimeFormat.FirstDayOfWeek;
+			m_last_day_of_week = m_cult.LCID == 1033 /*En-us*/ ? DayOfWeek.Saturday : DayOfWeek.Sunday;
+		}
+		catch(Exception e)
+		{
+			throw new Exception(string.Format("Culture name {0} not valid: {1}. Valid culture names: {2}", m_cult_str, e.Message, ListCultures()));
+		}
+		m_dt_iterate = m_days_step > 0 ? m_period_start : m_period_end;
+		return 1;
+	}
+	public int QueryFetch(out string period_start, out string period_end, out string cult_name, out int year, out int month_no, out int day_no, out int week_no, out int day_of_week, out int day_of_year, out string month_name, out string day_name)
+	{
+		period_start = m_period_start_str;
+		period_end = m_period_end_str;
+		cult_name = m_cult_str;
+		day_of_week = (int)m_dt_iterate.DayOfWeek;
+		year = m_dt_iterate.Year;
+		DateTime last_day_of_year = new DateTime(year, 12, 31);
+		// ISO8601 week number
+		week_no = m_cult.Calendar.GetWeekOfYear(m_dt_iterate, m_cult.DateTimeFormat.CalendarWeekRule, m_first_day_of_week);
+		week_no = week_no == 53 && last_day_of_year.DayOfWeek != m_last_day_of_week ? 1 : week_no;
+		day_of_year = m_dt_iterate.DayOfYear;
+		month_no = m_dt_iterate.Month;
+		day_no = m_dt_iterate.Day;
+		month_name = m_dt_iterate.ToString(m_month_name_fmt, m_cult);
+		day_name = m_dt_iterate.ToString(m_day_name_fmt, m_cult);
+		if(m_dt_iterate > m_period_end || m_dt_iterate < m_period_start)
+		{
+			return 0;
+		}
+		m_dt_iterate = m_dt_iterate.AddDays(m_days_step);
+		return 1;
+	}
+	public string AddDays(string date_str, double num_days, string format)
+	{
+		if(string.IsNullOrEmpty(format))
+		{
+			format = @"yyyy\/MMddHHmmss";
+		}
+		DateTime dt = DateTime.Now;
+		if(!string.IsNullOrEmpty(date_str))
+		{
+			dt = ParseDateTime(date_str);
+		}
+		dt = dt.AddDays(num_days);
+		return dt.ToString(format, m_default_cult);
+	}
+	public double DaysBetween(string date_str1, string date_str2)
+	{
+		DateTime dt1 = DateTime.Now, dt2 = DateTime.Now;
+		if(!string.IsNullOrEmpty(date_str1))
+		{
+			dt1 = ParseDateTime(date_str1);
+		}
+		if(!string.IsNullOrEmpty(date_str2))
+		{
+			dt2 = ParseDateTime(date_str2);
+		}
+		TimeSpan span = dt2.Subtract(dt1);
+		return Math.Round(span.TotalDays, 3); // loss of precision for fractions
+	}
+	public string ListCultures()
+	{
+		System.Text.StringBuilder result = new System.Text.StringBuilder();
+		CultureInfo[] cinfo = CultureInfo.GetCultures(CultureTypes.AllCultures & ~CultureTypes.NeutralCultures);
+		foreach (CultureInfo cul in cinfo)
+        {
+            result.Append(cul.Name + "\t\t" + cul.DisplayName + Environment.NewLine );
+        }
+		return result.ToString();
+	}
+	public string ListFormats()
+	{
+		System.Text.StringBuilder result = new System.Text.StringBuilder();
+		foreach (string fmt in m_formats)
+        {
+            result.Append(fmt + Environment.NewLine);
+        }
+		return result.ToString();
+	}
+	private DateTime FirstDayOfWeek(DateTime dt)
+	{
+		var diff = dt.DayOfWeek - m_first_day_of_week;
+        diff = (diff < 0) ? diff + 7 : diff;
+        return dt.AddDays(-diff);
+	}
+	private readonly Regex DateExProp = 
+		new Regex(	@"^(now|next|following|last|previous|preceding|this|soy|start\s*of\s*year|year\*start|eoy|end\s*of\s*year|year\s*end|yesterday|tomorrow|sow|start\s*of\s*week|eow|end\s*of\s*week|som|start\s*of\s*month)?((?<=next|following|last|previous|preceding|this)\s*[\w]*)?\s*(plus|\+|minus|\-)?((?<=plus|\+|minus|\-)\s*[\w\.]*)?\s*(years|year|months|month|weeks|week|days|day)?\s*$",
+					RegexOptions.IgnoreCase);
+
+	private bool ParseDateExpr(string expr, ref DateTime dt, string elname)
+	{
+		bool result = true;
+		Match m = DateExProp.Match(expr);
+		if(!m.Success || m.Groups.Count < 6 || string.IsNullOrWhiteSpace(m.Groups[0].Value))
+		{
+			return false;
+		}
+		string op1 = m.Groups[1].Value.Trim();
+		string op2 = m.Groups[2].Value.Trim();
+		string op3 =  m.Groups[3].Value.Trim();
+		string op4 =  m.Groups[4].Value.Trim();
+		string op5 =  m.Groups[5].Value.Trim();
+		switch(op1.ToLower().Replace(" ", string.Empty))
+		{
+			case "now":
+				dt = DateTime.Now;
+			break;
+			case "soy": case "startofyear": case "yearstart":
+				dt = new DateTime(DateTime.Now.Year, 01, 01);
+			break;
+			case "eoy": case "endofyear": case "yearend":
+				dt = new DateTime(DateTime.Now.Year, 12, 31);
+			break;
+			case "yesterday": 
+				dt = DateTime.Now.AddDays(-1);
+			break;
+			case "tomorrow": 
+				dt = DateTime.Now.AddDays(1);
+			break;
+			case "sow": case "startofweek": case "start of week":
+				dt = FirstDayOfWeek(DateTime.Now);
+			break;
+			case "eow": case "endofweek": case "end of week":
+				dt = FirstDayOfWeek(DateTime.Now).AddDays(6);
+			break;
+			case "som": case "startofmonth":
+				dt = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+			break;
+			case "eom": case "endofmonth":
+				dt = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1);
+			break;
+			case "this":
+				{
+					DayOfWeek dow;
+					if(Enum.TryParse(op2, true, out dow))
+					{
+						int day_still = ((int)dow - (int)DateTime.Now.DayOfWeek + 7) % 7;
+						dt = DateTime.Now.AddDays(day_still);
+					}
+					else
+					{
+						dt = ThisDate(op2, DateTime.Now, elname);
+					}
+				}
+			break;
+			case "next": case "following":
+				{
+					DayOfWeek dow;
+					dt = DateTime.Now;
+					bool isday_name = Enum.TryParse(op2, true, out dow);
+					if(isday_name)
+					{
+						int days_till = ((int)dow - (int)dt.DayOfWeek + 7) % 7;
+						dt = dt.AddDays(days_till);
+						op2 = "week";
+					}
+					if(!AddUnit(ref dt, "1", op2, 1))
+					{
+						throw new Exception(string.Format("Unit invalid in {0}", op2));
+					}
+					if(!isday_name) dt = ThisDate(op2, dt, elname);
+				}
+			break;
+			case "last":
+				{
+					DayOfWeek dow;
+					dt = DateTime.Now;
+					bool is_day_name = Enum.TryParse(op2, true, out dow);
+					if(is_day_name)
+					{
+						int days_till = ((int)dow - (int)dt.DayOfWeek - 7) % 7;
+						dt = dt.AddDays(days_till);
+						op2 = "week";
+					}
+					if(!AddUnit(ref dt, "1", op2, -1))
+					{
+						throw new Exception(string.Format("Unit invalid in {0}", op2));
+					}
+					if (!is_day_name) dt = ThisDate(op2, dt, elname);
+				}
+			break;
+			case "previous": case "preceding":
+				{
+					DayOfWeek dow;
+					dt = DateTime.Now;
+					bool is_day_name = Enum.TryParse(op2, true, out dow);
+					if(is_day_name)
+					{
+						int days_till = ((int)dow - (int)DateTime.Now.DayOfWeek - 7) % 7;
+						dt = DateTime.Now.AddDays(days_till);
+					}
+					else
+					{
+						if(!AddUnit(ref dt, "1", op2, -1))
+						{
+							throw new Exception(string.Format("Unit invalid in {0}", op2));
+						}
+						dt = ThisDate(op2, dt, elname);
+					}
+				}
+			break;
+			default:
+					if(string.IsNullOrWhiteSpace(op3) && string.IsNullOrWhiteSpace(op4))
+					{
+						return false;
+					}
+					dt = DateTime.Now;
+			break;
+		}
+		switch(op3)
+		{
+			case "plus": case "+":
+				if(!AddUnit(ref dt, op4, op5, 1)) throw new Exception(string.Format("Unit invalid in {0}", expr));
+			break;
+			case "min": case "-":
+				if(!AddUnit(ref dt, op4, op5, -1)) throw new Exception(string.Format("Unit invalid in {0}", expr));
+			break;
+		}
+		return result;
+	}
+	private bool AddUnit(ref DateTime dt, string n, string unit, int sign)
+	{
+		double amount = sign * double.Parse(n, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture);
+		switch(unit)
+		{
+			case "week": case "weeks": 
+				dt = dt.AddDays(amount * 7);
+			break;
+			case "month": case "months":
+				if(n.Contains(".")) throw new Exception(string.Format("Fractions in {0} are not supported for month units", n));
+				dt = dt.AddMonths( (int)amount);
+			break;
+			case "year": case "years":
+				if(n.Contains(".")) throw new Exception(string.Format("Fractions in {0} are not supported for year units", n));
+				dt = dt.AddYears( (int)amount);
+			break;
+			case "": case "days": case "day":
+				dt = dt.AddDays(amount);
+			break;
+			default: return false;
+		}
+		return true;
+	}
+	private DateTime ThisDate(string expr,  DateTime refdate, string elname)
+	{
+		DateTime dt = refdate;
+		bool isstart = elname.IndexOf("start", StringComparison.OrdinalIgnoreCase) >=0;
+		switch(expr)
+		{
+			case "year": dt = isstart ? new DateTime(refdate.Year, 01, 01) : new DateTime(refdate.Year, 12, 31); 
+			break;
+			case "month":
+				{
+					DateTime som = new DateTime(refdate.Year, refdate.Month , 01);
+					dt = isstart ? som : new DateTime(refdate.Year, refdate.Month, som.AddMonths(1).AddDays(-1).Day); 
+				}
+			break;
+			case "week":
+				{
+					int diff = (7 + (refdate.DayOfWeek - m_first_day_of_week)) % 7;
+					dt = refdate.AddDays(-1 * diff).Date;
+					dt = isstart ? dt : dt.AddDays(6);
+				}
+			break;
+			case "day":
+				dt = refdate;
+			break;
+		}
+		return dt;
+	}
+}]]></PROGRAM_SOURCE>
+		<ORIGIN><![CDATA[]]></ORIGIN>
+		<DESCRIPTION><![CDATA[This Calendar component is intended to be used in a Calendar table component.
+OTS_CALENDARDAY steps through the days in a certain period.
+The default period is specified in the constructor SQL, together with a default culture and default month and day name format.
+
+This component has to be considered as an example showing various programming techniques. For production purposes, the example can be extended or reduces to the actual requirements.
+This example shows:
+	-using C# calendar arithmetic
+	-a C# component using a query protocol to support a table component. i.e. usage of a table in USoft that can be queried to show calendar data
+	-an example of using query conditions; they are passed as parameters in an xml format to the QueryExe method when "Extended query conditions" are used.
+	-the use of  a regular expression
+	-parsing an Enum from a string
+		
+
+The component table OTS_CALENDARDAY can be queried to find all days in a certain period.
+In the USoft application, open the OTS_CALENDARDAY table and query all records to see the result.
+The default period is set in the constructor SQL. This period  can be overridden by specifying values for  the period start and end in the query (i.e. specify value(s) for PERIOD_START and/or PERIOD_END).
+Note that specifying PERIOD_START and PERIOD_END is a way of parameterizing the component and deviates from normal table behaviour.
+Operators <, <=, >, >=, % (LIKE) are not supported therefore on these fields.
+(For deployment purposes one could remove such fields from the component and only specify the period in the constructor SQL)
+The start and end period also support a basic date expression. Besides plain dates (as e.g. 2019 or 1-5-2020) one can specify expressions like: now
+
+
+The default culture (set by the constructor SQL) can be overridden by passing a culture name as e.g. en_US.
+The culture determines the language used to show month and day names
+This too this is a way of parameterizing the component with the same note above about operators applies.
+
+The year can be set (and must of course fall in the period to find any days at all). 
+The year can be used with conditions <, <=, >, >= and the component will use these conditions to reduce the number of days fetched for efficiency.
+Query conditions on the other fields (month number, day in month, day of week, day of year, month name, day name) are resolved by the rules engine.
+
+The OTS_CALENDARDAY also offers the following helper methods:
+select OTS_CALENDARDAY.ListFormats()		=> lists all DateTime input formats that can be used to specify the period (in the constructor SQL and/or as query condition)
+select OTS_CALENDARDAY.ListCultures()		=> lists all the culture names (with their display name)
+
+The OTS_CALENDARDAY also offers the following utility methods:
+select OTS_CALENDARDAY.AddDays( datestring, howmanydays, format)	
+	=> reads the datestring (according to the input formats). An empty input string is taken as the current datetime.
+	=> adds a number of days, e.g. 5  (which can also be a fraction, e.g. 1.5) 
+	=> produces a date string as output in the specified format. An empty format string is taken as the USoft default format ( yyyy/MMddHHmmss )
+
+select OTS_CALENDARDAY.DaysBetween(datestring1, datestring2)
+	=>reads both datestrings 
+	=>produces the number of days (can be a fraction) between the two dates
+
+Simple date expressions are supported for the start and end of period. (You could extend/change the basic grammar or use professional parsing techniques for more, or entirely leave out this example behaviour).
+Expression examples (the expressions are case insensitive. For details check the  implementation of the ParseDateExpr method):
+now
+yesterday
+tomorrow
+this  Monday
+next Monday
+following Monday
+next year
+last year
+yesterday + 2 weeks
+previous Monday + 1 week
+this day plus 1 year
+
+Note that only English day names and the English names year, month and day are supported.
+Note that the interpretation of "this year" would be January first for the start period but December 31 for the end period.
+In other words, to get all days in a year you can use in both period fields (start of period and end of period) the search condition: this year 
+This month likewise refers to the begin or the end of the month and this week refers to begin or end of this week. 
+Note that the following week can be addressed as:
+next week
+or
+this week + 1 week
+Also note that:
+yesterday + 1 
+adds one day (i.e. the default amount unit is days)
+yesterday + 1 week
+adds one week to yesterday
+this day
+is equivalent to
+now
+
+Finally,  note that fractions are not supported for year and month units. That is:
+now plus 1.5 year
+is not valid whereas
+now + 2.5 days 
+is valid
+
+An example of a query would be:
+select YEAR, MONTHNAME, DAYOFWEEK, DAYNAME from OTS_CALENDARDAY where PERIOD_START='now' and PERIOD_END='this week' and CULTURE_NAME='nl-NL']]></DESCRIPTION>
+	</T_RDMI_DOTNET_COMPONENT>
+</DotNet_Components><J2EE_Components documentName="J2EE Components"/><Stateful_Components documentName="Stateful Components">
+	<T_RDMI_STATEFUL_COMPONENT COMPONENT_NAME="OTS_CALENDAR_DAY" LIFETIME="SESSION" TRANSACTIONAL="N" SUPPORTS_COMMIT="N" SUPPORTS_ROLLBACK="N" SUPPORTS_PRECOMMIT="N" SUPPORTS_TABLECOMPONENT="Y" SUPPORTS_UPDATE="N" SUPPORTS_INSERT="N" SUPPORTS_DELETE="N" SUPPORTS_CONDITIONS="Y" SUPPORTS_ROWSETSIZEHINT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2019-10-02T17:32:04" G_U_K="F692C6226F00483DB49997388967B6BC">
+		<DESCRIPTION><![CDATA[This Calendar component is intended to be used in a Calendar table component.
+OTS_CALENDARDAY steps through the days in a certain period.
+The default period is specified in the constructor SQL, together with a default culture and default month and day name format.
+
+This component has to be considered as an example showing various programming techniques. For production purposes, the example can be extended or reduces to the actual requirements.
+This example shows:
+	-using C# calendar arithmetic
+	-a C# component using a query protocol to support a table component. i.e. usage of a table in USoft that can be queried to show calendar data
+	-an example of using query conditions; they are passed as parameters in an xml format to the QueryExe method when "Extended query conditions" are used.
+	-the use of  a regular expression
+	-parsing an Enum from a string
+		
+
+The component table OTS_CALENDARDAY can be queried to find all days in a certain period.
+In the USoft application, open the OTS_CALENDARDAY table and query all records to see the result.
+The default period is set in the constructor SQL. This period  can be overridden by specifying values for  the period start and end in the query (i.e. specify value(s) for PERIOD_START and/or PERIOD_END).
+Note that specifying PERIOD_START and PERIOD_END is a way of parameterizing the component and deviates from normal table behaviour.
+Operators <, <=, >, >=, % (LIKE) are not supported therefore on these fields.
+(For deployment purposes one could remove such fields from the component and only specify the period in the constructor SQL)
+The start and end period also support a basic date expression. Besides plain dates (as e.g. 2019 or 1-5-2020) one can specify expressions like: now
+
+
+The default culture (set by the constructor SQL) can be overridden by passing a culture name as e.g. en_US.
+The culture determines the language used to show month and day names
+This too this is a way of parameterizing the component with the same note above about operators applies.
+
+The year can be set (and must of course fall in the period to find any days at all). 
+The year can be used with conditions <, <=, >, >= and the component will use these conditions to reduce the number of days fetched for efficiency.
+Query conditions on the other fields (month number, day in month, day of week, day of year, month name, day name) are resolved by the rules engine.
+
+The OTS_CALENDARDAY also offers the following helper methods:
+select OTS_CALENDARDAY.ListFormats()		=> lists all DateTime input formats that can be used to specify the period (in the constructor SQL and/or as query condition)
+select OTS_CALENDARDAY.ListCultures()		=> lists all the culture names (with their display name)
+
+The OTS_CALENDARDAY also offers the following utility methods:
+select OTS_CALENDARDAY.AddDays( datestring, howmanydays, format)	
+	=> reads the datestring (according to the input formats). An empty input string is taken as the current datetime.
+	=> adds a number of days, e.g. 5  (which can also be a fraction, e.g. 1.5) 
+	=> produces a date string as output in the specified format. An empty format string is taken as the USoft default format ( yyyy/MMddHHmmss )
+
+select OTS_CALENDARDAY.DaysBetween(datestring1, datestring2)
+	=>reads both datestrings 
+	=>produces the number of days (can be a fraction) between the two dates
+
+Simple date expressions are supported for the start and end of period. (You could extend/change the basic grammar or use professional parsing techniques for more, or entirely leave out this example behaviour).
+Expression examples (the expressions are case insensitive. For details check the  implementation of the ParseDateExpr method):
+now
+yesterday
+tomorrow
+this  Monday
+next Monday
+following Monday
+next year
+last year
+yesterday + 2 weeks
+previous Monday + 1 week
+this day plus 1 year
+
+Note that only English day names and the English names year, month and day are supported.
+Note that the interpretation of "this year" would be January first for the start period but December 31 for the end period.
+In other words, to get all days in a year you can use in both period fields (start of period and end of period) the search condition: this year 
+This month likewise refers to the begin or the end of the month and this week refers to begin or end of this week. 
+Note that the following week can be addressed as:
+next week
+or
+this week + 1 week
+Also note that:
+yesterday + 1 
+adds one day (i.e. the default amount unit is days)
+yesterday + 1 week
+adds one week to yesterday
+this day
+is equivalent to
+now
+
+Finally,  note that fractions are not supported for year and month units. That is:
+now plus 1.5 year
+is not valid whereas
+now + 2.5 days 
+is valid
+
+An example of a query would be:
+select YEAR, MONTHNAME, DAYOFWEEK, DAYNAME from OTS_CALENDARDAY where PERIOD_START='now' and PERIOD_END='this week' and CULTURE_NAME='nl-NL']]></DESCRIPTION>
+	</T_RDMI_STATEFUL_COMPONENT>
+</Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_CALENDAR_DAY" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="RDMI91" CREATED_ON="2019-10-02T17:32:04" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="F692C6226F00483DB49997388967B6BC">
+		<DESCRIPTION><![CDATA[This Calendar component is intended to be used in a Calendar table component.
+OTS_CALENDARDAY steps through the days in a certain period.
+The default period is specified in the constructor SQL, together with a default culture and default month and day name format.
+
+This component has to be considered as an example showing various programming techniques. For production purposes, the example can be extended or reduces to the actual requirements.
+This example shows:
+	-using C# calendar arithmetic
+	-a C# component using a query protocol to support a table component. i.e. usage of a table in USoft that can be queried to show calendar data
+	-an example of using query conditions; they are passed as parameters in an xml format to the QueryExe method when "Extended query conditions" are used.
+	-the use of  a regular expression
+	-parsing an Enum from a string
+		
+
+The component table OTS_CALENDARDAY can be queried to find all days in a certain period.
+In the USoft application, open the OTS_CALENDARDAY table and query all records to see the result.
+The default period is set in the constructor SQL. This period  can be overridden by specifying values for  the period start and end in the query (i.e. specify value(s) for PERIOD_START and/or PERIOD_END).
+Note that specifying PERIOD_START and PERIOD_END is a way of parameterizing the component and deviates from normal table behaviour.
+Operators <, <=, >, >=, % (LIKE) are not supported therefore on these fields.
+(For deployment purposes one could remove such fields from the component and only specify the period in the constructor SQL)
+The start and end period also support a basic date expression. Besides plain dates (as e.g. 2019 or 1-5-2020) one can specify expressions like: now
+
+
+The default culture (set by the constructor SQL) can be overridden by passing a culture name as e.g. en_US.
+The culture determines the language used to show month and day names
+This too this is a way of parameterizing the component with the same note above about operators applies.
+
+The year can be set (and must of course fall in the period to find any days at all). 
+The year can be used with conditions <, <=, >, >= and the component will use these conditions to reduce the number of days fetched for efficiency.
+Query conditions on the other fields (month number, day in month, day of week, day of year, month name, day name) are resolved by the rules engine.
+
+The OTS_CALENDARDAY also offers the following helper methods:
+select OTS_CALENDARDAY.ListFormats()		=> lists all DateTime input formats that can be used to specify the period (in the constructor SQL and/or as query condition)
+select OTS_CALENDARDAY.ListCultures()		=> lists all the culture names (with their display name)
+
+The OTS_CALENDARDAY also offers the following utility methods:
+select OTS_CALENDARDAY.AddDays( datestring, howmanydays, format)	
+	=> reads the datestring (according to the input formats). An empty input string is taken as the current datetime.
+	=> adds a number of days, e.g. 5  (which can also be a fraction, e.g. 1.5) 
+	=> produces a date string as output in the specified format. An empty format string is taken as the USoft default format ( yyyy/MMddHHmmss )
+
+select OTS_CALENDARDAY.DaysBetween(datestring1, datestring2)
+	=>reads both datestrings 
+	=>produces the number of days (can be a fraction) between the two dates
+
+Simple date expressions are supported for the start and end of period. (You could extend/change the basic grammar or use professional parsing techniques for more, or entirely leave out this example behaviour).
+Expression examples (the expressions are case insensitive. For details check the  implementation of the ParseDateExpr method):
+now
+yesterday
+tomorrow
+this  Monday
+next Monday
+following Monday
+next year
+last year
+yesterday + 2 weeks
+previous Monday + 1 week
+this day plus 1 year
+
+Note that only English day names and the English names year, month and day are supported.
+Note that the interpretation of "this year" would be January first for the start period but December 31 for the end period.
+In other words, to get all days in a year you can use in both period fields (start of period and end of period) the search condition: this year 
+This month likewise refers to the begin or the end of the month and this week refers to begin or end of this week. 
+Note that the following week can be addressed as:
+next week
+or
+this week + 1 week
+Also note that:
+yesterday + 1 
+adds one day (i.e. the default amount unit is days)
+yesterday + 1 week
+adds one week to yesterday
+this day
+is equivalent to
+now
+
+Finally,  note that fractions are not supported for year and month units. That is:
+now plus 1.5 year
+is not valid whereas
+now + 2.5 days 
+is valid
+
+An example of a query would be:
+select YEAR, MONTHNAME, DAYOFWEEK, DAYNAME from OTS_CALENDARDAY where PERIOD_START='now' and PERIOD_END='this week' and CULTURE_NAME='nl-NL']]></DESCRIPTION>
+	</T_RDMI_COMPONENT>
+</Components><Methods documentName="Methods">
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_CALENDAR_DAY" METHOD_NAME="ADDDAYS" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-14T08:48:46">
+		<PHYSICAL_METHOD_NAME><![CDATA[AddDays]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_CALENDAR_DAY" METHOD_NAME="DAYSBETWEEN" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-14T08:48:46">
+		<PHYSICAL_METHOD_NAME><![CDATA[DaysBetween]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_CALENDAR_DAY" METHOD_NAME="LISTCULTURES" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-14T08:48:46">
+		<PHYSICAL_METHOD_NAME><![CDATA[ListCultures]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_CALENDAR_DAY" METHOD_NAME="LISTFORMATS" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-14T08:48:46">
+		<PHYSICAL_METHOD_NAME><![CDATA[ListFormats]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_CALENDAR_DAY" METHOD_NAME="OTS_CALENDAR_DAY" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-14T08:48:46">
+		<PHYSICAL_METHOD_NAME><![CDATA[OTS_CALENDAR_DAY]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_CALENDAR_DAY" METHOD_NAME="QUERYEXE" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-14T08:48:46">
+		<PHYSICAL_METHOD_NAME><![CDATA[QueryExe]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_CALENDAR_DAY" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-14T08:48:46">
+		<PHYSICAL_METHOD_NAME><![CDATA[QueryFetch]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_CALENDAR_DAY" METHOD_NAME="ROWSETSIZE" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-14T08:48:46">
+		<PHYSICAL_METHOD_NAME><![CDATA[RowsetSize]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+</Methods><Parameters documentName="Parameters">
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="0" METHOD_NAME="ADDDAYS" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_AddDays" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="0" METHOD_NAME="DAYSBETWEEN" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_DaysBetween" KIND="RETURN" PRIMITIVE_DATA_TYPE="DOUBLE" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="0" METHOD_NAME="LISTCULTURES" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_ListCultures" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="0" METHOD_NAME="LISTFORMATS" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_ListFormats" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="1" METHOD_NAME="ADDDAYS" METHOD_SEQNO="1" PARAMETER_NAME="datestr" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="1" METHOD_NAME="DAYSBETWEEN" METHOD_SEQNO="1" PARAMETER_NAME="datestr1" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="1" METHOD_NAME="OTS_CALENDAR_DAY" METHOD_SEQNO="1" PARAMETER_NAME="cultstr" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="1" METHOD_NAME="QUERYEXE" METHOD_SEQNO="1" PARAMETER_NAME="CONDITIONS" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="1" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="PERIOD_START" KIND="OUT" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="1" METHOD_NAME="ROWSETSIZE" METHOD_SEQNO="1" PARAMETER_NAME="CONDITIONS" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="2" METHOD_NAME="ADDDAYS" METHOD_SEQNO="1" PARAMETER_NAME="ndays" KIND="IN" PRIMITIVE_DATA_TYPE="DOUBLE" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="2" METHOD_NAME="DAYSBETWEEN" METHOD_SEQNO="1" PARAMETER_NAME="datestr2" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="2" METHOD_NAME="OTS_CALENDAR_DAY" METHOD_SEQNO="1" PARAMETER_NAME="monthnamefmt" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="2" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="PERIOD_END" KIND="OUT" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="3" METHOD_NAME="ADDDAYS" METHOD_SEQNO="1" PARAMETER_NAME="format" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="3" METHOD_NAME="OTS_CALENDAR_DAY" METHOD_SEQNO="1" PARAMETER_NAME="daynamefmt" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="3" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="CULTURE_NAME" KIND="OUT" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="4" METHOD_NAME="OTS_CALENDAR_DAY" METHOD_SEQNO="1" PARAMETER_NAME="period_start" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="4" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="YEAR" KIND="OUT" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="5" METHOD_NAME="OTS_CALENDAR_DAY" METHOD_SEQNO="1" PARAMETER_NAME="period_end" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="5" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="MONTH_NO" KIND="OUT" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="6" METHOD_NAME="OTS_CALENDAR_DAY" METHOD_SEQNO="1" PARAMETER_NAME="daysstep" KIND="IN" PRIMITIVE_DATA_TYPE="DOUBLE" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="6" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="DAY_IN_MONTH" KIND="OUT" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="7" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="WEEK_NO" KIND="OUT" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="8" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="DAY_OF_WEEK" KIND="OUT" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="9" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="DAY_OF_YEAR" KIND="OUT" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="10" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="MONTH_NAME" KIND="OUT" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="11" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="DAY_NAME" KIND="OUT" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="999" METHOD_NAME="QUERYEXE" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_QueryExe" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="999" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_QueryFetch" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_CALENDAR_DAY" PARAMETER_SEQNO="999" METHOD_NAME="ROWSETSIZE" METHOD_SEQNO="1" PARAMETER_NAME="return" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+</Parameters><AggregateProtocol_Associations documentName="AggregateProtocol Associations"/><Query_Protocol_Associations documentName="Query Protocol Associations">
+	<T_RDMI_QUERY_PROTOCOL COMPONENT_NAME="OTS_CALENDAR_DAY" PROTOCOL_NAME="QUERY" QP_EXE_METHOD_NAME="QUERYEXE" QP_EXE_COMPONENT_NAME="OTS_CALENDAR_DAY" QP_EXE_METHOD_SEQNO="1" QP_FETCH_COMPONENT_NAME="OTS_CALENDAR_DAY" QP_FETCH_METHOD_NAME="QUERYFETCH" QP_FETCH_METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y">
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_QUERY_PROTOCOL>
+</Query_Protocol_Associations><Named_Protocols documentName="Named Protocols">
+	<T_RDMI_NAMED_PROTOCOL COMPONENT_NAME="OTS_CALENDAR_DAY" PROTOCOL_NAME="QUERY" T_RDMI_QUERY_PROTOCOL="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" T_RDMI_AGGREGATE_PROTOCOL="N">
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_NAMED_PROTOCOL>
+</Named_Protocols></MultiImport>

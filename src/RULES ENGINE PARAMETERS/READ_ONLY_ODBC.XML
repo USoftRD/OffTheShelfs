@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Rules_Engine_Parameters documentName="Rules Engine Parameters">
+	<T_RE_PARAM NAME="READ_ONLY_ODBC" SETTING="False" DESCRIPTION="Specifies&#x20;if&#x20;the&#x20;Rules&#x20;Service&#x20;when&#x20;accessed&#x20;via&#x20;ODBC&#x20;is&#x20;restricted&#x20;to&#x20;querying&#x20;(or:&#x20;returning)&#x20;application&#x20;data,&#x20;as&#x20;opposed&#x20;to&#x20;being&#x20;allowed&#x20;to&#x20;manipulate&#x20;application&#x20;data." G_U_K="C0AD02B745CD4DACAB42A8726B2B4CA3"/>
+</Rules_Engine_Parameters></MultiImport>

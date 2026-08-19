@@ -1,0 +1,41 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Export_Definitions documentName="Export Definitions">
+	<T_EXP_DEF EXPORT_ID="81" EXPORT_NAME="OTS_VOLATILE_TABLE" DEFINED_BY="P3100027" DEF_FILE_NAME="C:\OTS_GITHUB\OffTheShelfs\OTS_VOLATILE_TABLE\OTS_VOLATILE_TABLE.xml" EXP_RES_WORDS="N">
+		<COMMENTS><![CDATA[This component implements a volatile in-memory table with 1 up to 10 fields, intended to be used as a component table.
+The first field is interpreted as the key field.
+All fields are stored as strings,
+The constructor SQL is used to:
+-1- define the number of fields (up to 10)
+-2- define initial data in xml format.
+
+A constructorSQL example  for a default volatile table with the max of 10 fields and no initial data:
+select null, null
+
+A constructor SQL example for a volatile table with 3 fields and no initial data:
+select 3, null
+
+A constructor SQL example for a pre-filled volatile table with 3 fields:
+
+select 3,
+'<Volatile_tables documentName="Volatile tables">
+<VOLATILETABLE FIELD1="1" FIELD2="one" FIELD3="first"/>
+<VOLATILETABLE FIELD1="2" FIELD2="two" FIELD3="second"/>
+<VOLATILETABLE FIELD1="3" FIELD2="three" FIELD3="third"/>
+<VOLATILETABLE FIELD1="4" FIELD2="four" FIELD3="fourth"/>
+</Volatile_tables>'
+
+The xml in the constructor can also be passed as a filepath to an xml data file.
+The xml resembles xml.import format but essentialy the attributes /*/*/@* are simply read in order of appearance and assigned to the fields of the table for each /*/* element.
+
+Calling the method OTS_VOLATILE_TABLE.Clear() ( select ots_volatile_table.clear() ) clears the table. Such an operation would be hidden from the rules engine, i.e. a transition constraint would not fire.
+select ots_volatile_table.reset() would clear the table and then re-insert the initial data from the constructor sql, if any ( this also is unseen by the rules engine).
+
+Make sure that a constructor is always available, active and checked (validated).
+After importing this component, the constructor SQL must be checked!]]></COMMENTS>
+	</T_EXP_DEF>
+</Export_Definitions><Export_Action_Tasks documentName="Export Action Tasks"/><Export_Business_Objects documentName="Export Business Objects"/><Export_Business_Areas documentName="Export Business Areas"/><Export_Constraints documentName="Export Constraints"/><Export_Decisions documentName="Export Decisions"/><Export_Domains documentName="Export Domains"/><Export_Export_Tasks documentName="Export Export Tasks"/><Export_External_Sets documentName="Export External Sets"/><Export_Import_Tasks documentName="Export Import Tasks"/><Export_Jobs documentName="Export Jobs"/><Export_RDMI_Components documentName="Export RDMI Components">
+	<T_EXP_RDMI_COMPONENT EXPORT_ID="81" COMPONENT_NAME="OTS_VOLATILE_TABLE"/>
+</Export_RDMI_Components><Export_Relationships documentName="Export Relationships"/><Export_Roles documentName="Export Roles"/><Export_Business_Rule_Sets documentName="Export Business Rule Sets"/><Export_SQL_Tasks documentName="Export SQL Tasks"/><Export_Tables documentName="Export Tables">
+	<T_EXP_TABLE EXPORT_ID="81" TABLE_NAME="OTS_VOLATILE_TABLE" INCL_DOMAINS="Y" INCL_SUBTYPES="N"/>
+</Export_Tables></MultiImport>

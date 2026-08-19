@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Publication_System_Properties documentName="Publication System Properties">
+	<T_PUB_SYS_PROPERTY NAME="StartPage" DISPLAYED_YN="N" MANDATORY_YN="Y" DEFAULT_VALUE="ApplicationPage" G_U_K="9C7493C9C53A41078E6040436F97825E"/>
+</Publication_System_Properties></MultiImport>

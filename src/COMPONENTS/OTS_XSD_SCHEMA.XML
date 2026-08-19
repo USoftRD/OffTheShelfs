@@ -1,0 +1,214 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Component_Constructors documentName="Component Constructors">
+	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_XSD_SCHEMA" ACTIVE="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-12-06T08:19:52" G_U_K="33C546073938426785BC283B3133462C">
+		<CONSTRUCTOR_SQL><![CDATA[]]></CONSTRUCTOR_SQL>
+		<DESCRIPTION><![CDATA[This component validates xml against an XSD schema.
+
+Call example: 
+	select OTS_XSD_SCHEMA('filepath to yourschema.xsd', ''filepath to yourxml.xml)
+
+
+Both the XSD schema and xml can be passe as inline arguments. The schema will then be saved in a temporary file in the users temp directory.
+Call example:
+
+SELECT OTS_XSD_SCHEMA.VALIDATE( '<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="r">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="author"/>
+				<xs:element name="gender" default="male">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="male"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="birthdate">
+					<xs:simpleType>
+						<xs:restriction base="xs:date"/>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="version" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>', 
+
+ '<r version="1.0"><author></author><gender>changethis to male or female</gender><birthdate>2002-09-24</birthdate></r>' )
+
+
+
+SELECT OTS_XSD_SCHEMA.VALIDATE( 'C:\Development\Digitrage\Standaard.xsd',  'c:\development\digitrage\Goed.xml' )
+
+SELECT OTS_XSD_SCHEMA.VALIDATE( 'C:\Development\Digitrage\Standaard.xsd',  'c:\development\digitrage\Invalid.xml' )]]></DESCRIPTION>
+	</T_RDMI_COMPONENT_CONSTRUCTOR>
+</Component_Constructors><DotNet_Components documentName="DotNet Components">
+	<T_RDMI_DOTNET_COMPONENT COMPONENT_NAME="OTS_XSD_SCHEMA" DOTNET_ACTIVE="Y" LANGUAGE="C#" APP_DOMAIN="Default" INCLUDE_WINDOWS_APP_DLL="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-12-06T08:19:52" G_U_K="33C546073938426785BC283B3133462C">
+		<ASSEMBLYREFS><![CDATA[System.Xml.dll]]></ASSEMBLYREFS>
+		<PROGRAM_SOURCE><![CDATA[using System;
+using System.IO;
+using System.Text;
+using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Schema;
+
+class OTS_XSD_SCHEMA
+{
+	public string Validate(string schemafile, string xmlfile)
+	{
+		if(schemafile.StartsWith("<"))
+		{
+			string schemafilepath = System.IO.Path.GetTempFileName();
+			File.WriteAllText(schemafilepath, schemafile);
+			schemafile = schemafilepath;
+		}
+		Schema  schema= new Schema(schemafile); //if missing: Value cannot be null. Parameter name: schemaUri
+		List<string> flaws = schema.Validate(xmlfile);
+		if(flaws.Count > 0)
+		{
+			StringBuilder result = new StringBuilder();
+			foreach (string flaw in flaws)
+			{
+				result.Append(flaw).Append(Environment.NewLine);
+			}
+			return result.ToString(); 
+		}
+		return "Valid";
+	}
+}
+
+class Schema
+{
+	List<string> m_flaws;
+	string m_schemaxml;
+	public Schema(string schema)
+	{
+		m_schemaxml = schema;
+	}
+	private  void ValidationCallBack(object sender,  ValidationEventArgs e) 
+	{
+		m_flaws.Add(e.Message);
+	} 
+	public  List<string> Validate(string xmldoc)
+	{
+		try 
+		{ 
+			m_flaws = new List<string>();
+	 		XmlDocument xmld=new XmlDocument (); 
+			if (xmldoc.StartsWith("<"))
+				xmld.LoadXml(xmldoc); 
+			else
+				xmld.Load(xmldoc); 
+			xmld.Schemas.Add(null, m_schemaxml); 
+			xmld.Validate(ValidationCallBack); 
+			return m_flaws;
+		} 
+		catch (Exception ex)
+		{ 
+			List<string> result = new List<string>();
+			result.Add(ex.Message);
+			return result;
+		} 
+	}
+}]]></PROGRAM_SOURCE>
+		<ORIGIN><![CDATA[]]></ORIGIN>
+		<DESCRIPTION><![CDATA[This component validates xml against an XSD schema.
+
+Call example: 
+	select OTS_XSD_SCHEMA('filepath to yourschema.xsd', ''filepath to yourxml.xml)
+
+
+Both the XSD schema and xml can be passe as inline arguments. The schema will then be saved in a temporary file in the users temp directory.
+Call example:
+
+SELECT OTS_XSD_SCHEMA.VALIDATE( '<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="r">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="author"/>
+				<xs:element name="gender" default="male">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="male"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="birthdate">
+					<xs:simpleType>
+						<xs:restriction base="xs:date"/>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="version" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>', 
+
+ '<r version="1.0"><author></author><gender>changethis to male or female</gender><birthdate>2002-09-24</birthdate></r>' )
+
+
+
+SELECT OTS_XSD_SCHEMA.VALIDATE( 'C:\Development\Digitrage\Standaard.xsd',  'c:\development\digitrage\Goed.xml' )
+
+SELECT OTS_XSD_SCHEMA.VALIDATE( 'C:\Development\Digitrage\Standaard.xsd',  'c:\development\digitrage\Invalid.xml' )]]></DESCRIPTION>
+	</T_RDMI_DOTNET_COMPONENT>
+</DotNet_Components><J2EE_Components documentName="J2EE Components"/><Stateful_Components documentName="Stateful Components"/><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_XSD_SCHEMA" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-12-06T08:19:52" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="33C546073938426785BC283B3133462C">
+		<DESCRIPTION><![CDATA[This component validates xml against an XSD schema.
+
+Call example: 
+	select OTS_XSD_SCHEMA('filepath to yourschema.xsd', ''filepath to yourxml.xml)
+
+
+Both the XSD schema and xml can be passe as inline arguments. The schema will then be saved in a temporary file in the users temp directory.
+Call example:
+
+SELECT OTS_XSD_SCHEMA.VALIDATE( '<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="r">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="author"/>
+				<xs:element name="gender" default="male">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="male"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="birthdate">
+					<xs:simpleType>
+						<xs:restriction base="xs:date"/>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="version" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>', 
+
+ '<r version="1.0"><author></author><gender>changethis to male or female</gender><birthdate>2002-09-24</birthdate></r>' )
+
+
+
+SELECT OTS_XSD_SCHEMA.VALIDATE( 'C:\Development\Digitrage\Standaard.xsd',  'c:\development\digitrage\Goed.xml' )
+
+SELECT OTS_XSD_SCHEMA.VALIDATE( 'C:\Development\Digitrage\Standaard.xsd',  'c:\development\digitrage\Invalid.xml' )]]></DESCRIPTION>
+	</T_RDMI_COMPONENT>
+</Components><Methods documentName="Methods">
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_XSD_SCHEMA" METHOD_NAME="OTS_XSD_SCHEMA" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-12-06T08:19:52">
+		<PHYSICAL_METHOD_NAME><![CDATA[OTS_XSD_SCHEMA]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_XSD_SCHEMA" METHOD_NAME="VALIDATE" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-12-06T08:19:52">
+		<PHYSICAL_METHOD_NAME><![CDATA[Validate]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+</Methods><Parameters documentName="Parameters">
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XSD_SCHEMA" PARAMETER_SEQNO="0" METHOD_NAME="VALIDATE" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_Validate" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XSD_SCHEMA" PARAMETER_SEQNO="1" METHOD_NAME="VALIDATE" METHOD_SEQNO="1" PARAMETER_NAME="schemafile" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_XSD_SCHEMA" PARAMETER_SEQNO="2" METHOD_NAME="VALIDATE" METHOD_SEQNO="1" PARAMETER_NAME="xmlfile" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+</Parameters><AggregateProtocol_Associations documentName="AggregateProtocol Associations"/><Query_Protocol_Associations documentName="Query Protocol Associations"/><Named_Protocols documentName="Named Protocols"/></MultiImport>

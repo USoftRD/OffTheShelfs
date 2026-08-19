@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Rules_Engine_Parameters documentName="Rules Engine Parameters">
+	<T_RE_PARAM NAME="TEMP_TABLE_AT_OWNER" SETTING="False" DESCRIPTION="Specifies&#x20;if&#x20;temporary&#x20;tables&#x20;are&#x20;to&#x20;be&#x20;created&#x20;in&#x20;the&#x20;owner&apos;s&#x20;schema." G_U_K="2759E4DA7B6E41938F181215AE6ABB2A"/>
+</Rules_Engine_Parameters></MultiImport>

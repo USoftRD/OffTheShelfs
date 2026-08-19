@@ -1,0 +1,10 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Regular_Expressions documentName="Regular Expressions">
+	<T_REGEXP NAME="URL" REGEXP="^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w&#x20;\?=.-]*)*\/?$" G_U_K="EF685CEA514A4FEAB62E179CD178B431">
+		<DESCRIPTION><![CDATA[http, https addresses]]></DESCRIPTION>
+		<CUSTOM_MESSAGE><![CDATA[]]></CUSTOM_MESSAGE>
+		<REGEXP_SAMPLE><![CDATA[http://www.usoft.com/contact]]></REGEXP_SAMPLE>
+		<TEST_RESULT><![CDATA[]]></TEST_RESULT>
+	</T_REGEXP>
+</Regular_Expressions></MultiImport>

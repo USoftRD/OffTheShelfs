@@ -1,0 +1,7 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Domains documentName="Domains">
+	<T_DOMAIN DOMAIN_NAME="TW_CHAR_30_USERNAME" BASE_DATA_TYPE_YN="N" BASE_DATA_TYPE="SHORT_TEXT" SUPER_DOMAIN="" DATATYPE="VARCHAR2" TOTAL_LENGTH="30" LENGTH_AFTER_PERIOD="" F_DATATYPE="CHAR" F_TOTAL_LENGTH="30" F_LENGTH_AFTER_PERIOD="" DISPLAY_LENGTH="" UPPERCASE="Y" FIXED_LENGTH="N" IS_SEQNO="N" DEF_VALUE="" RANGE_LOW="" RANGE_HIGH="" HELP_TEXT="" IOFORMAT="" DBFORMAT="" DESCR="Domain&#x20;is&#x20;used&#x20;by&#x20;USoft&#x20;Production." CREATED_BY="USD_COMPONENTS61" CREATED_ON="2002-08-09T09:52:33" SEQNO_COMPONENT="" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" REGEXP="" G_U_K="04AFB8292AE54320973F28B2BC9B1430">
+		<COM_TEXT><![CDATA[]]></COM_TEXT>
+	</T_DOMAIN>
+</Domains><Alternative_Input_Formats documentName="Alternative Input Formats"/><Domain_Constraints documentName="Domain Constraints"/><Domain_Values documentName="Domain Values"/><Sequence_Definitions documentName="Sequence Definitions"/></MultiImport>

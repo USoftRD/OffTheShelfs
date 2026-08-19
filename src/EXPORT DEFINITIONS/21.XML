@@ -1,0 +1,10 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Export_Definitions documentName="Export Definitions">
+	<T_EXP_DEF EXPORT_ID="21" EXPORT_NAME="OTS_JVM" DEFINED_BY="P3100027" DEF_FILE_NAME="C:\OTS_GITHUB\OffTheShelfs\OTS_JVM\OTS_JVM.xml" EXP_RES_WORDS="N">
+		<COMMENTS><![CDATA[The purpose of this component is mainly monitoring and debugging. It offers methods to call a Java command, to collect garbage, to check free memory, to retrieve properties and settings, and more. 
+A handy method is the CONSOLE method, which opens a console window that will show all logged events and all writes to stdio and stderr.]]></COMMENTS>
+	</T_EXP_DEF>
+</Export_Definitions><Export_Action_Tasks documentName="Export Action Tasks"/><Export_Business_Objects documentName="Export Business Objects"/><Export_Business_Areas documentName="Export Business Areas"/><Export_Constraints documentName="Export Constraints"/><Export_Decisions documentName="Export Decisions"/><Export_Domains documentName="Export Domains"/><Export_Export_Tasks documentName="Export Export Tasks"/><Export_External_Sets documentName="Export External Sets"/><Export_Import_Tasks documentName="Export Import Tasks"/><Export_Jobs documentName="Export Jobs"/><Export_RDMI_Components documentName="Export RDMI Components">
+	<T_EXP_RDMI_COMPONENT EXPORT_ID="21" COMPONENT_NAME="OTS_JVM"/>
+</Export_RDMI_Components><Export_Relationships documentName="Export Relationships"/><Export_Roles documentName="Export Roles"/><Export_Business_Rule_Sets documentName="Export Business Rule Sets"/><Export_SQL_Tasks documentName="Export SQL Tasks"/><Export_Tables documentName="Export Tables"/></MultiImport>

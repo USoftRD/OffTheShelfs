@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Data_Types documentName="Data Types">
+	<T_DATATYPE DATATYPE="BLOB" VALID_ON="Ora,&#x20;Oledb&#x20;(varbinary(max))" BASE_DATA_TYPE="BINARY" G_U_K="CC280891A2224CB983F69F4DE2F7EEE4"/>
+</Data_Types></MultiImport>

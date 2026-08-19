@@ -1,0 +1,12 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Motivations documentName="Motivations">
+	<T_MOTIVATION CODE="CHECKIFDEFINEROFDEFINER" SHORT_DESCRIPTION="CheckDefinerOfDefiner" MOTIVATION_TYPE="TECHNICAL" STATUS="AGREED" CREATED_BY="USD_COMPONENTS70" CREATED_ON="2006-01-04T10:04:02" G_U_K="45EF872325CE4322BFB0058B032C9017">
+		<DESCRIPTION><![CDATA[<ReneB 03-jan-2006>
+This is a dummy motivation.
+The sole purpose in life of this record is to identify that we are in the definer of the definer. See decision:
+ALL_CHECKIFDEFINEROFDEFINER
+Do not delete this record ever!!
+</ReneB>]]></DESCRIPTION>
+	</T_MOTIVATION>
+</Motivations></MultiImport>

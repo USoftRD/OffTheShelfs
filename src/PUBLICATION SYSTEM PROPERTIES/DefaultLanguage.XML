@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Publication_System_Properties documentName="Publication System Properties">
+	<T_PUB_SYS_PROPERTY NAME="DefaultLanguage" DISPLAYED_YN="N" MANDATORY_YN="Y" DEFAULT_VALUE="en" G_U_K="7ECE1A65D10F45DDBEB7B1365BAA0CC9"/>
+</Publication_System_Properties></MultiImport>

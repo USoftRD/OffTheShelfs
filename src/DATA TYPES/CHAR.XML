@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Data_Types documentName="Data Types">
+	<T_DATATYPE DATATYPE="CHAR" VALID_ON="ODBC(1-254),&#x20;Ora,&#x20;Oledb" BASE_DATA_TYPE="STRING" G_U_K="24A4E3A7327340818CF892A2A7FC2B0B"/>
+</Data_Types></MultiImport>

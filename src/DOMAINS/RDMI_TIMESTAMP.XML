@@ -1,0 +1,7 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Domains documentName="Domains">
+	<T_DOMAIN DOMAIN_NAME="RDMI_TIMESTAMP" BASE_DATA_TYPE_YN="N" BASE_DATA_TYPE="DATETIME" SUPER_DOMAIN="" DATATYPE="DATETIME" TOTAL_LENGTH="" LENGTH_AFTER_PERIOD="" F_DATATYPE="CHAR" F_TOTAL_LENGTH="1" F_LENGTH_AFTER_PERIOD="" DISPLAY_LENGTH="" UPPERCASE="N" FIXED_LENGTH="N" IS_SEQNO="N" DEF_VALUE="" RANGE_LOW="" RANGE_HIGH="" HELP_TEXT="" IOFORMAT="" DBFORMAT="" DESCR="" CREATED_BY="FRANK" CREATED_ON="2001-10-30T14:18:02" SEQNO_COMPONENT="" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" REGEXP="" G_U_K="F2E8FAB201F94B07A1E82671B80C31BA">
+		<COM_TEXT><![CDATA[]]></COM_TEXT>
+	</T_DOMAIN>
+</Domains><Alternative_Input_Formats documentName="Alternative Input Formats"/><Domain_Constraints documentName="Domain Constraints"/><Domain_Values documentName="Domain Values"/><Sequence_Definitions documentName="Sequence Definitions"/></MultiImport>

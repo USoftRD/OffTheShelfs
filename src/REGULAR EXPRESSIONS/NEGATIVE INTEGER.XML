@@ -1,0 +1,10 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Regular_Expressions documentName="Regular Expressions">
+	<T_REGEXP NAME="NEGATIVE&#x20;INTEGER" REGEXP="^-\d+$" G_U_K="773C055D33AD468BA1A5EBB9AB5F89A2">
+		<DESCRIPTION><![CDATA[negative integer validation]]></DESCRIPTION>
+		<CUSTOM_MESSAGE><![CDATA[]]></CUSTOM_MESSAGE>
+		<REGEXP_SAMPLE><![CDATA[-123]]></REGEXP_SAMPLE>
+		<TEST_RESULT><![CDATA[]]></TEST_RESULT>
+	</T_REGEXP>
+</Regular_Expressions></MultiImport>

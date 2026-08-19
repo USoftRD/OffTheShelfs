@@ -1,0 +1,367 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Component_Constructors documentName="Component Constructors">
+	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_VOLATILE_TABLE" ACTIVE="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09" G_U_K="124DB2330B4B474B910969BF2FF50F34">
+		<CONSTRUCTOR_SQL><![CDATA[/*select null, null */
+
+select 3,
+'<OTS_Volatile_tables documentName="OTS Volatile tables">
+	<OTS_VOLATILE_TABLE FIELD1="1" FIELD2="one" FIELD3="First"/>
+	<OTS_VOLATILE_TABLE FIELD1="2" FIELD2="two" FIELD3="Second"/>
+	<OTS_VOLATILE_TABLE FIELD1="3" FIELD2="three" FIELD3="Third"/>
+	<OTS_VOLATILE_TABLE FIELD1="4" FIELD2="four" FIELD3="Fourth"/>
+</OTS_Volatile_tables>']]></CONSTRUCTOR_SQL>
+		<DESCRIPTION><![CDATA[This component implements a volatile in-memory table with 1 up to 10 fields, intended to be used as a component table.
+The first field is interpreted as the key field.
+All fields are stored as strings,
+The constructor SQL is used to:
+-1- define the number of fields (up to 10)
+-2- define initial data in xml format.
+
+A constructorSQL example  for a default volatile table with the max of 10 fields and no initial data:
+select null, null
+
+A constructor SQL example for a volatile table with 3 fields and no initial data:
+select 3, null
+
+A constructor SQL example for a pre-filled volatile table with 3 fields:
+
+select 3,
+'<Volatile_tables documentName="Volatile tables">
+<VOLATILETABLE FIELD1="1" FIELD2="one" FIELD3="first"/>
+<VOLATILETABLE FIELD1="2" FIELD2="two" FIELD3="second"/>
+<VOLATILETABLE FIELD1="3" FIELD2="three" FIELD3="third"/>
+<VOLATILETABLE FIELD1="4" FIELD2="four" FIELD3="fourth"/>
+</Volatile_tables>'
+
+The xml in the constructor can also be passed as a filepath to an xml data file.
+The xml resembles xml.import format but essentialy the attributes /*/*/@* are simply read in order of appearance and assigned to the fields of the table for each /*/* element.
+
+Calling the method OTS_VOLATILE_TABLE.Clear() ( select ots_volatile_table.clear() ) clears the table. Such an operation would be hidden from the rules engine, i.e. a transition constraint would not fire.
+select ots_volatile_table.reset() would clear the table and then re-insert the initial data from the constructor sql, if any ( this also is unseen by the rules engine).
+
+Make sure that a constructor is always available, active and checked (validated).
+After importing this component, the constructor SQL must be checked!]]></DESCRIPTION>
+	</T_RDMI_COMPONENT_CONSTRUCTOR>
+</Component_Constructors><DotNet_Components documentName="DotNet Components">
+	<T_RDMI_DOTNET_COMPONENT COMPONENT_NAME="OTS_VOLATILE_TABLE" DOTNET_ACTIVE="Y" LANGUAGE="C#" APP_DOMAIN="Default" INCLUDE_WINDOWS_APP_DLL="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09" G_U_K="124DB2330B4B474B910969BF2FF50F34">
+		<ASSEMBLYREFS><![CDATA[System.Xml.dll]]></ASSEMBLYREFS>
+		<PROGRAM_SOURCE><![CDATA[using System;
+using System.Data;
+using System.Xml;
+using System.Xml.XPath;
+using System.Collections.Generic;
+
+public class OTS_VOLATILE_TABLE
+{
+	private readonly int m_max_fields = 10;
+
+	private DataTable m_table = new DataTable();
+	private string m_initial_data_xml = null;
+    private int m_row_number = 0;
+
+	public OTS_VOLATILE_TABLE(int? n_fields, string initial_data_xml)
+	{
+		int num_fields = (n_fields == null || n_fields.Value > m_max_fields) ? m_max_fields : n_fields.Value;
+		for(int i=0; i<num_fields; i++)
+		{
+			m_table.Columns.Add(i.ToString(), typeof(string));
+		}
+		InsertXmlData(initial_data_xml);
+		m_table.AcceptChanges();
+		m_initial_data_xml = initial_data_xml;
+	}
+	private void InsertXmlData(string xml)
+	{
+		if(string.IsNullOrWhiteSpace(xml)) 
+		{
+			return;
+		}
+		xml = xml.Trim();
+		XmlDocument xml_doc = new XmlDocument();
+		if(xml.StartsWith("<"))
+		{
+			xml_doc.LoadXml(xml);
+		}
+		else
+		{
+			xml_doc.Load(xml);
+		}
+		XPathNodeIterator ni = xml_doc.CreateNavigator().Select("/*/*");
+		while(ni.MoveNext())
+		{
+			XPathNavigator ni_clone = ni.Current.Clone();
+			XPathNodeIterator attr = ni_clone.Select("@*");
+			DataRow dr = m_table.NewRow();
+			for(int i=0; i<m_table.Columns.Count; i++)
+			{
+				if(attr.MoveNext()) dr[i] = attr.Current.Value;
+			}
+			m_table.Rows.Add(dr);
+		}
+	}
+	public void Reset()
+	{
+		m_table.Clear();
+		InsertXmlData(m_initial_data_xml);
+		m_table.AcceptChanges();
+	}
+	public void Clear()
+	{
+		m_table.Clear();
+	}
+	public void InsertRow(Object[] fields)
+	{
+		DataRow dr = m_table.NewRow();
+		for(int i=0; i<m_table.Columns.Count; i++)
+		{
+			dr[i] = i < fields.Length ? (string)fields[i] : string.Empty;
+		}
+		m_table.Rows.Add(dr);
+	}
+	public void UpdateRow(Object[] fields)
+	{
+		for(int i = 0; i < m_table.Rows.Count; i++)
+		{
+			DataRow dr = m_table.Rows[i];
+			if(dr.RowState == DataRowState.Deleted)
+			{
+				continue;
+			}
+			if (dr[0].Equals(fields[0]))
+			{
+				for(int j=1; j<m_table.Columns.Count; j++)
+				{
+					dr[j] = j < fields.Length ? (string)fields[j] : string.Empty;
+				}
+			}
+		}
+	}
+	public void DeleteRow(string field1)
+	{
+		for(int i = 0; i < m_table.Rows.Count; i++)
+		{
+			DataRow dr = m_table.Rows[i];	
+			if(dr.RowState == DataRowState.Deleted)
+			{
+				continue;
+			}
+			if (dr[0].Equals(field1))
+			{
+				dr.Delete();
+			}
+		}
+	}
+	public int QueryExe(Object[] fields)
+	{
+        m_row_number = 0;
+		return 1;
+	}
+	public int QueryFetch(out string field1, out string field2, out string field3, out string field4, out string field5, out string field6, out string field7, out string field8, out string field9, out string field10)
+	{
+		field1 = field2 = field3 = field4 = field5 = field6 = field7 = field8 = field9 = field10 = string.Empty;
+		DataRow row = null;
+		for(int rn=m_row_number; rn < m_table.Rows.Count; rn++)
+		{
+			row = m_table.Rows[rn];
+			if(row.RowState != DataRowState.Deleted)
+			{
+				m_row_number = rn + 1;
+				break;
+			}
+			row = null;
+		}
+		if (row == null)
+		{
+			return 0;
+		}
+		field1 = m_table.Columns.Count > 0 ? (string)row[m_table.Columns[0]] : string.Empty;
+		field2 = m_table.Columns.Count > 1 ? (string)row[m_table.Columns[1]] : string.Empty;
+		field3 = m_table.Columns.Count > 2 ? (string)row[m_table.Columns[2]] : string.Empty;
+		field4 = m_table.Columns.Count > 3 ? (string)row[m_table.Columns[3]] : string.Empty;
+		field5 = m_table.Columns.Count > 4 ? (string)row[m_table.Columns[4]] : string.Empty;
+		field6 = m_table.Columns.Count > 5 ? (string)row[m_table.Columns[5]] : string.Empty;
+		field7 = m_table.Columns.Count > 6 ? (string)row[m_table.Columns[6]] : string.Empty;
+		field8 = m_table.Columns.Count > 7 ? (string)row[m_table.Columns[7]] : string.Empty;
+		field9 = m_table.Columns.Count > 8 ? (string)row[m_table.Columns[8]] : string.Empty;
+		field10 = m_table.Columns.Count > 9 ? (string)row[m_table.Columns[9]] : string.Empty;
+		return 1;
+	}
+	public void Commit()
+	{
+		m_table.AcceptChanges();
+	}
+	public void Rollback()
+	{
+		m_table.RejectChanges();
+	}
+}]]></PROGRAM_SOURCE>
+		<ORIGIN><![CDATA[]]></ORIGIN>
+		<DESCRIPTION><![CDATA[This component implements a volatile in-memory table with 1 up to 10 fields, intended to be used as a component table.
+The first field is interpreted as the key field.
+All fields are stored as strings,
+The constructor SQL is used to:
+-1- define the number of fields (up to 10)
+-2- define initial data in xml format.
+
+A constructorSQL example  for a default volatile table with the max of 10 fields and no initial data:
+select null, null
+
+A constructor SQL example for a volatile table with 3 fields and no initial data:
+select 3, null
+
+A constructor SQL example for a pre-filled volatile table with 3 fields:
+
+select 3,
+'<Volatile_tables documentName="Volatile tables">
+<VOLATILETABLE FIELD1="1" FIELD2="one" FIELD3="first"/>
+<VOLATILETABLE FIELD1="2" FIELD2="two" FIELD3="second"/>
+<VOLATILETABLE FIELD1="3" FIELD2="three" FIELD3="third"/>
+<VOLATILETABLE FIELD1="4" FIELD2="four" FIELD3="fourth"/>
+</Volatile_tables>'
+
+The xml in the constructor can also be passed as a filepath to an xml data file.
+The xml resembles xml.import format but essentialy the attributes /*/*/@* are simply read in order of appearance and assigned to the fields of the table for each /*/* element.
+
+Calling the method OTS_VOLATILE_TABLE.Clear() ( select ots_volatile_table.clear() ) clears the table. Such an operation would be hidden from the rules engine, i.e. a transition constraint would not fire.
+select ots_volatile_table.reset() would clear the table and then re-insert the initial data from the constructor sql, if any ( this also is unseen by the rules engine).
+
+Make sure that a constructor is always available, active and checked (validated).
+After importing this component, the constructor SQL must be checked!]]></DESCRIPTION>
+	</T_RDMI_DOTNET_COMPONENT>
+</DotNet_Components><J2EE_Components documentName="J2EE Components"/><Stateful_Components documentName="Stateful Components">
+	<T_RDMI_STATEFUL_COMPONENT COMPONENT_NAME="OTS_VOLATILE_TABLE" LIFETIME="SESSION" TRANSACTIONAL="Y" SUPPORTS_COMMIT="Y" SUPPORTS_ROLLBACK="Y" SUPPORTS_PRECOMMIT="N" SUPPORTS_TABLECOMPONENT="Y" SUPPORTS_UPDATE="Y" SUPPORTS_INSERT="Y" SUPPORTS_DELETE="Y" SUPPORTS_CONDITIONS="N" SUPPORTS_ROWSETSIZEHINT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09" G_U_K="124DB2330B4B474B910969BF2FF50F34">
+		<DESCRIPTION><![CDATA[This component implements a volatile in-memory table with 1 up to 10 fields, intended to be used as a component table.
+The first field is interpreted as the key field.
+All fields are stored as strings,
+The constructor SQL is used to:
+-1- define the number of fields (up to 10)
+-2- define initial data in xml format.
+
+A constructorSQL example  for a default volatile table with the max of 10 fields and no initial data:
+select null, null
+
+A constructor SQL example for a volatile table with 3 fields and no initial data:
+select 3, null
+
+A constructor SQL example for a pre-filled volatile table with 3 fields:
+
+select 3,
+'<Volatile_tables documentName="Volatile tables">
+<VOLATILETABLE FIELD1="1" FIELD2="one" FIELD3="first"/>
+<VOLATILETABLE FIELD1="2" FIELD2="two" FIELD3="second"/>
+<VOLATILETABLE FIELD1="3" FIELD2="three" FIELD3="third"/>
+<VOLATILETABLE FIELD1="4" FIELD2="four" FIELD3="fourth"/>
+</Volatile_tables>'
+
+The xml in the constructor can also be passed as a filepath to an xml data file.
+The xml resembles xml.import format but essentialy the attributes /*/*/@* are simply read in order of appearance and assigned to the fields of the table for each /*/* element.
+
+Calling the method OTS_VOLATILE_TABLE.Clear() ( select ots_volatile_table.clear() ) clears the table. Such an operation would be hidden from the rules engine, i.e. a transition constraint would not fire.
+select ots_volatile_table.reset() would clear the table and then re-insert the initial data from the constructor sql, if any ( this also is unseen by the rules engine).
+
+Make sure that a constructor is always available, active and checked (validated).
+After importing this component, the constructor SQL must be checked!]]></DESCRIPTION>
+	</T_RDMI_STATEFUL_COMPONENT>
+</Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_VOLATILE_TABLE" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="124DB2330B4B474B910969BF2FF50F34">
+		<DESCRIPTION><![CDATA[This component implements a volatile in-memory table with 1 up to 10 fields, intended to be used as a component table.
+The first field is interpreted as the key field.
+All fields are stored as strings,
+The constructor SQL is used to:
+-1- define the number of fields (up to 10)
+-2- define initial data in xml format.
+
+A constructorSQL example  for a default volatile table with the max of 10 fields and no initial data:
+select null, null
+
+A constructor SQL example for a volatile table with 3 fields and no initial data:
+select 3, null
+
+A constructor SQL example for a pre-filled volatile table with 3 fields:
+
+select 3,
+'<Volatile_tables documentName="Volatile tables">
+<VOLATILETABLE FIELD1="1" FIELD2="one" FIELD3="first"/>
+<VOLATILETABLE FIELD1="2" FIELD2="two" FIELD3="second"/>
+<VOLATILETABLE FIELD1="3" FIELD2="three" FIELD3="third"/>
+<VOLATILETABLE FIELD1="4" FIELD2="four" FIELD3="fourth"/>
+</Volatile_tables>'
+
+The xml in the constructor can also be passed as a filepath to an xml data file.
+The xml resembles xml.import format but essentialy the attributes /*/*/@* are simply read in order of appearance and assigned to the fields of the table for each /*/* element.
+
+Calling the method OTS_VOLATILE_TABLE.Clear() ( select ots_volatile_table.clear() ) clears the table. Such an operation would be hidden from the rules engine, i.e. a transition constraint would not fire.
+select ots_volatile_table.reset() would clear the table and then re-insert the initial data from the constructor sql, if any ( this also is unseen by the rules engine).
+
+Make sure that a constructor is always available, active and checked (validated).
+After importing this component, the constructor SQL must be checked!]]></DESCRIPTION>
+	</T_RDMI_COMPONENT>
+</Components><Methods documentName="Methods">
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_VOLATILE_TABLE" METHOD_NAME="CLEAR" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09">
+		<PHYSICAL_METHOD_NAME><![CDATA[Clear]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_VOLATILE_TABLE" METHOD_NAME="COMMIT" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09">
+		<PHYSICAL_METHOD_NAME><![CDATA[Commit]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_VOLATILE_TABLE" METHOD_NAME="DELETEROW" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09">
+		<PHYSICAL_METHOD_NAME><![CDATA[DeleteRow]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_VOLATILE_TABLE" METHOD_NAME="INSERTROW" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09">
+		<PHYSICAL_METHOD_NAME><![CDATA[InsertRow]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_VOLATILE_TABLE" METHOD_NAME="OTS_VOLATILE_TABLE" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09">
+		<PHYSICAL_METHOD_NAME><![CDATA[OTS_VOLATILE_TABLE]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_VOLATILE_TABLE" METHOD_NAME="QUERYEXE" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09">
+		<PHYSICAL_METHOD_NAME><![CDATA[QueryExe]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_VOLATILE_TABLE" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09">
+		<PHYSICAL_METHOD_NAME><![CDATA[QueryFetch]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_VOLATILE_TABLE" METHOD_NAME="RESET" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09">
+		<PHYSICAL_METHOD_NAME><![CDATA[Reset]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_VOLATILE_TABLE" METHOD_NAME="ROLLBACK" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09">
+		<PHYSICAL_METHOD_NAME><![CDATA[Rollback]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_VOLATILE_TABLE" METHOD_NAME="UPDATEROW" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-09-30T15:24:09">
+		<PHYSICAL_METHOD_NAME><![CDATA[UpdateRow]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+</Methods><Parameters documentName="Parameters">
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="1" METHOD_NAME="DELETEROW" METHOD_SEQNO="1" PARAMETER_NAME="FIELD1" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="1" METHOD_NAME="INSERTROW" METHOD_SEQNO="1" PARAMETER_NAME="FIELD1" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="1" METHOD_NAME="OTS_VOLATILE_TABLE" METHOD_SEQNO="1" PARAMETER_NAME="n_fields" KIND="IN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="1" METHOD_NAME="QUERYEXE" METHOD_SEQNO="1" PARAMETER_NAME="FIELD1" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="1" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="FIELD1" KIND="OUT" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="1" METHOD_NAME="UPDATEROW" METHOD_SEQNO="1" PARAMETER_NAME="FIELD1" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="2" METHOD_NAME="INSERTROW" METHOD_SEQNO="1" PARAMETER_NAME="FIELD2" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="2" METHOD_NAME="OTS_VOLATILE_TABLE" METHOD_SEQNO="1" PARAMETER_NAME="initial_data_xml" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="2" METHOD_NAME="QUERYEXE" METHOD_SEQNO="1" PARAMETER_NAME="FIELD2" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="2" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="FIELD2" KIND="OUT" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="2" METHOD_NAME="UPDATEROW" METHOD_SEQNO="1" PARAMETER_NAME="FIELD2" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="3" METHOD_NAME="INSERTROW" METHOD_SEQNO="1" PARAMETER_NAME="FIELD3" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="3" METHOD_NAME="QUERYEXE" METHOD_SEQNO="1" PARAMETER_NAME="FIELD3" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="3" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="FIELD3" KIND="OUT" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="3" METHOD_NAME="UPDATEROW" METHOD_SEQNO="1" PARAMETER_NAME="FIELD3" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="999" METHOD_NAME="QUERYEXE" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_QueryExe" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_VOLATILE_TABLE" PARAMETER_SEQNO="999" METHOD_NAME="QUERYFETCH" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_QueryFetch" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+</Parameters><AggregateProtocol_Associations documentName="AggregateProtocol Associations"/><Query_Protocol_Associations documentName="Query Protocol Associations">
+	<T_RDMI_QUERY_PROTOCOL COMPONENT_NAME="OTS_VOLATILE_TABLE" PROTOCOL_NAME="QUERY" QP_EXE_METHOD_NAME="QUERYEXE" QP_EXE_COMPONENT_NAME="OTS_VOLATILE_TABLE" QP_EXE_METHOD_SEQNO="1" QP_FETCH_COMPONENT_NAME="OTS_VOLATILE_TABLE" QP_FETCH_METHOD_NAME="QUERYFETCH" QP_FETCH_METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y">
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_QUERY_PROTOCOL>
+</Query_Protocol_Associations><Named_Protocols documentName="Named Protocols">
+	<T_RDMI_NAMED_PROTOCOL COMPONENT_NAME="OTS_VOLATILE_TABLE" PROTOCOL_NAME="QUERY" T_RDMI_QUERY_PROTOCOL="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" T_RDMI_AGGREGATE_PROTOCOL="N">
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_NAMED_PROTOCOL>
+</Named_Protocols></MultiImport>

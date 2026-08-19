@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Data_Types documentName="Data Types">
+	<T_DATATYPE DATATYPE="IMAGE" VALID_ON="Oledb" BASE_DATA_TYPE="BINARY" G_U_K="790152D3A0694169B0F7AA6AF14F6E82"/>
+</Data_Types></MultiImport>

@@ -1,0 +1,10 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Regular_Expressions documentName="Regular Expressions">
+	<T_REGEXP NAME="SENTENCE" REGEXP="^[a-zA-Z\-;:.,?!()&apos;&quot;\s]+$" G_U_K="7097E84232C64C61B7910EF831D7762E">
+		<DESCRIPTION><![CDATA[Letters and punctuation only]]></DESCRIPTION>
+		<CUSTOM_MESSAGE><![CDATA[]]></CUSTOM_MESSAGE>
+		<REGEXP_SAMPLE><![CDATA[My first sentence. Hello world!]]></REGEXP_SAMPLE>
+		<TEST_RESULT><![CDATA[]]></TEST_RESULT>
+	</T_REGEXP>
+</Regular_Expressions></MultiImport>

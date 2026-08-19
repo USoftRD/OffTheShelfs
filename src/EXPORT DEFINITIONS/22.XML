@@ -1,0 +1,13 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Export_Definitions documentName="Export Definitions">
+	<T_EXP_DEF EXPORT_ID="22" EXPORT_NAME="OTS_CALENDAR" DEFINED_BY="P3100027" DEF_FILE_NAME="C:\OTS_GITHUB\OffTheShelfs\OTS_CALENDAR\OTS_CALENDAR.xml" EXP_RES_WORDS="N">
+		<COMMENTS><![CDATA[The calendar component gives access to a number of date conversion options as available in the java.util.Calendar and java.text.SimpleDateFormat classes. For example, you can convert a date to a string in a local representation according to a specified style. These functions are database-independent.  
+
+For detailed information, refer to the Java documentation: 
+https://docs.oracle.com/javase/9/docs/api/java/util/Calendar.html
+https://docs.oracle.com/javase/9/docs/api/java/text/SimpleDateFormat.html]]></COMMENTS>
+	</T_EXP_DEF>
+</Export_Definitions><Export_Action_Tasks documentName="Export Action Tasks"/><Export_Business_Objects documentName="Export Business Objects"/><Export_Business_Areas documentName="Export Business Areas"/><Export_Constraints documentName="Export Constraints"/><Export_Decisions documentName="Export Decisions"/><Export_Domains documentName="Export Domains"/><Export_Export_Tasks documentName="Export Export Tasks"/><Export_External_Sets documentName="Export External Sets"/><Export_Import_Tasks documentName="Export Import Tasks"/><Export_Jobs documentName="Export Jobs"/><Export_RDMI_Components documentName="Export RDMI Components">
+	<T_EXP_RDMI_COMPONENT EXPORT_ID="22" COMPONENT_NAME="OTS_CALENDAR"/>
+</Export_RDMI_Components><Export_Relationships documentName="Export Relationships"/><Export_Roles documentName="Export Roles"/><Export_Business_Rule_Sets documentName="Export Business Rule Sets"/><Export_SQL_Tasks documentName="Export SQL Tasks"/><Export_Tables documentName="Export Tables"/></MultiImport>

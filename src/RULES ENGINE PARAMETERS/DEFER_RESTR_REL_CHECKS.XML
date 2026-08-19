@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Rules_Engine_Parameters documentName="Rules Engine Parameters">
+	<T_RE_PARAM NAME="DEFER_RESTR_REL_CHECKS" SETTING="True" DESCRIPTION="Specifies&#x20;the&#x20;moment&#x20;when&#x20;restrictive&#x20;relational&#x20;checks&#x20;are&#x20;performed." G_U_K="829BC5B8309B414BA46F8699C12E35E6"/>
+</Rules_Engine_Parameters></MultiImport>

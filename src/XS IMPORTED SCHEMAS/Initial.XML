@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<XS_Imported_Schemas documentName="XS Imported Schemas">
+	<T_E_IMPORT IMPORT_NAME="Initial" SOURCETYPE="1" SOURCENAME="USDINIT" G_U_K="448472EF40D946798B581BDB6416B80B"/>
+</XS_Imported_Schemas></MultiImport>

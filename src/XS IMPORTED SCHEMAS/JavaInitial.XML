@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<XS_Imported_Schemas documentName="XS Imported Schemas">
+	<T_E_IMPORT IMPORT_NAME="JavaInitial" SOURCETYPE="6" SOURCENAME="JavaInitial" G_U_K="97B029C5374840E89D02A356E5156829"/>
+</XS_Imported_Schemas></MultiImport>

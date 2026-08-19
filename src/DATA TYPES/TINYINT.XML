@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Data_Types documentName="Data Types">
+	<T_DATATYPE DATATYPE="TINYINT" VALID_ON="ODBC,&#x20;Oledb" BASE_DATA_TYPE="NUMBER" G_U_K="FCD85737CEA044F2893781741005BE20"/>
+</Data_Types></MultiImport>

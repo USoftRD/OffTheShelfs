@@ -1,0 +1,26 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Export_Definitions documentName="Export Definitions">
+	<T_EXP_DEF EXPORT_ID="61" EXPORT_NAME="OTS_MAIL" DEFINED_BY="P3100027" DEF_FILE_NAME="C:\OTS_GITHUB\OffTheShelfs\OTS_MAIL\OTS_MAIL.xml" EXP_RES_WORDS="N">
+		<COMMENTS><![CDATA[This component uses System.Net.Mail to send an email to one or more recipients.
+The body can be plain text or it can contain HTML.
+Optionally 1 ore more attachments can be added to the mail.
+
+Example calls:
+
+INVOKE OTS_Mail.SendMail
+WITH
+SELECT 'JohnDo@MyCompany.com', 'TestMail1', 'Hello world!'
+
+
+INVOKE OTS_Mail.SendMailHtml
+WITH
+SELECT 'JohnDo@MyCompany.com', 'TestMail1', '<u>Hello<u><br/><b>world!</b>'
+
+INVOKE OTS_Mail.SendMailHtml
+WITH
+SELECT 'JohnDo@MyCompany.com;JaneDo@MyCompany.com', 'TestMail1', '<u>Hello<u><br/><b>world!</b>', 'C:\usd90setup\Doc\AddNote.pdf', 'C:\usd90setup\BITMAPS\usdlogo.bmp']]></COMMENTS>
+	</T_EXP_DEF>
+</Export_Definitions><Export_Action_Tasks documentName="Export Action Tasks"/><Export_Business_Objects documentName="Export Business Objects"/><Export_Business_Areas documentName="Export Business Areas"/><Export_Constraints documentName="Export Constraints"/><Export_Decisions documentName="Export Decisions"/><Export_Domains documentName="Export Domains"/><Export_Export_Tasks documentName="Export Export Tasks"/><Export_External_Sets documentName="Export External Sets"/><Export_Import_Tasks documentName="Export Import Tasks"/><Export_Jobs documentName="Export Jobs"/><Export_RDMI_Components documentName="Export RDMI Components">
+	<T_EXP_RDMI_COMPONENT EXPORT_ID="61" COMPONENT_NAME="OTS_MAIL"/>
+</Export_RDMI_Components><Export_Relationships documentName="Export Relationships"/><Export_Roles documentName="Export Roles"/><Export_Business_Rule_Sets documentName="Export Business Rule Sets"/><Export_SQL_Tasks documentName="Export SQL Tasks"/><Export_Tables documentName="Export Tables"/></MultiImport>

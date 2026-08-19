@@ -1,0 +1,155 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Component_Constructors documentName="Component Constructors">
+	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_MAIL" ACTIVE="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2017-12-21T11:07:49" G_U_K="CB963CF68B444D72ADD9F99DE8759831">
+		<CONSTRUCTOR_SQL><![CDATA[SELECT	'outgoing_mail_server', 'outgoing_mail_account']]></CONSTRUCTOR_SQL>
+		<DESCRIPTION><![CDATA[This component uses System.Net.Mail to send an email to one or more recipients.
+The body can be plain text or it can contain HTML.
+Optionally 1 ore more attachments can be added to the mail.
+
+Example calls:
+
+INVOKE OTS_Mail.SendMail
+WITH
+SELECT 'JohnDo@MyCompany.com', 'TestMail1', 'Hello world!'
+
+
+INVOKE OTS_Mail.SendMailHtml
+WITH
+SELECT 'JohnDo@MyCompany.com', 'TestMail1', '<u>Hello<u><br/><b>world!</b>'
+
+INVOKE OTS_Mail.SendMailHtml
+WITH
+SELECT 'JohnDo@MyCompany.com;JaneDo@MyCompany.com', 'TestMail1', '<u>Hello<u><br/><b>world!</b>', 'C:\usd90setup\Doc\AddNote.pdf', 'C:\usd90setup\BITMAPS\usdlogo.bmp']]></DESCRIPTION>
+	</T_RDMI_COMPONENT_CONSTRUCTOR>
+</Component_Constructors><DotNet_Components documentName="DotNet Components">
+	<T_RDMI_DOTNET_COMPONENT COMPONENT_NAME="OTS_MAIL" DOTNET_ACTIVE="Y" LANGUAGE="C#" APP_DOMAIN="Default" INCLUDE_WINDOWS_APP_DLL="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2017-12-21T11:07:49" G_U_K="CB963CF68B444D72ADD9F99DE8759831">
+		<ASSEMBLYREFS><![CDATA[]]></ASSEMBLYREFS>
+		<PROGRAM_SOURCE><![CDATA[using System;
+using System.Net.Mail;
+
+class OTS_MAIL
+{
+	private string  m_outgoing_mail_server;
+	private string  m_outgoing_mail_account;
+
+	public OTS_MAIL(string outgoing_mail_server, string outgoing_mail_account)
+	{
+		m_outgoing_mail_server	= outgoing_mail_server;
+		m_outgoing_mail_account	= outgoing_mail_account;
+	}
+
+	private void SendMail(string recipients, string subject, string body, bool html, params object[] attachments)
+	{
+		MailMessage message = new MailMessage();
+		foreach (string recipient in recipients.Split(new [] {";"}, StringSplitOptions.RemoveEmptyEntries))
+			message.To.Add(recipient);    
+		message.Subject = subject;
+		message.From = new System.Net.Mail.MailAddress(m_outgoing_mail_account);
+		message.IsBodyHtml = html;
+		message.Body = body;
+		if( attachments != null )
+			foreach (string attachment in attachments)
+				message.Attachments.Add(new Attachment(attachment));
+
+		SmtpClient smtp = new SmtpClient(m_outgoing_mail_server);
+		smtp.Send(message);
+	}
+
+	public void SendMail(string recipients, string subject, string body, params object[] attachments)
+	{
+		SendMail(recipients, subject, body, false, attachments);
+	}
+
+	public void SendMailHtml(string recipients, string subject, string body, params object[] attachments)
+	{
+		SendMail(recipients, subject, body, true, attachments);
+	}
+}]]></PROGRAM_SOURCE>
+		<ORIGIN><![CDATA[]]></ORIGIN>
+		<DESCRIPTION><![CDATA[This component uses System.Net.Mail to send an email to one or more recipients.
+The body can be plain text or it can contain HTML.
+Optionally 1 ore more attachments can be added to the mail.
+
+Example calls:
+
+INVOKE OTS_Mail.SendMail
+WITH
+SELECT 'JohnDo@MyCompany.com', 'TestMail1', 'Hello world!'
+
+
+INVOKE OTS_Mail.SendMailHtml
+WITH
+SELECT 'JohnDo@MyCompany.com', 'TestMail1', '<u>Hello<u><br/><b>world!</b>'
+
+INVOKE OTS_Mail.SendMailHtml
+WITH
+SELECT 'JohnDo@MyCompany.com;JaneDo@MyCompany.com', 'TestMail1', '<u>Hello<u><br/><b>world!</b>', 'C:\usd90setup\Doc\AddNote.pdf', 'C:\usd90setup\BITMAPS\usdlogo.bmp']]></DESCRIPTION>
+	</T_RDMI_DOTNET_COMPONENT>
+</DotNet_Components><J2EE_Components documentName="J2EE Components"/><Stateful_Components documentName="Stateful Components">
+	<T_RDMI_STATEFUL_COMPONENT COMPONENT_NAME="OTS_MAIL" LIFETIME="SESSION" TRANSACTIONAL="N" SUPPORTS_COMMIT="N" SUPPORTS_ROLLBACK="N" SUPPORTS_PRECOMMIT="N" SUPPORTS_TABLECOMPONENT="N" SUPPORTS_UPDATE="N" SUPPORTS_INSERT="N" SUPPORTS_DELETE="N" SUPPORTS_CONDITIONS="N" SUPPORTS_ROWSETSIZEHINT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2017-12-21T11:07:49" G_U_K="CB963CF68B444D72ADD9F99DE8759831">
+		<DESCRIPTION><![CDATA[This component uses System.Net.Mail to send an email to one or more recipients.
+The body can be plain text or it can contain HTML.
+Optionally 1 ore more attachments can be added to the mail.
+
+Example calls:
+
+INVOKE OTS_Mail.SendMail
+WITH
+SELECT 'JohnDo@MyCompany.com', 'TestMail1', 'Hello world!'
+
+
+INVOKE OTS_Mail.SendMailHtml
+WITH
+SELECT 'JohnDo@MyCompany.com', 'TestMail1', '<u>Hello<u><br/><b>world!</b>'
+
+INVOKE OTS_Mail.SendMailHtml
+WITH
+SELECT 'JohnDo@MyCompany.com;JaneDo@MyCompany.com', 'TestMail1', '<u>Hello<u><br/><b>world!</b>', 'C:\usd90setup\Doc\AddNote.pdf', 'C:\usd90setup\BITMAPS\usdlogo.bmp']]></DESCRIPTION>
+	</T_RDMI_STATEFUL_COMPONENT>
+</Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_MAIL" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2017-12-21T11:07:49" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="CB963CF68B444D72ADD9F99DE8759831">
+		<DESCRIPTION><![CDATA[This component uses System.Net.Mail to send an email to one or more recipients.
+The body can be plain text or it can contain HTML.
+Optionally 1 ore more attachments can be added to the mail.
+
+Example calls:
+
+INVOKE OTS_Mail.SendMail
+WITH
+SELECT 'JohnDo@MyCompany.com', 'TestMail1', 'Hello world!'
+
+
+INVOKE OTS_Mail.SendMailHtml
+WITH
+SELECT 'JohnDo@MyCompany.com', 'TestMail1', '<u>Hello<u><br/><b>world!</b>'
+
+INVOKE OTS_Mail.SendMailHtml
+WITH
+SELECT 'JohnDo@MyCompany.com;JaneDo@MyCompany.com', 'TestMail1', '<u>Hello<u><br/><b>world!</b>', 'C:\usd90setup\Doc\AddNote.pdf', 'C:\usd90setup\BITMAPS\usdlogo.bmp']]></DESCRIPTION>
+	</T_RDMI_COMPONENT>
+</Components><Methods documentName="Methods">
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_MAIL" METHOD_NAME="OTS_MAIL" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2017-12-21T11:07:49">
+		<PHYSICAL_METHOD_NAME><![CDATA[OTS_MAIL]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_MAIL" METHOD_NAME="SENDMAIL" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2017-12-21T11:07:49">
+		<PHYSICAL_METHOD_NAME><![CDATA[SendMail]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_MAIL" METHOD_NAME="SENDMAILHTML" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2017-12-21T11:07:49">
+		<PHYSICAL_METHOD_NAME><![CDATA[SendMailHtml]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+</Methods><Parameters documentName="Parameters">
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_MAIL" PARAMETER_SEQNO="1" METHOD_NAME="OTS_MAIL" METHOD_SEQNO="1" PARAMETER_NAME="outgoing_mail_server" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_MAIL" PARAMETER_SEQNO="1" METHOD_NAME="SENDMAIL" METHOD_SEQNO="1" PARAMETER_NAME="recipients" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_MAIL" PARAMETER_SEQNO="1" METHOD_NAME="SENDMAILHTML" METHOD_SEQNO="1" PARAMETER_NAME="recipients" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_MAIL" PARAMETER_SEQNO="2" METHOD_NAME="OTS_MAIL" METHOD_SEQNO="1" PARAMETER_NAME="outgoing_mail_account" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_MAIL" PARAMETER_SEQNO="2" METHOD_NAME="SENDMAIL" METHOD_SEQNO="1" PARAMETER_NAME="subject" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_MAIL" PARAMETER_SEQNO="2" METHOD_NAME="SENDMAILHTML" METHOD_SEQNO="1" PARAMETER_NAME="subject" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_MAIL" PARAMETER_SEQNO="3" METHOD_NAME="SENDMAIL" METHOD_SEQNO="1" PARAMETER_NAME="body" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_MAIL" PARAMETER_SEQNO="3" METHOD_NAME="SENDMAILHTML" METHOD_SEQNO="1" PARAMETER_NAME="body" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_MAIL" PARAMETER_SEQNO="4" METHOD_NAME="SENDMAIL" METHOD_SEQNO="1" PARAMETER_NAME="attachments" KIND="INLIST" PRIMITIVE_DATA_TYPE="VARIABLE" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_MAIL" PARAMETER_SEQNO="4" METHOD_NAME="SENDMAILHTML" METHOD_SEQNO="1" PARAMETER_NAME="attachments" KIND="INLIST" PRIMITIVE_DATA_TYPE="VARIABLE" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+</Parameters><AggregateProtocol_Associations documentName="AggregateProtocol Associations"/><Query_Protocol_Associations documentName="Query Protocol Associations"/><Named_Protocols documentName="Named Protocols"/></MultiImport>

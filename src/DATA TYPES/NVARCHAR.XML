@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Data_Types documentName="Data Types">
+	<T_DATATYPE DATATYPE="NVARCHAR" VALID_ON="Oledb" BASE_DATA_TYPE="STRING" G_U_K="06D703EC2DE34292A0562F1C1284FF5C"/>
+</Data_Types></MultiImport>

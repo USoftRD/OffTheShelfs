@@ -1,0 +1,5 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Rules_Engine_Parameters documentName="Rules Engine Parameters">
+	<T_RE_PARAM NAME="UPDATE_SUPERTYPE_ON_INS" SETTING="False" DESCRIPTION="Specifies&#x20;whether&#x20;inserting&#x20;a&#x20;subtype&#x20;for&#x20;an&#x20;existing&#x20;supertype&#x20;must&#x20;be&#x20;considered&#x20;as&#x20;an&#x20;UPDATE&#x20;on&#x20;the&#x20;whole&#x20;constellation." G_U_K="EFE8516BBDCD4F17AC71FA3F39C06474"/>
+</Rules_Engine_Parameters></MultiImport>

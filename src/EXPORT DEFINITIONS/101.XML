@@ -1,0 +1,93 @@
+<?usoft-xml version="1.0" return-corrected-records="no" action="multi-tables-import"?>
+<MultiImport>
+<Export_Definitions documentName="Export Definitions">
+	<T_EXP_DEF EXPORT_ID="101" EXPORT_NAME="OTS_CALENDAR_DAY" DEFINED_BY="P3100027" DEF_FILE_NAME="C:\OTS_GITHUB\OffTheShelfs\OTS_CALENDAR_DAY\OTS_CALENDAR_DAY.xml" EXP_RES_WORDS="N">
+		<COMMENTS><![CDATA[This Calendar component is intended to be used in a Calendar table component.
+OTS_CALENDAR_DAY steps through the days in a certain period.
+The default period is specified in the constructor SQL, together with a default culture and default month and day name format.
+
+This component has to be considered as an example showing various programming techniques. For production purposes, the example can be extended or reduces to the actual requirements.
+This example shows:
+	-using C# calendar arithmetic
+	-a C# component using a query protocol to support a table component. i.e. usage of a table in USoft that can be queried to show calendar data
+	-an example of using query conditions; they are passed as parameters in an xml format to the QueryExe method when "Extended query conditions" are used.
+	-the use of  a regular expression
+	-parsing an Enum from a string
+		
+
+The component table OTS_CALENDAR_DAY can be queried to find all days in a certain period.
+In the USoft application, open the OTS_CALENDAR_DAY table and query all records to see the result.
+The default period is set in the constructor SQL. This period  can be overridden by specifying values for  the period start and end in the query (i.e. specify value(s) for PERIOD_START and/or PERIOD_END).
+Note that specifying PERIOD_START and PERIOD_END is a way of parameterizing the component and deviates from normal table behaviour.
+Operators <, <=, >, >=, % (LIKE) are not supported therefore on these fields.
+(For deployment purposes one could remove such fields from the component and only specify the period in the constructor SQL)
+The start and end period also support a basic date expression. Besides plain dates (as e.g. 2019 or 1-5-2020) one can specify expressions like: now
+
+
+The default culture (set by the constructor SQL) can be overridden by passing a culture name as e.g. en_US.
+The culture determines the language used to show month and day names
+This too this is a way of parameterizing the component with the same note above about operators applies.
+
+The year can be set (and must of course fall in the period to find any days at all). 
+The year can be used with conditions <, <=, >, >= and the component will use these conditions to reduce the number of days fetched for efficiency.
+Query conditions on the other fields (month number, day in month, day of week, day of year, month name, day name) are resolved by the rules engine.
+
+The OTS_CALENDAR_DAY also offers the following helper methods:
+select OTS_CALENDAR_DAY.ListFormats()		=> lists all DateTime input formats that can be used to specify the period (in the constructor SQL and/or as query condition)
+select OTS_CALENDAR_DAY.ListCultures()		=> lists all the culture names (with their display name)
+
+The OTS_CALENDAR_DAY also offers the following utility methods:
+select OTS_CALENDAR_DAY.AddDays( datestring, howmanydays, format)	
+	=> reads the datestring (according to the input formats). An empty input string is taken as the current datetime.
+	=> adds a number of days, e.g. 5  (which can also be a fraction, e.g. 1.5) 
+	=> produces a date string as output in the specified format. An empty format string is taken as the USoft default format ( yyyy/MMddHHmmss )
+
+select OTS_CALENDAR_DAY.DaysBetween(datestring1, datestring2)
+	=>reads both datestrings 
+	=>produces the number of days (can be a fraction) between the two dates
+
+Simple date expressions are supported for the start and end of period. (You could extend/change the basic grammar or use professional parsing techniques for more, or entirely leave out this example behaviour).
+Expression examples (the expressions are case insensitive. For details check the  implementation of the ParseDateExpr method):
+now
+yesterday
+tomorrow
+this  Monday
+next Monday
+following Monday
+next year
+last year
+yesterday + 2 weeks
+previous Monday + 1 week
+this day plus 1 year
+
+Note that only English day names and the English names year, month and day are supported.
+Note that the interpretation of "this year" would be January first for the start period but December 31 for the end period.
+In other words, to get all days in a year you can use in both period fields (start of period and end of period) the search condition: this year 
+This month likewise refers to the begin or the end of the month and this week refers to begin or end of this week. 
+Note that the following week can be addressed as:
+next week
+or
+this week + 1 week
+Also note that:
+yesterday + 1 
+adds one day (i.e. the default amount unit is days)
+yesterday + 1 week
+adds one week to yesterday
+this day
+is equivalent to
+now
+
+Finally,  note that fractions are not supported for year and month units. That is:
+now plus 1.5 year
+is not valid whereas
+now + 2.5 days 
+is valid
+
+An example of a query would be:
+select YEAR, MONTHNAME, DAYOFWEEK, DAYNAME from OTS_CALENDAR_DAY where PERIOD_START='now' and PERIOD_END='this week' and CULTURE_NAME='nl-NL']]></COMMENTS>
+	</T_EXP_DEF>
+</Export_Definitions><Export_Action_Tasks documentName="Export Action Tasks"/><Export_Business_Objects documentName="Export Business Objects"/><Export_Business_Areas documentName="Export Business Areas"/><Export_Constraints documentName="Export Constraints"/><Export_Decisions documentName="Export Decisions"/><Export_Domains documentName="Export Domains"/><Export_Export_Tasks documentName="Export Export Tasks"/><Export_External_Sets documentName="Export External Sets"/><Export_Import_Tasks documentName="Export Import Tasks"/><Export_Jobs documentName="Export Jobs"/><Export_RDMI_Components documentName="Export RDMI Components">
+	<T_EXP_RDMI_COMPONENT EXPORT_ID="101" COMPONENT_NAME="OTS_CALENDAR_DAY"/>
+</Export_RDMI_Components><Export_Relationships documentName="Export Relationships"/><Export_Roles documentName="Export Roles"/><Export_Business_Rule_Sets documentName="Export Business Rule Sets"/><Export_SQL_Tasks documentName="Export SQL Tasks"/><Export_Tables documentName="Export Tables">
+	<T_EXP_TABLE EXPORT_ID="101" TABLE_NAME="OTS_CALENDAR_DAY" INCL_DOMAINS="Y" INCL_SUBTYPES="N"/>
+</Export_Tables></MultiImport>
