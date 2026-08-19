@@ -48,7 +48,7 @@ for the implementation you could use table constraints that trigger th
 	</T_RDMI_COMPONENT_CONSTRUCTOR>
 </Component_Constructors><DotNet_Components documentName="DotNet Components">
 	<T_RDMI_DOTNET_COMPONENT COMPONENT_NAME="OTS_SYSLOG_CLIENT_RFC3164" DOTNET_ACTIVE="Y" LANGUAGE="C#" APP_DOMAIN="Default" INCLUDE_WINDOWS_APP_DLL="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100021" CREATED_ON="2021-07-22T11:29:41" G_U_K="1406A32FF5954DB08D7BC06E29FC0369">
-		<ASSEMBLYREFS><![CDATA[System.Core.dll; System.Xml.dll; System.Collections.dll;System.Linq.dll;]]></ASSEMBLYREFS>
+		<ASSEMBLYREFS><![CDATA[]]></ASSEMBLYREFS>
 		<PROGRAM_SOURCE><![CDATA[using System;
 using System.IO;
 using System.Text;

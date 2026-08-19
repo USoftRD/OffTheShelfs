@@ -34,7 +34,7 @@ In the application, using SqlCommand, you can test the methods with the followin
 	</T_RDMI_COMPONENT_CONSTRUCTOR>
 </Component_Constructors><DotNet_Components documentName="DotNet Components">
 	<T_RDMI_DOTNET_COMPONENT COMPONENT_NAME="OTS_XML_SIGNING" DOTNET_ACTIVE="Y" LANGUAGE="C#" APP_DOMAIN="Default" INCLUDE_WINDOWS_APP_DLL="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="P3100027" CREATED_ON="2019-10-16T17:11:24" G_U_K="43789B3AFC2F4845AC0F604AEB714448">
-		<ASSEMBLYREFS><![CDATA[System.Xml.dll;System.Security.Cryptography.Xml/6.0.0;]]></ASSEMBLYREFS>
+		<ASSEMBLYREFS><![CDATA[System.Security.Cryptography.Xml]]></ASSEMBLYREFS>
 		<PROGRAM_SOURCE><![CDATA[using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
