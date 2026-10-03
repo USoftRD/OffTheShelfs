@@ -12,6 +12,7 @@
 //
 // One call writes one line:
 //   2026-10-03 14:22:01.123 [DEBUG] APP user=USER session=<pid>.<engine> tx=<pid>.<n> - message
+// Default file: OTS_LOGGER.log in the USoft log folder (RulesEngine.GetProperty('USoftLogDir')).
 // The level (OFF, ERROR, WARNING, INFORMATION, DEBUG) comes from the database table OTS_LOGGER_SETTING
 // (wins) and/or a configuration file, re-read every REFRESH_SECONDS, so a change needs no rule change.
 // Every public method returns the same constant (1, or the level test result for IsEnabled) and never
@@ -32,8 +33,13 @@ public class OTS_LOGGER : RulesEngine
 	private const int OFF = 0, ERROR = 1, WARNING = 2, INFORMATION = 3, DEBUG = 4;
 	private static readonly string[] s_levelNames = { "OFF", "ERROR", "WARNING", "INFORMATION", "DEBUG" };
 
-	// ------------------------------------------------------------------ defaults (backward compatible)
-	private const string DEFAULT_PATH = "C:\\temp\\mylog.log";   // the path of OTS_LOGGER 1.x
+	// ------------------------------------------------------------------ defaults
+	// Default file: OTS_LOGGER.log in the USoft log folder, RulesEngine.GetProperty('USoftLogDir') (the installation's
+	// LogPath + USoft_logs, e.g. C:\USoft\USD11-Logs\USoft_logs\): the same folder in clients, batch and the Rules Service.
+	// Without a Rules Engine to ask, or when it gives no folder: OTS_LOGGER.log in the configuration folder.
+	// 1.x wrote C:\temp\mylog.log.
+	private const string DEFAULT_FILE = "OTS_LOGGER.log";
+	private const string LOGDIR_TOKEN = "{USOFTLOGDIR}";
 	private const int DEFAULT_LEVEL = INFORMATION;              // 1.x wrote Information, Warning and Error
 	private const long DEFAULT_MAX_SIZE_KB = 10240;
 	private const int DEFAULT_MAX_FILES = 5;
@@ -56,11 +62,13 @@ public class OTS_LOGGER : RulesEngine
 	private static readonly UTF8Encoding s_utf8 = new UTF8Encoding(false);
 	private static readonly int s_pid = Environment.ProcessId;
 	private static long s_txCounter = 0;
+	private static string s_usoftLogDir;   // asked once per process; "" = could not be read
+	private static int s_configCreateTried;   // 1 = this process already tried to create the configuration file
 
 	private sealed class Settings
 	{
 		public int Level = DEFAULT_LEVEL;
-		public string Path = DEFAULT_PATH;
+		public string Path;   // null = the default file
 		public long MaxBytes = DEFAULT_MAX_SIZE_KB * 1024;
 		public int MaxFiles = DEFAULT_MAX_FILES;
 		public int RefreshMs = DEFAULT_REFRESH_SECONDS * 1000;
@@ -186,7 +194,88 @@ public class OTS_LOGGER : RulesEngine
 
 	private static string ExpandPath(string path, string app)
 	{
-		return Environment.ExpandEnvironmentVariables(path ?? DEFAULT_PATH).Replace("{APP}", app);
+		if (string.IsNullOrEmpty(path)) return DefaultPath();
+		path = Environment.ExpandEnvironmentVariables(path).Replace("{APP}", app);
+		int i = path.IndexOf(LOGDIR_TOKEN, StringComparison.OrdinalIgnoreCase);
+		if (i >= 0) path = path.Substring(0, i) + LogDirOrConfigFolder() + path.Substring(i + LOGDIR_TOKEN.Length);
+		return path;
+	}
+
+	private static string DefaultPath()
+	{
+		return Path.Combine(LogDirOrConfigFolder(), DEFAULT_FILE);
+	}
+
+	// The USoft log folder with a trailing backslash, or the configuration folder when it is unknown.
+	private static string LogDirOrConfigFolder()
+	{
+		string d = s_usoftLogDir;
+		if (string.IsNullOrEmpty(d)) d = ConfigFolder();
+		return d.EndsWith("\\") ? d : d + "\\";
+	}
+
+	// On first use, when no configuration file exists, write the shared one with every key and its current value,
+	// the log file path written out in full, so the settings can be read and changed without the source.
+	// Once per process; never overwrites a file; a failure only goes to the fallback report.
+	private void CreateConfigFileOnce()
+	{
+		if (Interlocked.Exchange(ref s_configCreateTried, 1) == 1) return;
+		if (getEngine() == IntPtr.Zero) { s_configCreateTried = 0; return; }   // wait until USoftLogDir can be asked
+		string file = Path.Combine(ConfigFolder(), "OTS_LOGGER.config");
+		try {
+			if (FindConfigFile("") != null || FindAnyAppConfig()) return;
+			Directory.CreateDirectory(ConfigFolder());
+			string nl = "\r\n";
+			string text =
+				"# OTS_LOGGER configuration, created " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " on first use." + nl +
+				"# Read every refresh_seconds; a row in table OTS_LOGGER_SETTING overrides a key here (the database wins)." + nl +
+				"# <APP>.config in this folder, or the file named by %OTS_LOGGER_CONFIG%, is used instead of this file." + nl +
+				"# In path: {APP} = application name, {USOFTLOGDIR} = RulesEngine.GetProperty('USoftLogDir'), %VARIABLES%." + nl +
+				nl +
+				"# OFF, ERROR, WARNING, INFORMATION or DEBUG" + nl +
+				"level=" + s_levelNames[DEFAULT_LEVEL] + nl +
+				"# Default: OTS_LOGGER.log in the USoft log folder (" + LogDirOrConfigFolder() + ")" + nl +
+				"path=" + DefaultPath() + nl +
+				"# Rotate when the file would exceed this size (0 = never); keep this many rotated files" + nl +
+				"max_size_kb=" + DEFAULT_MAX_SIZE_KB + nl +
+				"max_files=" + DEFAULT_MAX_FILES + nl +
+				"refresh_seconds=" + DEFAULT_REFRESH_SECONDS + nl +
+				"# off = do not read table OTS_LOGGER_SETTING" + nl +
+				"database=on" + nl +
+				"# fallback_path=" + Path.Combine(ConfigFolder(), "OTS_LOGGER_fallback.log") + nl;
+			byte[] b = s_utf8.GetBytes(text);
+			// CreateNew: when two processes start at once, one writes the file and the other leaves it alone.
+			using (var fs = new FileStream(file, FileMode.CreateNew, FileAccess.Write, FileShare.Read)) { fs.Write(b, 0, b.Length); }
+		}
+		catch (IOException) when (File.Exists(file)) { }
+		catch (Exception e) { Report(null, "config-create", "could not create " + file + ": " + e.Message + "; the built-in defaults are used"); }
+	}
+
+	private static bool FindAnyAppConfig()
+	{
+		try { return Directory.Exists(ConfigFolder()) && Directory.GetFiles(ConfigFolder(), "*.config").Length > 0; }
+		catch (Exception) { return false; }
+	}
+
+	// RulesEngine.GetProperty('USoftLogDir'), once per process. Asked in the caller's Rules Engine with its errors
+	// caught, so a USoft version without this property cannot fail the calling statement.
+	private void ResolveUsoftLogDir()
+	{
+		if (s_usoftLogDir != null || getEngine() == IntPtr.Zero) return;
+		string dir = "";
+		bool catching = false;
+		try {
+			try { Query("SELECT RulesEngine.StartCatchingErrors('Yes')"); catching = true; } catch (Exception) { }
+			object r = QuerySingleField("SELECT RulesEngine.GetProperty('USoftLogDir')");
+			string v = r == null || r == DBNull.Value ? "" : Convert.ToString(r).Trim();
+			if (v.Length > 0 && Path.IsPathRooted(v)) dir = v;
+		}
+		catch (Exception) { }
+		finally {
+			if (catching) { try { Query("SELECT RulesEngine.StopCatchingErrors()"); } catch (Exception) { } }
+		}
+		if (dir.Length == 0) Report(null, "logdir", "RulesEngine.GetProperty('USoftLogDir') gave no folder; default log file is " + Path.Combine(ConfigFolder(), DEFAULT_FILE));
+		s_usoftLogDir = dir;
 	}
 
 	// ================================================================== settings
@@ -220,6 +309,8 @@ public class OTS_LOGGER : RulesEngine
 
 	private Settings LoadSettings(string app)
 	{
+		ResolveUsoftLogDir();
+		CreateConfigFileOnce();
 		Settings s = new Settings();
 		var sources = new List<string>();
 		// 1. configuration file
