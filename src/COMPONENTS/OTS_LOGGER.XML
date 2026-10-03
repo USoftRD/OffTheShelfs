@@ -3,90 +3,535 @@
 <Component_Constructors documentName="Component Constructors">
 	<T_RDMI_COMPONENT_CONSTRUCTOR COMPONENT_NAME="OTS_LOGGER" ACTIVE="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-11-22T12:08:51" G_U_K="80a621ec899345439ee2d7d6a2330726">
 		<CONSTRUCTOR_SQL><![CDATA[]]></CONSTRUCTOR_SQL>
-		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+		<DESCRIPTION><![CDATA[OTS_LOGGER 2.0: levelled (OFF/ERROR/WARNING/INFORMATION/DEBUG), rotating, multi-process safe log file for rules, SQL tasks and jobs. Never throws; returns 1.]]></DESCRIPTION>
 	</T_RDMI_COMPONENT_CONSTRUCTOR>
 </Component_Constructors><DotNet_Components documentName="DotNet Components">
 	<T_RDMI_DOTNET_COMPONENT COMPONENT_NAME="OTS_LOGGER" DOTNET_ACTIVE="Y" LANGUAGE="C#" APP_DOMAIN="Default" INCLUDE_WINDOWS_APP_DLL="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-11-22T12:08:51" G_U_K="80a621ec899345439ee2d7d6a2330726">
-		<ASSEMBLYREFS><![CDATA[]]></ASSEMBLYREFS>
-		<PROGRAM_SOURCE><![CDATA[using System;
+		<ASSEMBLYREFS><![CDATA[RDMIRulesEngine.dll]]></ASSEMBLYREFS>
+		<PROGRAM_SOURCE><![CDATA[// OTS_LOGGER 2.0 - production logging for USoft rules, SQL tasks and jobs (USoft 11.2, .NET RDMI C# component).
+//
+// One call writes one line:
+//   2026-10-03 14:22:01.123 [DEBUG] APP user=USER session=<pid>.<engine> tx=<pid>.<n> - message
+// The level (OFF, ERROR, WARNING, INFORMATION, DEBUG) comes from the database table OTS_LOGGER_SETTING
+// (wins) and/or a configuration file, re-read every REFRESH_SECONDS, so a change needs no rule change.
+// Every public method returns the same constant (1, or the level test result for IsEnabled) and never
+// throws: a failure to write is reported in a fallback file, never in the transaction.
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.IO;
+using System.Security.AccessControl;
+using System.Security.Principal;
+using System.Text;
 using System.Threading;
 
-public class OTS_LOGGER
+public class OTS_LOGGER : RulesEngine
 {
-	private string m_filepath = "C:\\temp\\mylog.log";
-	private static readonly Mutex logMutex = new Mutex();
+	// ------------------------------------------------------------------ levels
+	private const int OFF = 0, ERROR = 1, WARNING = 2, INFORMATION = 3, DEBUG = 4;
+	private static readonly string[] s_levelNames = { "OFF", "ERROR", "WARNING", "INFORMATION", "DEBUG" };
 
-	public int WriteInformation(string message)
-    {
-		return WritePrivate0(m_filepath, message, "Information");
-    }
+	// ------------------------------------------------------------------ defaults (backward compatible)
+	private const string DEFAULT_PATH = "C:\\temp\\mylog.log";   // the path of OTS_LOGGER 1.x
+	private const int DEFAULT_LEVEL = INFORMATION;              // 1.x wrote Information, Warning and Error
+	private const long DEFAULT_MAX_SIZE_KB = 10240;
+	private const int DEFAULT_MAX_FILES = 5;
+	private const int DEFAULT_REFRESH_SECONDS = 5;
+	private const string SETTINGS_TABLE = "OTS_LOGGER_SETTING";
 
-	public int WriteWarning(string message)
-    {
-		return WritePrivate0(m_filepath, message, "Warning");
-    }
+	// ------------------------------------------------------------------ per instance
+	// With Lifetime = Transaction (as installed) one instance lives for one transaction.
+	private readonly string m_tx;
+	private string m_owner;
+	private string m_user;
 
-	public int WriteError(string message)
-    {
-		return WritePrivate0(m_filepath, message, "Error");
-    }
+	// ------------------------------------------------------------------ per process
+	private static readonly object s_lock = new object();
+	private static readonly Dictionary<string, Settings> s_settings = new Dictionary<string, Settings>(StringComparer.OrdinalIgnoreCase);
+	private static readonly Dictionary<string, Mutex> s_mutexes = new Dictionary<string, Mutex>(StringComparer.OrdinalIgnoreCase);
+	private static readonly Dictionary<string, long> s_reported = new Dictionary<string, long>(StringComparer.Ordinal);
+	private static readonly Dictionary<string, int> s_lost = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+	private static readonly object s_noMutexLock = new object();
+	private static readonly UTF8Encoding s_utf8 = new UTF8Encoding(false);
+	private static readonly int s_pid = Environment.ProcessId;
+	private static long s_txCounter = 0;
 
-	public int WriteInformationPath(string message, string filepath)
-    {
-		return WritePrivate0(filepath, message, "Information");
-    }
-
-	public int WriteWarningPath(string message, string filepath)
-    {
-		return WritePrivate0(filepath, message, "Warning");
-    }
-
-	public int WriteErrorPath(string message, string filepath)
-    {
-		return WritePrivate0(filepath, message, "Error");
-    }
-
-	private int WritePrivate0(string filepath, string message, string msgType)
+	private sealed class Settings
 	{
-		if(string.IsNullOrEmpty(filepath))
-			filepath = m_filepath;
-		return WritePrivate(filepath, message, msgType);
+		public int Level = DEFAULT_LEVEL;
+		public string Path = DEFAULT_PATH;
+		public long MaxBytes = DEFAULT_MAX_SIZE_KB * 1024;
+		public int MaxFiles = DEFAULT_MAX_FILES;
+		public int RefreshMs = DEFAULT_REFRESH_SECONDS * 1000;
+		public bool UseDatabase = true;
+		public string FallbackPath;
+		public string SettingsTable = SETTINGS_TABLE;
+		public string Source = "default";
+		public long LoadedAt;
 	}
 
-	private int WritePrivate(string filepath, string message, string msgType)
+	public OTS_LOGGER()
 	{
-		string logMessage = String.Format("{0:yyyy-MM-dd HH:mm:ss} [{2}] - {1}", DateTime.Now, message, msgType);
-        // Log to file if a path is specified
-        if (!string.IsNullOrEmpty(filepath))
-        {
-            try
-            {
-				logMutex.WaitOne();
-                File.AppendAllText(filepath, logMessage + Environment.NewLine);
-            }
-            catch (Exception ex)
-            {
-				throw new Exception(String.Format("Failed to write to log file: {0}", ex.Message));
-            }
-			finally
-			{
-				logMutex.ReleaseMutex();
-			}
-        }
+		m_tx = s_pid + "." + Interlocked.Increment(ref s_txCounter);
+	}
+
+	// Called by the USoft .NET proxy before each method call (when it supports it).
+	private void setUSoftOwnerUserRole(string owner, string user, string role)
+	{
+		m_owner = owner;
+		m_user = user;
+	}
+
+	// ================================================================== RDMI methods
+	// 1.x methods: same names, parameters and return value.
+	public int WriteError(string message) { return Log(ERROR, message, null); }
+	public int WriteWarning(string message) { return Log(WARNING, message, null); }
+	public int WriteInformation(string message) { return Log(INFORMATION, message, null); }
+	public int WriteErrorPath(string message, string filepath) { return Log(ERROR, message, filepath); }
+	public int WriteWarningPath(string message, string filepath) { return Log(WARNING, message, filepath); }
+	public int WriteInformationPath(string message, string filepath) { return Log(INFORMATION, message, filepath); }
+
+	// 2.0 methods.
+	public int WriteDebug(string message) { return Log(DEBUG, message, null); }
+	public int WriteDebugPath(string message, string filepath) { return Log(DEBUG, message, filepath); }
+
+	// Level by name: 'ERROR', 'WARNING', 'INFORMATION' (or 'INFO'), 'DEBUG'. An unknown name logs as INFORMATION.
+	public int Write(string level, string message)
+	{
+		int l = ParseLevel(level);
+		return Log(l <= OFF ? INFORMATION : l, message, null);
+	}
+
+	// 1 when a call at this level would write, else 0. Use it to skip building an expensive message.
+	public int IsEnabled(string level)
+	{
+		try {
+			int l = ParseLevel(level);
+			if (l <= OFF) return 0;
+			return l <= GetSettings(AppName(), false).Level ? 1 : 0;
+		}
+		catch (Exception) { return 0; }
+	}
+
+	// The effective settings and where they came from, for diagnostics.
+	public string GetConfiguration()
+	{
+		try {
+			string app = AppName();
+			Settings s = GetSettings(app, false);
+			return "level=" + s_levelNames[s.Level] + "; path=" + ExpandPath(s.Path, app) + "; max_size_kb=" + (s.MaxBytes / 1024)
+				+ "; max_files=" + s.MaxFiles + "; refresh_seconds=" + (s.RefreshMs / 1000) + "; database=" + (s.UseDatabase ? "on" : "off")
+				+ "; fallback_path=" + FallbackPath(s) + "; source=" + s.Source + "; config_file=" + (FindConfigFile(app) ?? "(none)")
+				+ "; app=" + app + "; user=" + (m_user ?? "") + "; session=" + SessionId() + "; tx=" + m_tx;
+		}
+		catch (Exception e) { return "error: " + e.Message; }
+	}
+
+	// Re-read the settings now instead of at the next refresh. Returns 1.
+	public int Reload()
+	{
+		try { GetSettings(AppName(), true); } catch (Exception) { }
 		return 1;
+	}
+
+	// ================================================================== core
+	private int Log(int level, string message, string explicitPath)
+	{
+		try {
+			string app = AppName();
+			Settings s = GetSettings(app, false);
+			if (level > s.Level) return 1;   // OFF = 0: nothing is ever written
+			string path = ExpandPath(string.IsNullOrEmpty(explicitPath) ? s.Path : explicitPath, app);
+			string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + " [" + s_levelNames[level] + "] " + app
+				+ " user=" + (m_user ?? "") + " session=" + SessionId() + " tx=" + m_tx + " - " + OneLine(message);
+			Append(path, line, s);
+		}
+		catch (Exception e) {
+			try { Fallback(null, "logging failed: " + e.GetType().Name + ": " + e.Message); } catch (Exception) { }
+		}
+		return 1;
+	}
+
+	private string AppName()
+	{
+		return string.IsNullOrEmpty(m_owner) ? "USOFT" : m_owner;
+	}
+
+	private string SessionId()
+	{
+		long engine = 0;
+		try { engine = getEngine().ToInt64(); } catch (Exception) { }
+		return s_pid + "." + engine.ToString("x");
+	}
+
+	private static string OneLine(string message)
+	{
+		if (message == null) return "(null)";
+		return message.Replace("\r\n", "\\n").Replace("\n", "\\n").Replace("\r", "\\n");
+	}
+
+	private static int ParseLevel(string level)
+	{
+		if (level == null) return -1;
+		switch (level.Trim().ToUpperInvariant()) {
+			case "OFF": case "NONE": case "0": return OFF;
+			case "ERROR": case "1": return ERROR;
+			case "WARNING": case "WARN": case "2": return WARNING;
+			case "INFORMATION": case "INFO": case "3": return INFORMATION;
+			case "DEBUG": case "4": return DEBUG;
+			default: return -1;
+		}
+	}
+
+	private static string ExpandPath(string path, string app)
+	{
+		return Environment.ExpandEnvironmentVariables(path ?? DEFAULT_PATH).Replace("{APP}", app);
+	}
+
+	// ================================================================== settings
+	private Settings GetSettings(string app, bool force)
+	{
+		long now = Environment.TickCount64;
+		Settings s;
+		lock (s_lock) { s_settings.TryGetValue(app, out s); }
+		if (!force && s != null && now - s.LoadedAt < s.RefreshMs) return s;
+		Settings n = LoadSettings(app);
+		n.LoadedAt = Environment.TickCount64;
+		lock (s_lock) { s_settings[app] = n; }
+		return n;
+	}
+
+	private static string ConfigFolder()
+	{
+		return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "USoft", "OTS_LOGGER");
+	}
+
+	private static string FindConfigFile(string app)
+	{
+		string env = Environment.GetEnvironmentVariable("OTS_LOGGER_CONFIG");
+		if (!string.IsNullOrEmpty(env) && File.Exists(env)) return env;
+		string perApp = Path.Combine(ConfigFolder(), app + ".config");
+		if (File.Exists(perApp)) return perApp;
+		string shared = Path.Combine(ConfigFolder(), "OTS_LOGGER.config");
+		if (File.Exists(shared)) return shared;
+		return null;
+	}
+
+	private Settings LoadSettings(string app)
+	{
+		Settings s = new Settings();
+		var sources = new List<string>();
+		// 1. configuration file
+		string file = null;
+		try {
+			file = FindConfigFile(app);
+			if (file != null) {
+				foreach (string raw in File.ReadAllLines(file)) {
+					string l = raw.Trim();
+					if (l.Length == 0 || l.StartsWith("#") || l.StartsWith(";")) continue;
+					int eq = l.IndexOf('=');
+					if (eq <= 0) continue;
+					Apply(s, l.Substring(0, eq), l.Substring(eq + 1), "file " + file, app);
+				}
+				sources.Add("file");
+			}
+		}
+		catch (Exception e) {
+			Report(s, "config:" + file, "could not read configuration file " + file + ": " + e.Message);
+		}
+		// 2. database setting: wins over the file, key by key
+		if (s.UseDatabase && getEngine() != IntPtr.Zero && !DatabaseRecentlyFailed(app)) {
+			// The query runs in the caller's Rules Engine. A failing query (table not installed) puts an
+			// error on the engine's message stack that fails the calling statement, even though no
+			// exception reaches this code; catching the engine's errors around it prevents that.
+			bool catching = false;
+			string failure = null;
+			try {
+				try { Query("SELECT RulesEngine.StartCatchingErrors('Yes')"); catching = true; } catch (Exception) { }
+				// A table that is in the model but not created in the database gives an RDBMS error, which
+				// still makes the calling statement return no rows (tested on 11.2.1, also while catching).
+				// On SQL Server, ask the database first: OBJECT_ID never fails.
+				if (IsSqlServer()) {
+					object id = QuerySingleField("SELECT NVL(NUMBERTOCHAR(OBJECT_ID($$RDBMSOWNER$$ || '." + s.SettingsTable + "')), 'NONE')");
+					if (id == null || id == DBNull.Value || Convert.ToString(id).Trim() == "NONE")
+						throw new Exception("table " + s.SettingsTable + " does not exist in the database (run Create Tables)");
+				}
+				DataTable t = Query("SELECT SETTING_NAME, SETTING_VALUE FROM " + s.SettingsTable);
+				if (catching) {
+					object caught = null;
+					try { caught = QuerySingleField("SELECT RulesEngine.GetLastCaughtErrors()"); } catch (Exception) { }
+					string c = caught == null || caught == DBNull.Value ? "" : Convert.ToString(caught).Trim();
+					if (c.Length > 0) failure = c;
+				}
+				if (failure == null) {
+					int n = 0;
+					foreach (DataRow r in t.Rows) {
+						if (r[0] == DBNull.Value || r[1] == DBNull.Value) continue;
+						string v = Convert.ToString(r[1]);
+						if (string.IsNullOrWhiteSpace(v)) continue;
+						Apply(s, Convert.ToString(r[0]), v, "database", app);
+						n++;
+					}
+					if (n > 0) sources.Add("database");
+				}
+			}
+			catch (Exception e) { failure = e.Message; }
+			finally {
+				if (catching) { try { Query("SELECT RulesEngine.StopCatchingErrors()"); } catch (Exception) { } }
+			}
+			if (failure != null) {
+				lock (s_lock) { s_dbFailedAt[app] = Environment.TickCount64; }
+				Report(s, "db:" + app, "could not read OTS_LOGGER_SETTING (" + OneLine(failure) + "); using the file or default settings, retrying in "
+					+ (DB_RETRY_MS / 1000) + " s. Set database=off in the configuration file if the table is not installed.");
+			}
+		}
+		s.Source = sources.Count == 0 ? "default" : string.Join("+", sources);
+		return s;
+	}
+
+	private const int DB_RETRY_MS = 60000;
+	private static readonly Dictionary<string, long> s_dbFailedAt = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
+
+	private bool? m_isSqlServer;
+
+	private bool IsSqlServer()
+	{
+		if (m_isSqlServer == null) {
+			object r = null;
+			try { r = QuerySingleField("SELECT RulesEngine.GetProperty('Rdbms')"); } catch (Exception) { }
+			m_isSqlServer = r != null && Convert.ToString(r).IndexOf("SQL Server", StringComparison.OrdinalIgnoreCase) >= 0;
+		}
+		return m_isSqlServer.Value;
+	}
+
+	private static bool DatabaseRecentlyFailed(string app)
+	{
+		lock (s_lock) {
+			long at;
+			return s_dbFailedAt.TryGetValue(app, out at) && Environment.TickCount64 - at < DB_RETRY_MS;
+		}
+	}
+
+	private static void BadValue(Settings s, string key, string value, string where)
+	{
+		Report(s, "value:" + where + key + value, "invalid value '" + value + "' for " + key + " in " + where + "; kept the previous value");
+	}
+
+	private void Apply(Settings s, string key, string value, string where, string app)
+	{
+		key = key.Trim().ToUpperInvariant();
+		value = value.Trim();
+		long num;
+		switch (key) {
+			case "LEVEL":
+				int l = ParseLevel(value);
+				if (l >= 0) s.Level = l;
+				else Report(s, "level:" + where + value, "unknown level '" + value + "' in " + where + "; kept " + s_levelNames[s.Level]);
+				break;
+			case "PATH": if (value.Length > 0) s.Path = value; break;
+			case "MAX_SIZE_KB": if (long.TryParse(value, out num) && num >= 0) s.MaxBytes = num * 1024; else BadValue(s, key, value, where); break;
+			case "MAX_FILES": if (long.TryParse(value, out num) && num >= 0 && num <= 100) s.MaxFiles = (int)num; else BadValue(s, key, value, where); break;
+			case "REFRESH_SECONDS": if (long.TryParse(value, out num) && num >= 0 && num <= 3600) s.RefreshMs = (int)num * 1000; else BadValue(s, key, value, where); break;
+			case "DATABASE": s.UseDatabase = !(value.Equals("off", StringComparison.OrdinalIgnoreCase) || value.Equals("no", StringComparison.OrdinalIgnoreCase) || value == "0"); break;
+			case "FALLBACK_PATH": if (value.Length > 0) s.FallbackPath = value; break;
+			case "SETTINGS_TABLE": if (System.Text.RegularExpressions.Regex.IsMatch(value, "^[A-Za-z_][A-Za-z0-9_]{0,29}$")) s.SettingsTable = value.ToUpperInvariant(); else BadValue(s, key, value, where); break;
+			default: break;   // unknown keys are ignored, so newer files work with older versions
+		}
+	}
+
+	// ================================================================== writing
+	private static void Append(string path, string line, Settings s)
+	{
+		string full = Path.GetFullPath(path);
+		byte[] bytes = s_utf8.GetBytes(line + "\r\n");
+		Mutex m = GetMutex(full);
+		bool owned = false;
+		try {
+			if (m != null) {
+				try { owned = m.WaitOne(2000); }
+				catch (AbandonedMutexException) { owned = true; }
+			}
+			if (m == null) Monitor.Enter(s_noMutexLock);
+			try {
+				Rotate(full, bytes.Length, s);
+				WriteBytes(full, bytes);
+				int lost = 0;
+				lock (s_lock) { if (s_lost.TryGetValue(full, out lost)) s_lost.Remove(full); }
+				if (lost > 0) Fallback(s, "writing to " + full + " works again; " + lost + " line(s) were lost before");
+			}
+			finally { if (m == null) Monitor.Exit(s_noMutexLock); }
+		}
+		catch (Exception e) {
+			int lost;
+			lock (s_lock) { s_lost.TryGetValue(full, out lost); s_lost[full] = ++lost; }
+			Report(s, "write:" + full, "could not write to " + full + " (" + e.GetType().Name + ": " + e.Message + "); " + lost + " line(s) lost so far. Line: " + line);
+		}
+		finally {
+			if (owned) { try { m.ReleaseMutex(); } catch (Exception) { } }
+		}
+	}
+
+	private static void WriteBytes(string full, byte[] bytes)
+	{
+		for (int attempt = 0; ; attempt++) {
+			try {
+				// Append mode + one Write call: the line is appended in one piece, also by other processes.
+				using (var fs = new FileStream(full, FileMode.Append, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete, 4096, FileOptions.None)) {
+					fs.Write(bytes, 0, bytes.Length);
+				}
+				return;
+			}
+			catch (DirectoryNotFoundException) {
+				if (attempt > 0) throw;
+				Directory.CreateDirectory(Path.GetDirectoryName(full));
+			}
+			catch (IOException) {
+				if (attempt >= 3) throw;
+				Thread.Sleep(20 * (attempt + 1));
+			}
+		}
+	}
+
+	private static string RotatedName(string full, int i)
+	{
+		string dir = Path.GetDirectoryName(full);
+		return Path.Combine(dir, Path.GetFileNameWithoutExtension(full) + "." + i + Path.GetExtension(full));
+	}
+
+	private static void Rotate(string full, int adding, Settings s)
+	{
+		if (s.MaxBytes <= 0) return;
+		var fi = new FileInfo(full);
+		if (!fi.Exists || fi.Length + adding <= s.MaxBytes) return;
+		try {
+			if (s.MaxFiles <= 0) { File.Delete(full); return; }
+			string oldest = RotatedName(full, s.MaxFiles);
+			if (File.Exists(oldest)) File.Delete(oldest);
+			for (int i = s.MaxFiles - 1; i >= 1; i--) {
+				string from = RotatedName(full, i);
+				if (File.Exists(from)) File.Move(from, RotatedName(full, i + 1));
+			}
+			File.Move(full, RotatedName(full, 1));
+		}
+		catch (Exception e) {
+			Report(s, "rotate:" + full, "could not rotate " + full + ": " + e.Message + "; the file keeps growing until rotation works");
+		}
+	}
+
+	private static Mutex GetMutex(string full)
+	{
+		lock (s_lock) {
+			Mutex m;
+			if (s_mutexes.TryGetValue(full, out m)) return m;
+			m = CreateMutex("Global\\OTS_LOGGER_" + Fnv1a(full.ToLowerInvariant()));
+			s_mutexes[full] = m;   // null is cached too: then this process relies on append-mode writes
+			return m;
+		}
+	}
+
+	private static Mutex CreateMutex(string name)
+	{
+		try {
+			// Everyone may use it: a Rules Service (LocalSystem) and a user's client share one log file.
+			var sec = new MutexSecurity();
+			sec.AddAccessRule(new MutexAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),
+				MutexRights.Synchronize | MutexRights.Modify, AccessControlType.Allow));
+			bool created;
+			return MutexAcl.Create(false, name, out created, sec);
+		}
+		catch (Exception) { }
+		try { return Mutex.OpenExisting(name); } catch (Exception) { }
+		try { return new Mutex(false, name); } catch (Exception) { }
+		Report(null, "mutex:" + name, "no named mutex " + name + "; writing with append mode only");
+		return null;
+	}
+
+	// A stable hash: string.GetHashCode() differs per process in .NET.
+	private static string Fnv1a(string s)
+	{
+		ulong h = 14695981039346656037UL;
+		foreach (char c in s) { h ^= c; h *= 1099511628211UL; }
+		return h.ToString("x16");
+	}
+
+	// ================================================================== fallback reporting
+	private static string FallbackPath(Settings s)
+	{
+		if (s != null && !string.IsNullOrEmpty(s.FallbackPath)) return Environment.ExpandEnvironmentVariables(s.FallbackPath);
+		return Path.Combine(ConfigFolder(), "OTS_LOGGER_fallback.log");
+	}
+
+	// At most one report per key per minute.
+	private static void Report(Settings s, string key, string text)
+	{
+		long now = Environment.TickCount64;
+		lock (s_lock) {
+			long last;
+			if (s_reported.TryGetValue(key, out last) && now - last < 60000) return;
+			s_reported[key] = now;
+		}
+		Fallback(s, text);
+	}
+
+	private static void Fallback(Settings s, string text)
+	{
+		string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + " [OTS_LOGGER] pid=" + s_pid + " - " + OneLine(text);
+		try { Trace.WriteLine(line); } catch (Exception) { }
+		foreach (string p in new[] { FallbackPath(s), Path.Combine(Path.GetTempPath(), "OTS_LOGGER_fallback.log") }) {
+			try {
+				string dir = Path.GetDirectoryName(p);
+				if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+				var fi = new FileInfo(p);
+				if (fi.Exists && fi.Length > 5L * 1024 * 1024) File.Delete(p);
+				byte[] b = s_utf8.GetBytes(line + "\r\n");
+				using (var fs = new FileStream(p, FileMode.Append, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete)) {
+					fs.Write(b, 0, b.Length);
+				}
+				return;
+			}
+			catch (Exception) { }
+		}
 	}
 }]]></PROGRAM_SOURCE>
 		<ORIGIN><![CDATA[]]></ORIGIN>
-		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+		<DESCRIPTION><![CDATA[OTS_LOGGER 2.0: levelled (OFF/ERROR/WARNING/INFORMATION/DEBUG), rotating, multi-process safe log file for rules, SQL tasks and jobs. Never throws; returns 1.]]></DESCRIPTION>
 	</T_RDMI_DOTNET_COMPONENT>
-</DotNet_Components><J2EE_Components documentName="J2EE Components"/><Stateful_Components documentName="Stateful Components"/><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
-	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_LOGGER" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-11-22T12:08:51" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="80a621ec899345439ee2d7d6a2330726">
-		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+</DotNet_Components><J2EE_Components documentName="J2EE Components"/><Stateful_Components documentName="Stateful Components">
+	<T_RDMI_STATEFUL_COMPONENT COMPONENT_NAME="OTS_LOGGER" LIFETIME="TRANSACTION" TRANSACTIONAL="N" SUPPORTS_COMMIT="N" SUPPORTS_ROLLBACK="N" SUPPORTS_PRECOMMIT="N" SUPPORTS_TABLECOMPONENT="N" SUPPORTS_UPDATE="N" SUPPORTS_INSERT="N" SUPPORTS_DELETE="N" SUPPORTS_CONDITIONS="N" SUPPORTS_ROWSETSIZEHINT="N" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-11-22T12:08:51" G_U_K="80a621ec899345439ee2d7d6a2330726">
+		<DESCRIPTION><![CDATA[OTS_LOGGER 2.0: levelled (OFF/ERROR/WARNING/INFORMATION/DEBUG), rotating, multi-process safe log file for rules, SQL tasks and jobs. Never throws; returns 1.]]></DESCRIPTION>
+	</T_RDMI_STATEFUL_COMPONENT>
+</Stateful_Components><Web_Service_Components documentName="Web Service Components"/><Components documentName="Components">
+	<T_RDMI_COMPONENT COMPONENT_NAME="OTS_LOGGER" T_RDMI_JAVA_COMPONENT="N" T_RDMI_STATEFUL_COMPONENT="Y" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-11-22T12:08:51" T_RDMI_WEB_SERVICE_COMPONENT="N" T_RDMI_DOTNET_COMPONENT="Y" T_RDMI_COMPONENT_CONSTRUCTOR="Y" G_U_K="80a621ec899345439ee2d7d6a2330726">
+		<DESCRIPTION><![CDATA[OTS_LOGGER 2.0: levelled (OFF/ERROR/WARNING/INFORMATION/DEBUG), rotating, multi-process safe log file for rules, SQL tasks and jobs. Never throws; returns 1.]]></DESCRIPTION>
 	</T_RDMI_COMPONENT>
 </Components><Methods documentName="Methods">
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_LOGGER" METHOD_NAME="GETCONFIGURATION" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-11-22T12:08:51">
+		<PHYSICAL_METHOD_NAME><![CDATA[GetConfiguration]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_LOGGER" METHOD_NAME="ISENABLED" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-11-22T12:08:51">
+		<PHYSICAL_METHOD_NAME><![CDATA[IsEnabled]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
 	<T_RDMI_METHOD COMPONENT_NAME="OTS_LOGGER" METHOD_NAME="OTS_LOGGER" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-11-22T12:08:51">
 		<PHYSICAL_METHOD_NAME><![CDATA[OTS_LOGGER]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_LOGGER" METHOD_NAME="RELOAD" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-11-22T12:08:51">
+		<PHYSICAL_METHOD_NAME><![CDATA[Reload]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_LOGGER" METHOD_NAME="WRITE" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-11-22T12:08:51">
+		<PHYSICAL_METHOD_NAME><![CDATA[Write]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_LOGGER" METHOD_NAME="WRITEDEBUG" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-11-22T12:08:51">
+		<PHYSICAL_METHOD_NAME><![CDATA[WriteDebug]]></PHYSICAL_METHOD_NAME>
+		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
+	</T_RDMI_METHOD>
+	<T_RDMI_METHOD COMPONENT_NAME="OTS_LOGGER" METHOD_NAME="WRITEDEBUGPATH" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-11-22T12:08:51">
+		<PHYSICAL_METHOD_NAME><![CDATA[WriteDebugPath]]></PHYSICAL_METHOD_NAME>
 		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
 	</T_RDMI_METHOD>
 	<T_RDMI_METHOD COMPONENT_NAME="OTS_LOGGER" METHOD_NAME="WRITEERROR" METHOD_SEQNO="1" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y" CREATED_BY="USD_COMPONENTS1100" CREATED_ON="2024-11-22T12:08:51">
@@ -114,18 +559,30 @@ public class OTS_LOGGER
 		<DESCRIPTION><![CDATA[]]></DESCRIPTION>
 	</T_RDMI_METHOD>
 </Methods><Parameters documentName="Parameters">
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="0" METHOD_NAME="GETCONFIGURATION" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_GetConfiguration" KIND="RETURN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="0" METHOD_NAME="ISENABLED" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_IsEnabled" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="0" METHOD_NAME="RELOAD" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_Reload" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="0" METHOD_NAME="WRITE" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_Write" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="0" METHOD_NAME="WRITEDEBUG" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_WriteDebug" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="0" METHOD_NAME="WRITEDEBUGPATH" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_WriteDebugPath" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
 	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="0" METHOD_NAME="WRITEERROR" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_WriteError" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
 	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="0" METHOD_NAME="WRITEERRORPATH" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_WriteErrorPath" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
 	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="0" METHOD_NAME="WRITEINFORMATION" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_WriteInformation" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
 	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="0" METHOD_NAME="WRITEINFORMATIONPATH" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_WriteInformationPath" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
 	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="0" METHOD_NAME="WRITEWARNING" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_WriteWarning" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
 	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="0" METHOD_NAME="WRITEWARNINGPATH" METHOD_SEQNO="1" PARAMETER_NAME="Return_From_WriteWarningPath" KIND="RETURN" PRIMITIVE_DATA_TYPE="LONG" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="1" METHOD_NAME="ISENABLED" METHOD_SEQNO="1" PARAMETER_NAME="level" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="1" METHOD_NAME="WRITE" METHOD_SEQNO="1" PARAMETER_NAME="level" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="1" METHOD_NAME="WRITEDEBUG" METHOD_SEQNO="1" PARAMETER_NAME="message" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="1" METHOD_NAME="WRITEDEBUGPATH" METHOD_SEQNO="1" PARAMETER_NAME="message" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
 	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="1" METHOD_NAME="WRITEERROR" METHOD_SEQNO="1" PARAMETER_NAME="message" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
 	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="1" METHOD_NAME="WRITEERRORPATH" METHOD_SEQNO="1" PARAMETER_NAME="message" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
 	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="1" METHOD_NAME="WRITEINFORMATION" METHOD_SEQNO="1" PARAMETER_NAME="message" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
 	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="1" METHOD_NAME="WRITEINFORMATIONPATH" METHOD_SEQNO="1" PARAMETER_NAME="message" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
 	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="1" METHOD_NAME="WRITEWARNING" METHOD_SEQNO="1" PARAMETER_NAME="message" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
 	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="1" METHOD_NAME="WRITEWARNINGPATH" METHOD_SEQNO="1" PARAMETER_NAME="message" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="2" METHOD_NAME="WRITE" METHOD_SEQNO="1" PARAMETER_NAME="message" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
+	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="2" METHOD_NAME="WRITEDEBUGPATH" METHOD_SEQNO="1" PARAMETER_NAME="filepath" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
 	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="2" METHOD_NAME="WRITEERRORPATH" METHOD_SEQNO="1" PARAMETER_NAME="filepath" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
 	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="2" METHOD_NAME="WRITEINFORMATIONPATH" METHOD_SEQNO="1" PARAMETER_NAME="filepath" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>
 	<T_RDMI_PARAMETER COMPONENT_NAME="OTS_LOGGER" PARAMETER_SEQNO="2" METHOD_NAME="WRITEWARNINGPATH" METHOD_SEQNO="1" PARAMETER_NAME="filepath" KIND="IN" PRIMITIVE_DATA_TYPE="STRING" INTERFACE="N" MODULE="" INTERFACE_CORRECT="Y"/>

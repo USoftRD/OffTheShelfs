@@ -1,5 +1,35 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <OTS>
 	<OTS_Type>C# Component</OTS_Type>
-	<Description>The OTS_LOGGER component is a C# component which can be used for performing logging.</Description>
+	<Description>OTS_LOGGER 2.0 writes run-time values from constraints, SQL tasks and jobs to a log file, so you can see every intermediate value of a field in a transaction. The log statements can stay in production: the level is set outside the rules and a call at level OFF writes nothing.
+
+Every call writes one line:
+2026-10-03 14:22:01.123 [DEBUG] MYAPP user=JDOE session=4711.1a2b3c tx=4711.7 - your message
+(timestamp with milliseconds, level, application, user, session = process.engine, tx = one id per transaction).
+
+Methods (all return 1, also when the log cannot be written, so they can be used in a WHERE clause):
+WRITEERROR(message), WRITEWARNING(message), WRITEINFORMATION(message), WRITEDEBUG(message),
+WRITEERRORPATH / WRITEWARNINGPATH / WRITEINFORMATIONPATH / WRITEDEBUGPATH(message, filepath),
+WRITE(level, message), ISENABLED(level) returns 1 or 0, GETCONFIGURATION() returns the effective settings, RELOAD().
+
+Settings (level OFF, ERROR, WARNING, INFORMATION, DEBUG; path; max_size_kb; max_files; refresh_seconds; fallback_path):
+- table OTS_LOGGER_SETTING (SETTING_NAME, SETTING_VALUE), part of this package: a row here wins;
+- file %ProgramData%\USoft\OTS_LOGGER\&lt;APPLICATION&gt;.config or OTS_LOGGER.config (key=value lines), or the file named by environment variable OTS_LOGGER_CONFIG.
+Settings are re-read every 5 seconds: no rule change, no restart. Without any setting the logger behaves like 1.x: level INFORMATION, file C:\temp\mylog.log.
+The file rotates at max_size_kb (default 10240) and keeps max_files (default 5). Lines from several processes (Rules Service, clients, jobs) stay whole (named mutex + append). A failure to write never fails the transaction; it is reported in %ProgramData%\USoft\OTS_LOGGER\OTS_LOGGER_fallback.log.
+
+After importing: Check the repository, Create Tables (OTS_LOGGER_SETTING) and restart the Rules Service.
+
+Example calls:
+
+-- a restrictive constraint that only logs (it never returns a row):
+SELECT '' violation
+FROM   ORDERLINE
+WHERE  OTS_LOGGER.WRITEDEBUG('ORDERLINE ' || NUMBERTOCHAR(ID) || ' amount ' || NVL(NUMBERTOCHAR(OLD(AMOUNT)), 'null') || ' -&gt; ' || NVL(NUMBERTOCHAR(AMOUNT), 'null')) = 0
+
+-- a statement in a SQL task:
+INVOKE OTS_LOGGER.WRITEINFORMATION WITH SELECT 'task start: amount=' || NUMBERTOCHAR(AMOUNT) FROM ORDERLINE WHERE ID = 1
+
+On SQL Server, || with a number fails (the text is converted to a number): use NUMBERTOCHAR(), and NVL() for values that can be NULL.
+	</Description>
 </OTS>
